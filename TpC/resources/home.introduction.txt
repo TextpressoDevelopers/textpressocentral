@@ -1,0 +1,17 @@
+This is a platform to perform full text literature searches, view and curate 
+research papers, train and apply machine learning (ML) and text mining (TM) 
+algorithm for semantic analysis and curation purposes. The user is supported 
+in this task by giving him capabilities to select, edit and store lists of 
+papers, sentences, term and categories in order to perform training and 
+mining. The system is designed with the intent to empower the user to perform 
+as many operations on a literature corpus or a particular paper as possible. 
+It uses state-of-the-art software packages and frameworks such as the 
+Unstructured Information Management Architecture (UIMA)	http://uima.apache.org
+, 
+Lucene	http://lucene.apache.org
+ and 
+Wt	http://www.webtoolkit.eu/wt
+. The corpus of papers can be build from fulltext articles 
+that are available in PDF or 
+NXML	http://dtd.nlm.nih.gov/
+ format.

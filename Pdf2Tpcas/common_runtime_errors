@@ -1,0 +1,10 @@
+Error: An error 2 ocurred during uncompressing the pdf file.
+
+
+PoDoFo encounter an error. Error: 2 ePdfError_InvalidHandle
+	Error Description: A NULL handle was passed, but initialized data was expected.
+	Callstack:
+	#0 Error Source: PdfInfo.cpp:109
+
+
+Resolve: create images/ directory

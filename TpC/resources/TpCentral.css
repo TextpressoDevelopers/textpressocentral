@@ -1,0 +1,118 @@
+/* Style sheet for TextpressoCentral */
+
+body, td, button {
+  font-family:arial,sans-serif;
+}
+
+.example-tree .selected {
+    background-color: yellow;
+}
+
+.Wt-btn {
+  margin-left: 10px;
+  margin-right: 10px;
+  padding-left: 5px;
+  padding-right: 5px;
+  font-size: x-small;
+}
+
+.label {
+  font-weight: bold;
+  font-size: smaller;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.text80 {
+  font-weight: normal;
+  font-size: 80%;
+  margin-left: 5px;
+  margin-right: 5px
+}
+
+.option {
+  cursor: pointer; cursor: hand;
+  color: blue;
+  font-size: smaller;
+  text-decoration: underline;
+}
+
+.sep {
+  padding: 5px;
+}
+
+button.default {
+  font-weight: bold
+}
+
+.lighter {
+/*  background-color: #e0ecff; */
+  background-color: #eeeeee;
+}
+
+.darker {
+  background-color: #C3D9FF;
+}
+
+.status {
+  font-size: smaller;
+}
+
+.error {
+  color: red;
+  font-size: smaller;
+}
+
+.remove {
+  cursor: pointer; cursor: hand;
+  color: blue;
+  font-size: x-small;
+  text-decoration: underline;
+}
+
+.feedback div {
+  margin: 10px;
+}
+
+a {
+  color: blue;
+  font-size: smaller;
+  text-decoration: underline;
+}
+
+.extract-table {
+  margin: 5px auto;
+  border: 1px solid gray;
+}
+
+.extract-table td {
+  padding: 3px 5px;
+  border: 1px solid gray;
+  background-color: #eeeeee;
+}
+
+.extract-table th {
+  padding: 3px 5px;
+  border: 1px solid gray;
+  background-color: #aaaaaa;
+}
+
+.source-table {
+/*  margin: 5px auto; */
+  border: 1px solid gray;
+}
+
+.source-table td {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 3px 5px;
+    border: 1px solid gray;
+    background-color: #f8f8f8;
+}
+
+.source-table th {
+    padding: 3px 5px;
+    border: 1px solid gray;
+    background-color: #ccccff;
+}

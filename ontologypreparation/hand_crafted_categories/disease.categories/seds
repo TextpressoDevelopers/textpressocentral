@@ -1,0 +1,6 @@
+ 1935  cat all.disease.txt | sed 's/\([a-z]\),\([a-z]\)/\1\, \2/g'> new
+ 1955  cat all.disease.txt | sed 's/ $//g'> new
+ 2021  cat disease.term.basic.txt | sed 's/\r*$//g'> new
+ 1957  cat all.disease.txt | sed 's/ *$//g'> new
+ 1978  cat all.disease.txt | sed 's/^[A-Z]/\1/g'> new
+ 1989  cat all.disease.txt | sed 's/^\([A-Z]\)\([a-z]\)/\L\1\E\2/g'

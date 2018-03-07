@@ -1,0 +1,9 @@
+cmake-build*
+.idea/
+**/build/
+**/dist/
+**/nbproject/
+/pgdumps/
+*~
+/tpctl.config
+*.obo

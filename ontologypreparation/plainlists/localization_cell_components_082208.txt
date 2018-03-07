@@ -1,0 +1,172 @@
+a-band
+active zone
+adherens junction
+annular
+annuli
+apical
+apicolateral
+astral microtubule
+autosome
+axial element
+axon
+basal
+basement membrane
+basolateral
+bivalent
+bodies
+body
+border
+boundary
+cell body
+cell boundaries
+cell-cell contact
+cell cortex
+cell junctions
+cell margins
+cell membrane
+cell peripheries
+cell soma
+cell-surface
+centriolar
+centriole
+centromere
+centrosomal
+centrosome-associated
+chromatids
+chromatin
+chromosomal
+chromosome-associated
+cilia
+cilium
+cleavage furrow
+cohesin
+condensin
+cortex
+cortical
+cortices
+cuticle
+cuticular
+cytoplasm
+cytoskeletal
+cytoskeleton
+cytosol
+dendrite
+dendritic
+dense bodies
+dense body
+dense-core vesicle
+desmosomes
+early endosome
+ees
+endocytic
+endoplasmic reticulum
+endosomal
+endosome
+envelope
+er
+extracellular
+extrasynaptic
+filament
+filopodia
+fraction
+furrow
+golgi
+gpi
+granule
+hemidesmosome
+i band
+i-band
+inm
+inner mitochondrial membrane
+insoluble
+integral golgi membrane
+integral membrane
+intercellular junctions
+interzone
+intracellular
+junction
+kinetochore
+late endosome
+lateral
+leading edge
+luminal er
+lysosome
+membrane
+membranous organelles
+microfilament
+microtubule
+midbody
+midzone
+mitochondria
+m line
+m-line
+multivesicular body
+muscle arms
+mvb
+myofibril
+ne
+neural processes
+neurite
+neuromuscular junction
+neuromuscular synapse
+neuronal processes
+nmj
+npc
+nuclear
+nuclei
+nucleo-cytoplasmic
+nucleolar
+nucleoli
+nucleolus
+nucleoplasm
+nucleosomal
+nucleus
+organelle
+p-bodies
+pellet fraction
+periactive zone
+pericentriolar
+pericentrosomal
+perinuclear
+peripheral
+periphery
+p-granule
+phagocytic cup
+phagosome
+plasma membrane
+pm
+poles
+pore wall
+postsynaptic
+post-synaptic
+presynaptic
+pre-synaptic
+process
+projection
+pronuclear
+pronuclei
+pronucleus
+puncta
+reticular
+sarcolemma
+sarcomere
+sc
+sensory cilia
+soma
+spindle
+subnuclear
+supernatant
+surface
+synapse
+synaptic
+synaptonemal complex
+tgn
+thick filament
+thin filament
+trans-cisterna
+trans-golgi
+transition zone
+vesicle
+vesicular
+x chromosome
+x-localized

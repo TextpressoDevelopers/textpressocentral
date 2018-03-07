@@ -1,0 +1,91 @@
+#!/usr/bin/perl
+# This is a small server that provides autocomplete lists for TPC
+# 
+use strict;
+use warnings FATAL => 'all';
+
+use strict;
+
+use HTTP::Request;
+use LWP::UserAgent;
+
+
+use CGI qw();
+my $cgi = new CGI;
+#################
+##
+my $searchterm = "";
+my $mode = 0;
+if (defined($cgi->param('q'))) {
+    $searchterm=$cgi->param('q');
+}
+if (defined($cgi->param('m'))) {
+    $mode=$cgi->param('m');
+}
+
+#
+
+my $keywordquery1;
+my $keywordquery2;
+# Correct for colons:
+$searchterm =~ s/:/\\:/g;
+#
+    my @ksplits = split(" ", $searchterm);
+    my @orterms1;
+    my @orterms2;
+    foreach my $k (@ksplits) {
+	push @orterms1, "(annotation_class_label:*$k* OR annotation_class:*$k*)";
+	push @orterms2, "(annotation_class_label:*$k* OR annotation_class:*$k* OR database_xref:*$k*)";
+    }
+    $keywordquery1 = join(" AND ", @orterms1);
+    $keywordquery2 = join(" AND ", @orterms2);
+#
+##
+my $url;
+if ($mode == 0) {
+    $url = "http://noctua-golr.berkeleybop.org/select?q=annotation_class_label:$searchterm* AND is_obsolete:false&fl=annotation_class_label&rows=50000";
+} elsif ($mode == 1) {
+    $url = "http://noctua-golr.berkeleybop.org/select?q=$keywordquery1 AND is_obsolete:false AND idspace:GO&fl=annotation_class_label,annotation_class&rows=50000";
+}  elsif ($mode == 2) {
+    $url = "http://noctua-golr.berkeleybop.org/select?q=$keywordquery1 AND isa_partof_closure:*23367&fl=annotation_class_label,annotation_class&rows=50000";
+}  elsif ($mode == 3) {
+    $url = "http://noctua-golr.berkeleybop.org/select?q=$keywordquery2 AND isa_partof_closure:*0000000 AND idspace:ECO&fl=annotation_class_label,annotation_class,database_xref&rows=50000";
+}
+my $page = GetWebPage($url);
+##
+my $ret = "";
+my @splits = split("\n", $page);
+my @docs;
+foreach my $s (@splits) {
+    if ($s =~ /<result /) {
+	push (@docs, ($s =~ /<doc>(.+?)<\/doc>/g));
+    }
+}
+my @strings;
+foreach my $d (@docs) {
+    my $concatenated = "";
+    while ($d =~ /<str.*?>(.+?)<\/str>/g) {
+	if ($concatenated ne "") {
+	    $concatenated .= " " . $1;
+	} else {
+	    $concatenated = $1;
+	}
+    }
+    if ($concatenated ne "") {
+	push (@strings, $concatenated);
+    }
+}
+print $cgi->header('text/plain');
+$ret = join("\n", @strings) . "\n";
+print $ret;
+
+sub GetWebPage{
+    my $u = shift;
+    my $page;
+    my $ua = LWP::UserAgent->new(timeout => 30); #instantiates a new user agent
+    my $request = HTTP::Request->new(GET => $u); #grabs url
+    my $response = $ua->request($request);       #checks url, dies if not valid.
+    die "Error while getting ", $response->request->uri," -- ", $response->status_line, "\nAborting" unless $response-> is_success;
+    $page = $response->content;    #splits by line
+    return $page;
+}

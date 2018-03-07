@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<messages>
+  <!-- All languages -->
+  <message id="msg.processnow">Process now!</message>
+  <message id="msg.processing">Processing...</message>
+  <message id="msg.processed">Processed.</message>
+  <message id="msg.savenow">Save Now</message>
+  <message id="msg.discard">Discard</message>
+  <message id="msg.to">To:</message>
+  <message id="msg.cc">Cc:</message>
+  <message id="msg.bcc">Bcc:</message>
+  <message id="msg.addcc">Add Cc</message>
+  <message id="msg.addbcc">Add Bcc</message>
+  <message id="msg.subject">Subject:</message>
+  <message id="msg.attachfile">Upload a file</message>
+  <message id="msg.attachanother">Upload another file</message>
+  <message id="msg.remove">remove</message>
+  <message id="msg.file-empty">Error: file was empty!</message>
+  <message id="msg.file-too-large">Error: file size of {1} KB exceeds limit ({2} KB).</message>
+  <message id="msg.uploading">Uploading attachments...</message>
+  <message id="msg.attachment.failed">Error: empty or oversized attachments?</message>
+</messages>

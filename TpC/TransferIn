@@ -1,0 +1,12 @@
+#!/usr/bin/perl
+# This is a small server that receives a HTTP GET and redirects it to TPC
+# after some modifications.
+use strict;
+use warnings FATAL => 'all';
+use CGI qw();
+my $cgi = new CGI;
+#################
+#################
+my $endpoint_url=$cgi->param('endpoint_url');
+print $cgi->redirect("http://tpc.textpresso.org/cgi-bin/tc/tpc?endpoint_url=$endpoint_url");
+

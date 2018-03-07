@@ -1,0 +1,101 @@
+3 _sq_ -5 _sq_ exonuclease
+3 _sq_ -diesterase
+3 _sq_ -phosphodiesterase
+3-ureidoproprionase
+5 _sq_ -3 _sq_ -exonuclease activity
+aconitase activity
+activated
+activation
+active site
+activities
+activity
+affinity
+amidohydrolase activity
+analysis
+assay
+autoactivation
+autoprocessing
+basal
+biochemical
+caspase
+catalyst
+catalytic
+cleavage
+complex
+concentration
+conversion
+data
+deglutamylase
+deoxyribonuclease activity
+detectable
+dicing activity
+diesterase
+dnase
+endonuclease
+endonucleolytic cleavage
+enzymatic
+enzyme
+exonuclease
+extracts
+formation
+gap activity
+glutathionine conjugation activity
+glycosylase
+gtp hydrolysis
+hydrolysis activity
+immunopurified
+incorporation
+incubation
+inhibition
+inhibitory
+in vitro
+kcat
+kinase
+kinetic parameters
+km
+ligase activity
+linearized
+maximal activity
+maximally
+measurement
+methylation
+michaelis-menten
+nicked
+nicking
+nucleases
+phosphatase
+phosphodiesterase
+phosphodiester bond cleavage
+phosphorylation
+phosphotransferase activity
+processing
+product
+protease
+proteolytic processing
+purified
+rates
+reaction mixture
+reactions
+recombinant
+residue
+result
+sites
+specific activity
+specificity
+substrate
+sulfotransferase acitivty
+sumo modification
+tautomerase
+th activity
+transport
+tyrosinase
+tyrosine hydroxylase activity
+ubiquitin conjugates
+ubiquitin ligase activity
+unstimulated
+uptake
+uracil-dna glycosylase
+velocity
+vitro
+vmax
+zymogen

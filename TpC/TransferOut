@@ -1,0 +1,39 @@
+#!/usr/bin/perl
+# This is a small server that receives a HTTP GET and redirects it to TPC
+# after some modifications.
+use strict;
+use warnings FATAL => 'all';
+use CGI qw();
+my $cgi = new CGI;
+#################
+my $javascript = <<JSEND;
+function post(path, params, method) {
+    method = method || "post"; // Set method to post by default if not specified.
+    // The rest of this code assumes you are not using a library.
+    // It can be made less wordy if you use one.
+    var form = document.createElement("form");
+    form.setAttribute("method", method);
+    form.setAttribute("action", path);
+    form.setAttribute("enctype", "text/plain");
+    for(var key in params) {
+        if(params.hasOwnProperty(key)) {
+            var hiddenField = document.createElement("input");
+            hiddenField.setAttribute("type", "hidden");
+            hiddenField.setAttribute("name", key);
+            hiddenField.setAttribute("value", params[key]);
+            form.appendChild(hiddenField);
+         }
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+}
+JSEND
+
+my $jsonblob='{"token": "uzrtkn", "provided-by": ["http://foo.bar"], "x-user-id": "http://orcid.org/foo", "x-model-id": "gomodel:01234567", "x-client-id": "tpc", "requests": [{"database-id": "UniProtKB:A0A005", "evidence-id": "ECO:0000314", "class-id": "GO:0050689", "reference-id": "PMID:666333", "external-id": "XXX:YYYYYYY", "comments": ["foo", "bar"]}]}';
+my $url="'http://tpc.textpresso.org/cgi-bin/tc/ReceivePost.cgi'";
+my $msg="{endpoint_arguments : '$jsonblob'}";
+
+print $cgi->header;
+print $cgi->start_html(-script=>$javascript, -onload=>"post($url, $msg)");
+print $cgi->end_html;

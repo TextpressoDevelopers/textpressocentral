@@ -1,0 +1,11 @@
+stages:
+- build
+
+build_job:
+  stage: build
+  script:
+  - mkdir cmake-build-release && cd cmake-build-release
+  - cmake -DCMAKE_BUILD_TYPE=Release ..
+  - make && make install
+  - cd ..
+  - ./tpctl.sh activate

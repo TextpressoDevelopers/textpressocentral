@@ -1,0 +1,197 @@
+(+)
+(0)
+(gf)
+(lf)
+abolished
+absence
+absent
+allele
+allelic
+amorph
+amorphic
+antimorph
+antimorphic
+block
+cold sensitive
+cold sensitivity
+cold-sensitive
+cold-sensitivity
+constitutive
+constitutive activation
+constitutive activity
+constitutively
+constitutively activate
+constitutively activated
+constitutively activating
+constitutively active
+deficiency
+delete
+deletion
+deplete
+depletion
+devoid
+devoid of
+diminish
+disfunctional
+dominant
+dominant negative
+dominant-negative
+double stranded RNA
+double-stranded RNA
+down regulate
+down regulated
+down regulating
+down regulation
+down-regulate
+down-regulated
+down-regulating
+down-regulation
+downregulate
+downregulated
+downregulating
+downregulation
+dsRNA
+early stop
+early stop codon
+eliminate
+elimination
+empty vector
+frame shift
+frameshift
+gain of function
+gain-of-function
+genetic
+genetic analysis
+genetic screen
+genetically
+genotype
+genotyped
+genotyping
+gf
+gof
+heat sensitive
+heat sensitivity
+heat-sensitive
+heat-sensitivity
+hemizygote
+hemizygotic
+hemizygous
+heterozygote
+heterozygotic
+heterozygous
+homozygote
+homozygotic
+homozygous
+hypermorph
+hypermorphic
+hypomorph
+hypomorphic
+impair
+impairment
+inactivate
+inactivation
+inactive
+inhibit
+inhibition
+kinase dead
+knock down
+knock out
+knock-down
+knock-out
+knockdown
+knocked down
+knocked out
+knocking down
+knocking out
+knockout
+knocks down
+knocks out
+lack
+lack activity
+lack the activity
+lacked activity
+lacked the activity
+lacking activity
+lacking the activity
+lacks activity
+lacks the activity
+lesion
+lf
+lof
+loss
+loss of function
+loss-of-expression
+loss-of-function
+lost
+maternal effect
+missense
+missing
+mosaic
+mosaicism
+mosaics
+mutagen
+mutagenesis
+mutagens
+mutant
+mutants
+mutate
+mutation
+mutational
+N2
+neomorph
+neomorphic
+nonsense
+null
+nulls
+over-express
+over-expressed
+over-expressing
+over-expression
+overexpress
+overexpressed
+overexpressing
+overexpression
+permissive
+permissive conditions
+permissive temperature
+permissive temperatures
+perturb
+perturbation
+phenocopied
+phenocopy
+phenocopying
+pre-mature
+pre-mature stop codon
+premature
+premature stop
+premature stop codon
+recessive
+recombinant
+reduce
+reduction
+reduction of function
+reduction-of-function
+restrictive
+restrictive conditions
+restrictive temperature
+RNA interference
+RNA-interference
+RNAi
+RNAi-based
+RNAi-induced
+silence
+strain
+substitute
+substitution
+temperature sensitive
+temperature sensitivity
+temperature-sensitive
+temperature-sensitivity
+truncate
+truncation
+variant
+wild type
+wild-type
+wildtype
+wt
+WT

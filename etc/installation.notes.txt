@@ -1,0 +1,166 @@
+01) Install Ubuntu
+02) Install Synaptic
+03) Download jdk from http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html, install in /usr/local
+04) Download Netbeans from netbeans.org (optional)
+05) Install g++, make, gdb
+06) Install svn
+07) Make dir /usr/local/textpresso
+08) Make the following subdirectories in /usr/local/textpresso
+       bin
+       lib
+       resources
+       cronjobs
+       luceneindex
+       runAECpp.txt
+       tpontology
+       descriptors (link to resources/resources-tpc/descriptors/)
+       sources
+       useful
+       etc
+       useruploads
+       html
+       outside-libraries (link to svn-co/textpressocentral/trunk/outside-libraries/)
+       tpcas
+       svn-co
+09) cd /usr/local/textpresso/svn-co/
+10) svn co http://sandbox.textpresso.org/svn/textpressocentral.
+11) Make all necessary links in /usr/local/textpresso to the checkout dir.
+12) Check out https://uima.apache.org/ and install UIMA and required prerequisite
+
+    	    Note: if you don't want to recompile some of the packages required, use
+	    the system ones and modify the ./configure for uimacpp accordingly
+	    (for example --with-icu=/usr)
+
+    	    check out http://site.icu-project.org/ and download
+    	    tar -xvzf icu4c-55_1-src.tgz
+  	    cd icu/
+  	    cd source/
+  	    ./configure --enable-static --enable-shared --prefix=/usr/local
+   	    make && make test
+   	    sudo make install
+
+	    check out https://apr.apache.org/ and download
+	    the different prefix is for avoiding collision with apache2
+	    tar -xvjf apr-1.5.2.tar.bz2
+  	    cd apr-1.5.2/
+  	    ./configure --enable-static --enable-shared --prefix=/usr/local/apr-1 
+  	    make && make test
+  	    sudo make install
+
+	    check out https://apr.apache.org/ and download
+	    the different prefix is for avoiding collision with apache2
+	    tar -xvjf apr-util-1.5.4.tar.bz2
+ 	    cd apr-util-1.5.4
+ 	    ./configure --with-apr=/usr/local --prefix=/usr/local/aprutil
+  	    make && make test
+	    sudo make install
+
+	    checkout https://xerces.apache.org/xerces-c/ and download
+	    tar xvfj xerces-c-3.1.2.tar.bz2 
+	    cd xerces-c-3.1.2/
+	    ./configure --prefix=/usr/local
+ 	    make && make check
+ 	    sudo make install
+
+	    checkout http://activemq.apache.org/cms
+	    tar xvfz activemq-cpp-library-3.8.2-src.tar.gz
+  	    cd activemq-cpp-library-3.8.2/
+  	    ./configure --enable-static --enable-shared --prefix=/usr/local
+  	    make
+   	    make check
+    	    sudo make install
+
+	    unzip uimacpp-2.4.0-src.zip
+ 	    cd uimacpp-2.4.0/
+	    apply UIMA patches from the patches/ directory.
+            ./configure --with-apr=/usr/local/apr-1 --with-icu=/usr/local/ --with-xerces=/usr/local/ --with-apr-util=/usr/local/aprutil --with-activemq=/usr/local --prefix=/usr/local --with-jdk="/usr/local/jdk1.8.0_60/include/ -I/usr/local/jdk1.8.0_60/include/linux" --enable-static --enable-shared 
+	    make && make check
+	    sudo make install
+	    sudo make sdk TARGETDIR=/usr/local/uimacpp-sdk
+13) Install Apache 2
+14) Install fcgi++ and libapache2-mod-fastcgi, from source if necessary
+15) Install Boost
+16) Install Wt either from Linux distribution or source (outside-libraries)
+     	    (see also INSTALL.html in the package)
+	    tar xvfz wt-3.x.x.tar.gz
+	    cd wt-3.x.x
+	    mkdir build
+	    cd build
+	    cmake -DWT_CPP_11_MODE=-std=c++0x -DWT_WRASTERIMAGE_IMPLEMENTATION=GraphicsMagick CMAKE_INSTALL_PREFIX=/usr/local ../
+	    make
+	    make install
+17) Install Podofo
+     	     mkdir build
+	     cd build
+	     cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="/usr/local" -DCMAKE_BUILD_TYPE=RELEASE -DWANT_BOOST:BOOL=1 -DWANT_LIB64:BOOL=TRUE -DPODOFO_BUILD_SHARED:BOOL=TRUE -DPODOFO_BUILD_STATIC:BOOL=TRUE ../
+	     make
+	     sudo make install
+18) Install Pqxx
+19) Install LucenePlusPlus
+     First for all build:
+     	 cmake .
+     For static library build:
+     	 ./waf --static configure
+     	 ./waf --static build
+     	 ./waf --static install
+     For dynamic library build:
+     	 make
+     sudo make install
+20) Compile all source codes in /usr/local/textpresso/svn-co/textpressocentral/trunk
+21) Fill /usr/local/textpresso/tpcas with tpcas links or actual files
+22) Fill /usr/local/textpresso/luceneindex with index links or actual files
+23) Place wt_config.xml in correct place (must be root)
+    cd /etc/wt
+    mv wt_config.xml orig_wt_config.xml_orig
+    ln -s /usr/local/textpresso/sources/ConfigurationFiles/wt_config.xml .
+24) Change the fastcgi.conf file in /etc/apache2/mods-available
+    <IfModule mod_fastcgi.c>
+      AddHandler default-handler .css .jpg .gif .png .woff2 .woff .ttf .ppm
+      FastCgiServer /usr/lib/cgi-bin/tc/tpc
+    </IfModule>
+25) Enable cgi
+    a2enmod cgi
+    apachectl restart
+26) Set up /usr/lib/cgi-bin/tc
+    ln -s /usr/local/textpresso/bin/tpc .
+    ln -s /usr/local/textpresso/resources/resources-web resources
+27) Place configuration files from ConfigurationFiles directory in their respective place
+28) Make links in /usr/local/textpresso/sources
+    CMYKInverter -> ../svn-co/textpressocentral/trunk/CMYKInverter/
+    ConfigurationFiles -> ../svn-co/textpressocentral/trunk/ConfigurationFiles/
+    GenerateLexicalVariations -> ../svn-co/textpressocentral/trunk/GenerateLexicalVariations/
+    LexicalVariations -> ../svn-co/textpressocentral/trunk/LexicalVariations/
+    LuceneIndexing -> ../svn-co/textpressocentral/trunk/LuceneIndexing/
+    OboFileAnalyzer -> ../svn-co/textpressocentral/trunk/OboFileAnalyzer/
+    Pdf2Tpcas -> ../svn-co/textpressocentral/trunk/Pdf2Tpcas/
+    PrintBibFromNxmlOrCasFile -> ../svn-co/textpressocentral/trunk/PrintBibFromNxmlOrCasFile/
+    supportingscripts -> ../svn-co/textpressocentral/trunk/supportingscripts/
+    TextpressoCentralGlobalDefinitions.h -> ../svn-co/textpressocentral/trunk/TextpressoCentralGlobalDefinitions.h
+    TextpressoCentralGlobals.h -> ../svn-co/textpressocentral/trunk/TextpressoCentralGlobals.h
+    TpC -> ../svn-co/textpressocentral/trunk/TpC/
+    TpCuration -> ../svn-co/textpressocentral/trunk/TpCuration/
+    TpFlat2OboConverter -> ../svn-co/textpressocentral/trunk/TpFlat2OboConverter/
+    TpOntology -> ../svn-co/textpressocentral/trunk/TpOntology/
+    TpUimaAnnotators -> ../svn-co/textpressocentral/trunk/TpUimaAnnotators/
+    Xml2Tpcas -> ../svn-co/textpressocentral/trunk/Xml2Tpcas/
+29) Make links in /usr/local/textpresso/bin
+    cas2singleindex -> ../sources/LuceneIndexing/CAS2SingleIndex/dist/Release/GNU-Linux-x86/cas2singleindex
+    cmykinverter -> ../sources/CMYKInverter/dist/Release/GNU-Linux-x86/cmykinverter
+    generatelexicalvariations -> ../sources/GenerateLexicalVariations/dist/Release/GNU-Linux-x86/generatelexicalvariations
+    getbib -> ../sources/LuceneIndexing/GetBib/dist/Release/GNU-Linux-x86/getbib
+    indexmerger -> ../sources/LuceneIndexing/IndexMerger/dist/Release/GNU-Linux-x86/indexmerger
+    obofileanalyzer -> ../sources/OboFileAnalyzer/dist/Release/GNU-Linux-x86/obofileanalyzer
+    pdf2tpcas -> ../sources/Pdf2Tpcas/dist/Release/GNU-Linux-x86/pdf2tpcas
+    printbibfromnxmlorcasfile -> ../sources/PrintBibFromNxmlOrCasFile/dist/Release/GNU-Linux-x86/printbibfromnxmlorcasfile
+    tpc -> ../sources/TpC/dist/Release/GNU-Linux-x86/tpc
+    tpflat2oboconverter -> ../sources/TpFlat2OboConverter/dist/Release/GNU-Linux-x86/tpflat2oboconverter
+    tpontology -> ../sources/TpOntology/dist/Release/GNU-Linux-x86/tpontology
+    xml2tpcas -> ../sources/Xml2Tpcas/dist/Release/GNU-Linux-x86/xml2tpcas
+30) Make links in /usr/local/textpresso/lib
+    libTpTokenizer.so -> TpTokenizer.so
+    Tpcas2Bib.so -> ../sources/LuceneIndexing/Tpcas2Bib/dist/Release/GNU-Linux-x86/Tpcas2Bib.so
+    Tpcas2SingleIndex.so -> ../sources/LuceneIndexing/Tpcas2SingleIndex/dist/Release/GNU-Linux-x86/Tpcas2SingleIndex.so
+    Tpcas2TpCentral.so -> ../sources/TpUimaAnnotators/Tpcas2TpCentral/dist/Release/GNU-Linux-x86/Tpcas2TpCentral.so
+    TpLexiconAnnotatorFromPg.so -> ../sources/TpUimaAnnotators/TpLexiconAnnotatorFromPg/dist/Release/GNU-Linux-x86/TpLexiconAnnotatorFromPg.so
+    TpTokenizer.so -> ../sources/TpUimaAnnotators/TpTokenizer/dist/Release/GNU-Linux-x86/TpTokenizer.so
+    TxTokenizer.so -> ../sources/TpUimaAnnotators/TxTokenizer/dist/Release/GNU-Linux-x86/TxTokenizer.so

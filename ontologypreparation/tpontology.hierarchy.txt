@@ -1,0 +1,56 @@
+Textpresso Ontology (Tp:0000001)
+-Alleles and Variations (Tp:0000004)
+--allele (C. elegans)
+--Variation (C. elegans)
+-Anatomy and Cells (Tp:0000005)
+--anatomical structure (Tp:0000003)
+--C. elegans Cell and Anatomy Ontology
+-Basic Formal Ontology (BFO) (Tp:0000017)
+--material entity
+--quality
+-Customized Ontology (Tp:0000002)
+--Tables and Figures (tptbfig:0000001)
+-Chemicals and Molecules (Tp:0000006)
+--chemical entity (ChEBI)
+--Molecules (uncategorized)
+--role (ChEBI)
+--subatomic particle (ChEBI)
+-Disease (Tp:0000007)
+--human disease
+-Gene Ontology (GO) (Tp:0000018)
+--biological_process
+--cellular_component
+--molecular_function
+-Gene Ontology Curation (Tp:0000008)
+--Cellular Component (Tp:0000009)
+---Localization assay terms
+---Localization cellular components
+---Localization verbs
+--Molecular Function (Tp:0000010)
+---Enzymatic Activity (Tp:0000011)
+----MFEA assay terms
+----MFEA verbs
+---Physical Interactions (Tp:0000012)
+----MFINT assay terms
+----MFINT verbs
+-Genes and Proteins (Tp:0000013)
+--Gene (C. elegans)
+--Protein (C. elegans)
+-Genetics (Tp:0000014)
+--genetic interaction (WormBase curation)
+--genetic perturbation (WormBase curation)
+--phenotypic perturbation (WormBase curation)
+--Variant
+-Life Stages (Tp:0000015)
+--Nematoda Life Stage
+-Phenotype and Trait Ontology (PATO) (Tp:0000019)
+--quality
+-Sequence Ontology (SO) (Tp:0000020)
+--sequence_attribute
+--sequence_collection
+--sequence_feature
+--sequence_variant
+-WormBase Curation (Tp:0000016)
+--genetic interaction
+--genetic perturbation
+--phenotypic pertubation

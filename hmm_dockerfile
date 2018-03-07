@@ -1,0 +1,44 @@
+#
+# Build:
+#	cd /usr/local/textpresso/git/textpressocentral
+#	docker build -t hmm_ubuntu-tpc-16.04 -f hmm_dockerfile .
+#
+FROM hmm_ubuntu-tpc-buildtest-16.04
+COPY . /root/textpressocentral/
+RUN cd /root/textpressocentral; rm -rf cmake-build-release; \
+mkdir cmake-build-release; cd cmake-build-release; \
+cmake -DCMAKE_BUILD_TYPE=Release ..; make -j 5; make install; make clean
+RUN mkdir -p /data/tpcas; mkdir -p /data/luceneindex; mkdir -p /data/postgres
+RUN /usr/local/textpresso/bin/tpctl.sh set_literature_dir /data
+RUN /usr/local/textpresso/bin/tpctl.sh activate
+RUN cd /root/; mv textpressocentral/run.sh .; rm -rf textpressocentral/
+EXPOSE 80
+ENTRYPOINT ["/root/run.sh"]
+CMD ["default"]
+#
+# To be done manually:
+#    	- make sure there are no sym. links in tpcas or luceneindex that the container
+#	  cannot reach. Do rsync luceneindex and tpcas directory with --copy-links option
+#	  to a tmp directory if necessary. Make sure all postgres, tpcas and luceneindices
+#	  on the host are owned by root
+#       - set default literature permissions
+#
+#
+# Run:
+#    To make life easier, put tpcas, luceneindex, postgres directory in a data
+#    directory on the host file system. If that's not possible, map the three
+#    directories separately.
+#
+#    default:
+#       docker run --name tpc -d --restart=always -p <host port>:80 \
+#	-v <data directory on host>:/data:ro hmm_ubuntu-tpc-16.04
+#
+#    stopped:
+#       docker run --name tpc -d -p <host port>:80 \
+#	-v <data directory on host>:/data:ro hmm_ubuntu-tpc-16.04 stopped
+#
+#    dev:
+#       docker run --name tpc -d -p <host port>:80 \
+#	-v <data directory on host>:/data:ro
+#       -v <textpressocentral directory on host>:/root/textpressocentral hmm_ubuntu-tpc-16.04 dev
+#

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<messages>
+    <message id="curationform-template">
+        <legend>${title}</legend>
+        <div class="form-horizontal">
+            <div class="row">
+                <div class="form-group">
+                    <label class="control-label col-sm-1" for="${id:first-name}">
+      First name
+                    </label>
+                    <div class="col-sm-5">
+      ${first-name}
+                    </div>
+                    <div class="has-error">
+                        <div class="help-block col-sm-6">
+      ${first-name-info}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group">
+                    <label class="control-label col-sm-1" for="${id:last-name}">
+      Last name
+                    </label>
+                    <div class="col-sm-5">
+      ${last-name}
+                    </div>
+                    <div class="has-error">
+                        <div class="help-block col-sm-6">
+      ${last-name-info}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group">
+                    <label class="control-label col-sm-1" for="${id:country}">
+      Country
+                    </label>
+                    <div class="col-sm-5">
+      ${country}
+                    </div>
+                    <div class="has-error">
+                        <div class="help-block col-sm-6">
+      ${country-info}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group">
+                    <label class="control-label col-sm-1" for="${id:city}">
+      City
+                    </label>
+                    <div class="col-sm-5">
+      ${city}
+                    </div>
+                    <div class="has-error">
+                        <div class="help-block col-sm-6">
+      ${city-info}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group">
+                    <label class="control-label col-sm-1" for="${id:birth}">
+      Birth date
+                    </label>
+                    <div class="col-sm-5">
+      ${birth}
+                    </div>
+                    <div class="has-error">
+                        <div class="help-block col-sm-6">
+      ${birth-info}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group">
+                    <label class="control-label col-sm-1" for="${id:children}">
+      Children
+                    </label>
+                    <div class="col-sm-5">
+      ${children}
+                    </div>
+                    <div class="has-error">
+                        <div class="help-block col-sm-6">
+      ${children-info}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group">
+                    <label class="control-label col-sm-1" for="${id:remarks}">
+      Remarks
+                    </label>
+                    <div class="col-sm-5">
+      ${remarks}
+                    </div>
+                    <div class="has-error">
+                        <div class="help-block col-sm-6">
+      ${remarks-info}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-6">
+      ${submit-button} 
+                    <span class="help-inline">${submit-info}</span>
+                </div>
+            </div>
+        </div>
+    </message>    
+</messages>

@@ -1,0 +1,114 @@
+#!/usr/bin/perl
+# This is a small server that receives a HTTP GET and redirects it to TPC
+# after some modifications.
+use strict;
+use warnings FATAL => 'all';
+use CGI qw();
+use CGI qx();
+my $cgi = new CGI;
+#################
+my $requests="";
+my $preamble= "";
+my @names = $cgi->multi_param;
+for (my $i = 0; $i < @names; $i++) {
+    if ($names[$i] ne "endpoint_url") {
+	if (($names[$i] eq "token") || ($names[$i] eq "provided-by")
+	    || ($names[$i] eq "x-user-id") || ($names[$i] eq "x-model-id") || ($names[$i] eq "x-client-id")) {
+	    if ($preamble ne "") {
+		$preamble .= " ";
+	    }
+	    $preamble .= "$names[$i]=" . $cgi->param($names[$i]);
+	} else {
+	    if ($requests ne "") {
+		$requests .= ", ";
+	    }
+	    my $fieldcontent = $cgi->param($names[$i]);
+	    if ($fieldcontent =~ /([A-Za-z]+\:[A-Za-z0-9]+)/) {
+		$fieldcontent = $1;
+	    }
+	    $requests .= "\"$names[$i]\": \"" . $fieldcontent . "\"";
+	}
+    }
+}
+my $url = "";
+if (defined($cgi->param('endpoint_url'))) {
+    $url = $cgi->param('endpoint_url');
+}
+$url =~ s/\%([a-fA-F0-9][a-fA-F0-9])/chr(hex($1))/eg;
+$preamble =~ s/\%([a-fA-F0-9][a-fA-F0-9])/chr(hex($1))/eg;
+$requests =~ s/\%([a-fA-F0-9][a-fA-F0-9])/chr(hex($1))/eg;
+my $cmd = "http --ignore-stdin --json $url $preamble requests:='[{$requests}]'";
+print $cgi->header;
+print $cgi->start_html;
+print "Sending request to $url:<br><br>Command: $cmd\n<br><br>";
+my $ret=qx/$cmd/;
+print "Response: \n<br><br>";
+print $ret;
+print $cgi->end_html;
+###################
+#
+# old code:
+#!/usr/bin/perl
+# This is a small server that receives a HTTP GET and redirects it to TPC
+# after some modifications.
+#use strict;
+#use warnings FATAL => 'all';
+#use CGI qw();
+#my $cgi = new CGI;
+##################
+#my $javascript = <<JSEND;
+#function post(path, params, method) {
+#    method = method || "post"; // Set method to post by default if not specified.
+#    // The rest of this code assumes you are not using a library.
+#    // It can be made less wordy if you use one.
+#    var form = document.createElement("form");
+#    form.setAttribute("method", method);
+#    form.setAttribute("action", path);
+#    form.setAttribute("enctype", "text/plain");
+#    for(var key in params) {
+#        if(params.hasOwnProperty(key)) {
+#            var hiddenField = document.createElement("input");
+#            hiddenField.setAttribute("type", "hidden");
+#            hiddenField.setAttribute("name", key);
+#            hiddenField.setAttribute("value", params[key]);
+#            form.appendChild(hiddenField);
+#         }
+#    }
+#
+#    document.body.appendChild(form);
+#    form.submit();
+#}
+#JSEND
+#    
+#my $request="";
+#my $preamble= "";
+#my @names = $cgi->multi_param;
+#for (my $i = 0; $i < @names; $i++) {
+#    if ($names[$i] ne "endpoint_url") {
+#	my $aux = "\"$names[$i]\": \"" . $cgi->param($names[$i]) . "\"";
+#	if (($names[$i] eq "token") || ($names[$i] eq "provided-by")
+#	    || ($names[$i] eq "x-user-id") || ($names[$i] eq "x-model-id") || ($names[$i] eq "x-client-id")) {
+#	    if ($preamble ne "") {
+#		$preamble .= ", ";
+#	    }
+#	    $preamble .= $aux;
+#	} else {
+#	    if ($request ne "") {
+#		$request .= ", ";
+#	    }
+#	    $request .= $aux;
+#	}
+#    }
+#}
+#my $jsonblob = "{$preamble\, \"requests\": [{$request}]}";
+#my $url = "";
+#if (defined($cgi->param('endpoint_url'))) {
+#    $url= "'" . $cgi->param('endpoint_url') . "?endpoint_arguments=$jsonblob'";
+#}
+#my $msg="{endpoint_arguments: '$jsonblob'}";
+##my $msg="";
+#
+#print $cgi->header;
+#print $cgi->start_html(-script=>$javascript, -onload=>"post($url, $msg)");
+#print $cgi->end_html;
+#

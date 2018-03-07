@@ -1,0 +1,2 @@
+eid	dbxref	term	category	attributes	annotationtypes	lexicalvariations	curation_status	curation_use	comment	owner	source	version	last_update
+GO:12345678	SO:12345678	repress	regulation	direction='negative' 	lexical		final	ccc	nice	me	WormBase	1	2013-06-24 16:35:37

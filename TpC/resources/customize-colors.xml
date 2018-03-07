@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<messages>
+    <message id="customize-colors">
+        <div class="row">
+            <div class="span15">
+                Click on the color pickers to select the colors for highlighting in the search and viewer pages. Colors
+                are selected in order (e.g., the first keyword inserted in the search form will be colored with the
+                first keyword color). Keyword colors apply to both the search and viewer pages, whereas category colors
+                are specific for the search page and label colors for the viewer page. A sample of the resulting color
+                effect is reported on the left side of each color picker.
+            </div>
+        </div>
+        <div>
+            <p></p>
+        </div>
+        <div class="row">
+            <div class="span5"><h3>Keywords (All Forms)</h3></div>
+            <div class="span5"><h3>Categories (Search Form)</h3></div>
+            <div class="span5"><h3>Labels (Viewer)</h3></div>
+        </div>
+        <div>
+            <p></p>
+        </div>
+        <div class="row">
+            <div class="span2"><span id="descK1">${descK1}</span></div>
+            <div class="span3">${pickK1}</div>
+            <div class="span2"><span id="descC1">${descC1}</span></div>
+            <div class="span3">${pickC1}</div>
+            <div class="span2"><span id="descBgC1">${descBgC1}</span></div>
+            <div class="span3">${pickBgC1}</div>
+        </div>
+        <div class="row">
+            <div class="span2"><span id="descK2">${descK2}</span></div>
+            <div class="span3">${pickK2}</div>
+            <div class="span2"><span id="descC2">${descC2}</span></div>
+            <div class="span3">${pickC2}</div>
+            <div class="span2"><span id="descBgC2">${descBgC2}</span></div>
+            <div class="span3">${pickBgC2}</div>
+        </div>
+        <div class="row">
+            <div class="span2"><span id="descK3">${descK3}</span></div>
+            <div class="span3">${pickK3}</div>
+            <div class="span2"><span id="descC3">${descC3}</span></div>
+            <div class="span3">${pickC3}</div>
+            <div class="span2"><span id="descBgC3">${descBgC3}</span></div>
+            <div class="span3">${pickBgC3}</div>
+        </div>
+        <div class="row">
+            <div class="span2"><span id="descK4">${descK4}</span></div>
+            <div class="span3">${pickK4}</div>
+            <div class="span2"><span id="descC4">${descC4}</span></div>
+            <div class="span3">${pickC4}</div>
+            <div class="span2"><span id="descBgC4">${descBgC4}</span></div>
+            <div class="span3">${pickBgC4}</div>
+        </div>
+        <div class="row">
+            <div class="span2"><span id="descK5">${descK5}</span></div>
+            <div class="span3">${pickK5}</div>
+            <div class="span2"><span id="descC5">${descC5}</span></div>
+            <div class="span3">${pickC5}</div>
+            <div class="span2"><span id="descBgC5">${descBgC5}</span></div>
+            <div class="span3">${pickBgC5}</div>
+        </div>
+        <div class="row">
+            <div class="span2"><span id="descK6">${descK6}</span></div>
+            <div class="span3">${pickK6}</div>
+            <div class="span2"><span id="descC6">${descC6}</span></div>
+            <div class="span3">${pickC6}</div>
+            <div class="span2"><span id="descBgC6">${descBgC6}</span></div>
+            <div class="span3">${pickBgC6}</div>
+        </div>
+        <div class="row">
+            <div class="span2"><span id="descK7">${descK7}</span></div>
+            <div class="span3">${pickK7}</div>
+            <div class="span2"><span id="descC7">${descC7}</span></div>
+            <div class="span3">${pickC7}</div>
+            <div class="span2"><span id="descBgC7">${descBgC7}</span></div>
+            <div class="span3">${pickBgC7}</div>
+        </div>
+        <div class="row">
+            <div class="span2"><span id="descK8">${descK8}</span></div>
+            <div class="span3">${pickK8}</div>
+            <div class="span2"><span id="descC8">${descC8}</span></div>
+            <div class="span3">${pickC8}</div>
+            <div class="span2"><span id="descBgC8">${descBgC8}</span></div>
+            <div class="span3">${pickBgC8}</div>
+        </div>
+        <div class="row">
+            <div class="span2"><span id="descK9">${descK9}</span></div>
+            <div class="span3">${pickK9}</div>
+            <div class="span2"><span id="descC9">${descC9}</span></div>
+            <div class="span3">${pickC9}</div>
+            <div class="span2"><span id="descBgC9">${descBgC9}</span></div>
+            <div class="span3">${pickBgC9}</div>
+        </div>
+        <div class="row">
+            <div class="span2"><span id="descK10">${descK10}</span></div>
+            <div class="span3">${pickK10}</div>
+            <div class="span2"><span id="descC10">${descC10}</span></div>
+            <div class="span3">${pickC10}</div>
+            <div class="span2"><span id="descBgC10">${descBgC10}</span></div>
+            <div class="span3">${pickBgC10}</div>
+        </div>
+        <div>
+            <p></p>
+        </div>
+        <div class="row">
+            <div class="span3">${save-btn}${reset-btn}</div>
+        </div>
+    </message>
+</messages>
