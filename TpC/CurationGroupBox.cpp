@@ -208,6 +208,11 @@ void CurationGroupBox::PopulateFormComboBox() {
         }
         for (std::set<Wt::WString>::iterator it = names.begin(); it != names.end(); it++)
             formnameComboBox_->addItem(*it);
+        if (formnameComboBox_->count() == 0) {
+            formnameComboBox_->disable();
+        } else {
+            formnameComboBox_->enable();
+        }
     }
 }
 
