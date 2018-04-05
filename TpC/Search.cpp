@@ -1304,8 +1304,13 @@ void Search::displayTable(int start, int end, int direction) {
         } else {
             doc_score = 1;
         }
-        scores.push_back(doc_score);
-        doc_summaries.push_back(searchResults.hit_documents[i]);
+        if (direction == -1) {
+            scores.insert(scores.begin(), doc_score);
+            doc_summaries.insert(doc_summaries.begin(), searchResults.hit_documents[i]);
+        } else {
+            scores.push_back(doc_score);
+            doc_summaries.push_back(searchResults.hit_documents[i]);
+        }
         n_row++;
     }
     set<string> fields_to_exclude;
@@ -1314,14 +1319,18 @@ void Search::displayTable(int start, int end, int direction) {
             DOCUMENTS_FIELDS_DETAILED, SENTENCE_FIELDS_DETAILED,
             {"fulltext_compressed", "fulltext_cat_compressed"}, {});
     n_row = 0;
-    for (int i = 0; i < docsDetails.size(); ++i) {
+    map<string, DocumentDetails> docDetailsMap;
+    for (DocumentDetails docDetails : docsDetails) {
+        docDetailsMap[docDetails.identifier] = docDetails;
+    }
+    for (int i = 0; i < doc_summaries.size(); ++i) {
         cout << "doc score " << scores[i] << "min score " << min_score_ << endl;
         std::wstring w_score = boost::lexical_cast<std::wstring > (100.0 * scores[i]);
         w_score = w_score.substr(0, 5); //display only 4 digit of score
         identifiers.push_back(StringUtils::toString(doc_summaries[i].identifier.c_str())); //collection 20 identifers
         indexes.push_back(i); //collect 20 doc ids
         int maxHits = 1;
-        DocumentDetails docDetails = docsDetails[i];
+        DocumentDetails docDetails = docDetailsMap[doc_summaries[i].identifier];
         n_row++; //one row is qualified
         std::vector<std::wstring> row;
         std::wstring serial = boost::lexical_cast<std::wstring > (i + 1);
@@ -1360,12 +1369,14 @@ void Search::displayTable(int start, int end, int direction) {
     clock_t end_time = clock();
     cout << " time to check " << i << ": " << double(end_time - begin_time) / CLOCKS_PER_SEC << endl;
     if (direction == 1) {
-        current_start_ = current_end_ + 1;
+        if (current_end_ != 0) {
+            current_start_ = current_end_ + 1;
+        }
         current_end_ = i;
     } else if (direction == -1) {
         current_end_ = current_start_ - 1;
         current_start_ = i;
-        std::reverse(contents.begin(), contents.end());
+        //std::reverse(contents.begin(), contents.end());
     } else if (direction == 0) {
         current_start_ = 0;
         current_end_ = RECORDS_PER_PAGE - 1;
@@ -1645,10 +1656,10 @@ std::string Search::RetrieveBEString(int index) {
         if (search_docs.hit_documents.size() > 0) {
             document = search_docs.hit_documents[0];
         } else {
-            document = searchResults.hit_documents[index];
+            document = searchResults.hit_documents[index + current_start_];
         }
     } else {
-        document = searchResults.hit_documents[index];
+        document = searchResults.hit_documents[index + current_start_];
     }
     String identifier = StringUtils::toString(document.identifier.c_str());
     int beupperlimit = 110;
@@ -1689,7 +1700,7 @@ vector<wstring> Search::getCleanKeywords() {
 
 void Search::setHitText(int index, Wt::WGroupBox* textGroupBox) {
     expandedPanelIndexes.insert(index);
-    DocumentSummary currDocSummary = searchResults.hit_documents[index];
+    DocumentSummary currDocSummary = searchResults.hit_documents[index + current_start_];
     vector<WWidget*> children = textGroupBox->children();
     int n_children = children.size();
     for (int i = 12; i <= n_children; i++) { // clean up junky widgets before inserting hit texts
