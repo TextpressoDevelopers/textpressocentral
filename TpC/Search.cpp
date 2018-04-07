@@ -1319,9 +1319,17 @@ void Search::displayTable(int start, int end, int direction) {
             DOCUMENTS_FIELDS_DETAILED, SENTENCE_FIELDS_DETAILED,
             {"fulltext_compressed", "fulltext_cat_compressed"}, {});
     n_row = 0;
+    bool use_identifiers = all_of(doc_summaries.begin(), doc_summaries.end(), [](DocumentSummary d) {
+        return !d.identifier.empty();
+    });
     map<string, DocumentDetails> docDetailsMap;
     for (DocumentDetails docDetails : docsDetails) {
-        docDetailsMap[docDetails.identifier] = docDetails;
+        if (use_identifiers) {
+            docDetailsMap[docDetails.identifier] = docDetails;
+
+        } else {
+            docDetailsMap[to_string(docDetails.lucene_internal_id)] = docDetails;
+        }
     }
     for (int i = 0; i < doc_summaries.size(); ++i) {
         cout << "doc score " << scores[i] << "min score " << min_score_ << endl;
@@ -1330,7 +1338,12 @@ void Search::displayTable(int start, int end, int direction) {
         identifiers.push_back(StringUtils::toString(doc_summaries[i].identifier.c_str())); //collection 20 identifers
         indexes.push_back(i); //collect 20 doc ids
         int maxHits = 1;
-        DocumentDetails docDetails = docDetailsMap[doc_summaries[i].identifier];
+        DocumentDetails docDetails;
+        if (use_identifiers) {
+            docDetails = docDetailsMap[doc_summaries[i].identifier];
+        } else {
+            docDetails = docDetailsMap[to_string(doc_summaries[i].lucene_internal_id)];
+        }
         n_row++; //one row is qualified
         std::vector<std::wstring> row;
         std::wstring serial = boost::lexical_cast<std::wstring > (i + 1);
