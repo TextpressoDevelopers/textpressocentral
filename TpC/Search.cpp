@@ -1663,12 +1663,16 @@ std::string Search::RetrieveBEString(int index) {
         q.categories_and_ed = false;
         q.type = QueryType::sentence;
         string docid = indexManager.get_document_details(
-                searchResults.hit_documents[index], false,
+                searchResults.hit_documents[index + current_start_], false,
                 {"doc_id", "fulltext_compressed", "fulltext_cat_compressed"}, {}, {}, {}).identifier;
-        auto search_docs = indexManager.search_documents(q, false, {docid});
-        if (search_docs.hit_documents.size() > 0) {
-            document = search_docs.hit_documents[0];
-        } else {
+        try {
+            auto search_docs = indexManager.search_documents(q, false, {docid});
+            if (search_docs.hit_documents.size() > 0) {
+                document = search_docs.hit_documents[0];
+            } else {
+                document = searchResults.hit_documents[index + current_start_];
+            }
+        } catch (tpc_exception& e) {
             document = searchResults.hit_documents[index + current_start_];
         }
     } else {
