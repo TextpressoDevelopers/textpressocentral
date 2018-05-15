@@ -82,6 +82,7 @@ session_("user=www-data dbname=www-data"), urlparameters_(urlparameters) {
     home_->LoadContent(search_);
 
     aboutus_ = new AboutUs();
+    download_ = new Download();
     curation_ = new Curation(session_, urlparameters_, this);
     curationmenuitem_ = leftMenu_->addItem("Curation", curation_);
     curationmenuitem_->setPathComponent("curation");
@@ -107,6 +108,8 @@ session_("user=www-data dbname=www-data"), urlparameters_(urlparameters) {
     //            ->setPathComponent("modannotator");
     leftMenu_->addItem("Customization", customization_)
             ->setPathComponent("customization");
+    leftMenu_->addItem("Download", download_)
+            ->setPathComponent("download");
     leftMenu_->addItem("About Us", aboutus_)
             ->setPathComponent("aboutus");
     if (urlparameters_->IsRoot()) {

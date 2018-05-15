@@ -16,12 +16,12 @@
 
 AboutUs::AboutUs() {
 
-    setContentAlignment(Wt::AlignLeft);
-    setMaximumSize(Wt::WLength("90%"), Wt::WLength::Auto);
+    setContentAlignment(Wt::AlignJustify);
+    setMaximumSize(Wt::WLength("100%"), Wt::WLength::Auto);
     std::string date(__DATE__);
     std::string year(date.substr(date.length() - 4, 4));
     Wt::WString copyright = Wt::WString::fromUTF8(
-            "© " + year + " Textpresso, California Institute of Technology. Site build date: " + date + ", " +
+            "© 2000-" + year + " Textpresso, California Institute of Technology. Site build date: " + date + ", " +
             __TIME__ + ". Textpressocentral " + VERSION + " (" + RELEASE_NAME + ")");
     Wt::WText *ct = new Wt::WText(copyright);
     ct->decorationStyle().font().setSize(Wt::WFont::Large);
@@ -45,23 +45,9 @@ AboutUs::AboutUs() {
                                  "the utility of the system, Textpresso Central also allows for processing "
                                  "and displaying of results from third-party text mining and "
                                  "natural language processing algorithms.");
-    Wt::WString licenses("This sites uses the following third-party libraries and software. "
-                                 "Please follow the links to see the license and copyright notices.<br/>"
-                                 "<br/><a href=\"https://www.webtoolkit.eu/wt\" target=\"_blank\">Wt. A C++ Web Toolkit</a>."
-                                 "<br/><a href=\"https://github.com/luceneplusplus/LucenePlusPlus\" target=\"_blank\">Lucene++</a>."
-                                 "<br/><a href=\"http://uima.apache.org\" target=\"_blank\">Unstructured Information Management Architecture</a>."
-                                 "<br/><a href=\"http://podofo.sourceforge.net/\" target=\"_blank\">PoDoFo</a>."
-                                 "<br/><a href=\"http://pqxx.org/development/libpqxx/\" target=\"_blank\">libpqxx</a>."
-    );
     Wt::WText *at = new Wt::WText(abstract);
     at->decorationStyle().font().setSize(Wt::WFont::Large);
     addWidget(at);
-    addWidget(new Wt::WBreak());
-    addWidget(new Wt::WBreak());
-    Wt::WText *li = new Wt::WText(licenses);
-    li->decorationStyle().font().setSize(Wt::WFont::Large);
-    addWidget(li);
-    addWidget(new Wt::WBreak());
     addWidget(new Wt::WBreak());
     addWidget(new Wt::WBreak());
     addWidget(ct);

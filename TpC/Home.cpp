@@ -73,15 +73,15 @@ void Home::LoadContent(Search * search) {
         searchicon->clicked().connect(std::bind([ = ] (){
             if (!keyword->text().empty()) {
                 TCNavWeb * tcnw = dynamic_cast<TCNavWeb*> (parent_);
-                tcnw->GetLeftMenu()->select(tcnw->GetSearchMenuItem());
-                search->SimpleKeywordSearchApi(keyword->text());
+                        tcnw->GetLeftMenu()->select(tcnw->GetSearchMenuItem());
+                        search->SimpleKeywordSearchApi(keyword->text());
             }
         }));
         keyword->enterPressed().connect(std::bind([ = ](){
             if (!keyword->text().empty()) {
                 TCNavWeb * tcnw = dynamic_cast<TCNavWeb*> (parent_);
-                tcnw->GetLeftMenu()->select(tcnw->GetSearchMenuItem());
-                search->SimpleKeywordSearchApi(keyword->text());
+                        tcnw->GetLeftMenu()->select(tcnw->GetSearchMenuItem());
+                        search->SimpleKeywordSearchApi(keyword->text());
             }
         }));
         Wt::WAnchor * advsearch = new Wt::WAnchor(Wt::WLink(Wt::WLink::InternalPath, "/search"), "Advanced Search");
@@ -97,13 +97,37 @@ void Home::LoadContent(Search * search) {
     center->addWidget(new Wt::WBreak());
     //center->addWidget(new Wt::WBreak());
     //
+    Wt::WContainerWidget * notice = new Wt::WContainerWidget();
+    notice = new Wt::WContainerWidget();
+    notice->setContentAlignment(Wt::AlignLeft);
+    notice->decorationStyle().setBackgroundColor(Wt::WColor(255, 64, 129));
+    notice->decorationStyle().setForegroundColor(Wt::WColor(255, 255, 255));
+    notice->setWidth(Wt::WLength("50%"));
+    center->addWidget(notice);
+    notice->addWidget(new Wt::WText("This is the new Textpresso site. You can "
+            "still access the "));
+    Wt::WAnchor * oldsite = new Wt::WAnchor("http://textpresso.org/index_old.html");
+    oldsite->setTarget(Wt::TargetNewWindow);
+    oldsite->setText("old site");
+    oldsite->decorationStyle().setForegroundColor(Wt::WColor(200, 200, 255));
+    notice->addWidget(oldsite);
+    notice->addWidget(new Wt::WText(", but it will be retired, probably by the "
+            "end of the year 2018. This new site is described in more detail "
+            "in our "));
+    Wt::WAnchor * paper = new Wt::WAnchor("https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-018-2103-8");
+    paper->decorationStyle().setForegroundColor(Wt::WColor(200, 200, 255));
+    paper->setTarget(Wt::TargetNewWindow);
+    paper->setText("paper");
+    notice->addWidget(paper);
+    notice->addWidget(new Wt::WText(", published in March 2018."));
     Wt::WContainerWidget * sftcont = new Wt::WContainerWidget();
     sftcont->setWidth(Wt::WLength("50%"));
     center->addWidget(sftcont);
     Wt::WGroupBox * sftgroup = new Wt::WGroupBox("Search Full Text");
     sftgroup->setContentAlignment(Wt::AlignJustify);
-    Wt::WText * sfttext1 = new Wt::WText("Textpresso Central contains (roughly a million) PMCOA "
-            "full text articles. Number of articles are continuously growing.");
+    Wt::WText * sfttext1 = new Wt::WText("Textpresso Central contains "
+            "(roughly 1.5 million) PMCOA full text articles. Number of "
+            "articles are continuously growing.");
     sfttext1->decorationStyle().font().setSize(Wt::WFont::Large);
     sfttext1->decorationStyle().font().setVariant(Wt::WFont::SmallCaps);
     sftgroup->addWidget(sfttext1);
@@ -118,8 +142,8 @@ void Home::LoadContent(Search * search) {
     Wt::WGroupBox * frfgroup = new Wt::WGroupBox("Find Relevant Facts");
     frfgroup->setContentAlignment(Wt::AlignJustify);
     Wt::WText * frftext1 = new Wt::WText("Perform simple keyword searches or more advanced searches to answer specific "
-                                                 "biological questions. Search results are presented within the "
-                                                 "context of the full text for rapid assessment of relevancy.");
+            "biological questions. Search results are presented within the "
+            "context of the full text for rapid assessment of relevancy.");
     frftext1->decorationStyle().font().setSize(Wt::WFont::Large);
     frftext1->decorationStyle().font().setVariant(Wt::WFont::SmallCaps);
     frfgroup->addWidget(frftext1);
@@ -167,11 +191,11 @@ void Home::LoadContent(Search * search) {
     //se->setMinimumSize(Wt::WLength(80, Wt::WLength::Percentage), Wt::WLength(36, Wt::WLength::FontEx));
     Wt::WVBoxLayout * vbox = new Wt::WVBoxLayout();
     south->setLayout(vbox);
-    auto southButtons =  new Wt::WContainerWidget();
+    auto southButtons = new Wt::WContainerWidget();
     auto hbox = new Wt::WHBoxLayout();
     southButtons->setLayout(hbox);
     vbox->addWidget(southButtons);
-    auto southText =  new Wt::WContainerWidget();
+    auto southText = new Wt::WContainerWidget();
     auto vboxText = new Wt::WVBoxLayout();
     southText->setLayout(vboxText);
     vbox->addWidget(southText);
@@ -186,6 +210,7 @@ void Home::LoadContent(Search * search) {
     tipcontainer->addWidget(tipimage);
     tipcontainer->addWidget(tt);
     //
+    /*
     Wt::WImage * newsimage = new Wt::WImage("resources/other_images/news.png");
     newsimage->resize(Wt::WLength(4, Wt::WLength::FontEx), Wt::WLength(4, Wt::WLength::FontEx));
     newsimage->setInline(true);
@@ -196,6 +221,7 @@ void Home::LoadContent(Search * search) {
     newscontainer->decorationStyle().setBackgroundColor(newscolor);
     newscontainer->addWidget(newsimage);
     newscontainer->addWidget(tn);
+    */
     //
     Wt::WImage * introimage = new Wt::WImage("resources/other_images/glowingbulb.png");
     introimage->resize(Wt::WLength(4, Wt::WLength::FontEx), Wt::WLength(4, Wt::WLength::FontEx));
@@ -231,7 +257,7 @@ void Home::LoadContent(Search * search) {
     contactanchor->addWidget(tc);
 
     hbox->addWidget(tipcontainer);
-    hbox->addWidget(newscontainer);
+    //hbox->addWidget(newscontainer);
     hbox->addWidget(introcontainer);
     hbox->addWidget(nextstepcontainer);
     hbox->addWidget(contactanchor);
@@ -254,12 +280,14 @@ void Home::LoadContent(Search * search) {
         delete tips;
         southText->addWidget(tiptext);
     }));
+    /*
     newscontainer->clicked().connect(std::bind([ = ] (){
         southText->clear();
         timer->stop();
         std::string news("/usr/local/textpresso/resources/resources-web/home.news.txt");
         DisplayTextAndLinksFromFile(news, newscolor, southText);
     }));
+    */
     introcontainer->clicked().connect(std::bind([ = ] (){
         southText->clear();
         timer->stop();
@@ -279,7 +307,7 @@ void Home::LoadContent(Search * search) {
     //    DisplayTextAndLinksFromFile(contact, contactcolor, southText);
     //}));
     tipcontainer->mouseWentOver().connect(boost::bind(&Home::SetCursorHand, this, tipcontainer));
-    newscontainer->mouseWentOver().connect(boost::bind(&Home::SetCursorHand, this, newscontainer));
+    //newscontainer->mouseWentOver().connect(boost::bind(&Home::SetCursorHand, this, newscontainer));
     introcontainer->mouseWentOver().connect(boost::bind(&Home::SetCursorHand, this, introcontainer));
     nextstepcontainer->mouseWentOver().connect(boost::bind(&Home::SetCursorHand, this, nextstepcontainer));
     //contactcontainer->mouseWentOver().connect(boost::bind(&Home::SetCursorHand, this, contactcontainer));

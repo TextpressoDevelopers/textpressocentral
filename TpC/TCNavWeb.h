@@ -24,6 +24,7 @@
 #include "ModAnnotator.h"
 #include "Customization.h"
 #include "AboutUs.h"
+#include "Download.h"
 #include "Permissions.h"
 #include "AuthWidget.h"
 #include <Wt/WContainerWidget>
@@ -76,6 +77,7 @@ private:
     Wt::WMenuItem * searchmenuitem_;
     Customization * customization_;
     AboutUs * aboutus_;
+    Download * download_;
     Permissions * permissions_;
     void AuthEvent();
     void MenuItemTriggered(Wt::WMenuItem * x);
