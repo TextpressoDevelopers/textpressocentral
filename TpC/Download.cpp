@@ -22,7 +22,7 @@ Download::Download() {
     setContentAlignment(Wt::AlignLeft);
     setMaximumSize(Wt::WLength("90%"), Wt::WLength::Auto);
 
-    Wt::WString dltext("The software can be downloaded at our "
+    Wt::WString dltext("The software  to run this site can be downloaded at our "
             "<a href=\"https://github.com/TextpressoDevelopers\" target=\"_blank\">GitHub site</a>. "
             "All licenses are available there.");
     Wt::WText *dt = new Wt::WText(dltext);

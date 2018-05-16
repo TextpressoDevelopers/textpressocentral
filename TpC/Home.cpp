@@ -314,7 +314,7 @@ void Home::LoadContent(Search * search) {
 }
 
 void Home::DisplayRandomItem(Wt::WContainerWidget * se) {
-    int pick = rand() % 5;
+    int pick = rand() % 4;
     se->clear();
     switch (pick) {
         case 0:
@@ -329,25 +329,18 @@ void Home::DisplayRandomItem(Wt::WContainerWidget * se) {
         case 1:
         {
             // Code
-            std::string news("/usr/local/textpresso/resources/resources-web/home.news.txt");
-            DisplayTextAndLinksFromFile(news, Wt::blue, se);
-            break;
-        }
-        case 2:
-        {
-            // Code
             std::string intro("/usr/local/textpresso/resources/resources-web/home.introduction.txt");
             DisplayTextAndLinksFromFile(intro, Wt::blue, se);
             break;
         }
-        case 3:
+        case 2:
         {
             // Code
             std::string nextstep("/usr/local/textpresso/resources/resources-web/home.firststeps.txt");
             DisplayTextAndLinksFromFile(nextstep, Wt::blue, se);
             break;
         }
-        case 4:
+        case 3:
         {
             std::string contact("/usr/local/textpresso/resources/resources-web/home.contactus.txt");
             DisplayTextAndLinksFromFile(contact, Wt::blue, se);
