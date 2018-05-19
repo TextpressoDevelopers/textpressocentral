@@ -35,10 +35,11 @@ function activate() {
 function set_literature_dir() {
     literature_dir=$1
     rmdir /usr/local/textpresso/luceneindex
-    ln -s $literature_dir/luceneindex /usr/local/textpresso/luceneindex
-    rmdir /usr/local/textpresso/tpcas
-    ln -s $literature_dir/tpcas-2 /usr/local/textpresso/tpcas
-    ln -s /usr/local/textpresso/tpcas /usr/lib/cgi-bin/tc/images
+    ln -s $literature_dir/luceneindex $TPC_HOME/luceneindex
+    rmdir $TPC_HOME/tpcas
+    ln -s $literature_dir/tpcas-2 $TPC_HOME/tpcas
+    mkdir $CGI_BIN/tc
+    ln -s $TPC_HOME/tpcas $CGI_BIN/tc/images
 }
 
 case "$1" in
