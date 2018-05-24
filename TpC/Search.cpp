@@ -1451,7 +1451,14 @@ void Search::displayTable(int start, int end, int direction) {
         }
         table_->elementAt(i + 1, 1)->addWidget(new Wt::WText(accession)); //accession
         Wt::WPanel* panel = new Wt::WPanel();
-        panel->setTitle(row[4]); //title
+        //add "supplemental material" based on literature name
+        wstring p_title(row[4]);
+        std::regex lit_sup_re(".*[S|s]upplemental.*");
+        string s_title(row[2].begin(), row[2].end());
+        if (std::regex_match(s_title, lit_sup_re)) {
+            p_title += L" (Supplemental material)";
+        }
+        panel->setTitle(p_title); //title
         panel->addStyleClass("centered-example");
         panel->setCollapsible(true);
         panel->setCollapsed(true);
