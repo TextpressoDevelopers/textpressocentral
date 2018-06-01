@@ -19,8 +19,8 @@ Home::Home(Session& session, Wt::WContainerWidget * parent) : parent_(parent), W
 }
 
 void Home::LoadContent(Search * search) {
-    //    Wt::WBorderLayout * mainlayout = new Wt::WBorderLayout();
-    Wt::WVBoxLayout * mainlayout = new Wt::WVBoxLayout();
+        Wt::WBorderLayout * mainlayout = new Wt::WBorderLayout();
+//    Wt::WVBoxLayout * mainlayout = new Wt::WVBoxLayout();
     setLayout(mainlayout);
     Wt::WContainerWidget * center = new Wt::WContainerWidget();
     Wt::WContainerWidget * north = new Wt::WContainerWidget();
@@ -32,35 +32,39 @@ void Home::LoadContent(Search * search) {
     mainlayout->addWidget(south, Wt::WBorderLayout::South);
     mainlayout->addWidget(west, Wt::WBorderLayout::West);
     mainlayout->addWidget(east, Wt::WBorderLayout::East);
-    center->resize(Wt::WLength("50%"), Wt::WLength(80, Wt::WLength::Percentage));
-    south->resize(Wt::WLength("50%"), Wt::WLength(20, Wt::WLength::Percentage));
-    south->setMinimumSize(Wt::WLength("50%"), Wt::WLength(20, Wt::WLength::Percentage));
+//    center->resize(Wt::WLength("50%"), Wt::WLength(80, Wt::WLength::Percentage));
+//    south->resize(Wt::WLength("50%"), Wt::WLength(20, Wt::WLength::Percentage));
+//    south->setMinimumSize(Wt::WLength("50%"), Wt::WLength(20, Wt::WLength::Percentage));
     //south->setMaximumSize(Wt::WLength("50%"), Wt::WLength(20, Wt::WLength::Percentage));
     //south->setWidth(WLength(50, WLength::Percentage));
     //
+    north->setContentAlignment(Wt::AlignCenter);
     center->setContentAlignment(Wt::AlignCenter);
-    Wt::WText * banner = new Wt::WText("Textpresso Central");
-    banner->decorationStyle().setForegroundColor(Wt::WColor(70, 90, 180));
-    banner->decorationStyle().font().setWeight(Wt::WFont::Bold);
-    banner->decorationStyle().font().setSize(Wt::WFont::XXLarge);
-    banner->decorationStyle().font().setStyle(Wt::WFont::Italic);
-    banner->decorationStyle().font().setFamily(Wt::WFont::SansSerif);
-    center->addWidget(banner);
+    Wt::WImage * banner = new Wt::WImage("resources/other_images/textpresso_banner_aj.png");
+    banner->setWidth(Wt::WLength(30, Wt::WLength::Percentage));
+    //    Wt::WText * banner = new Wt::WText("Textpresso Central");
+    //    banner->decorationStyle().setForegroundColor(Wt::WColor(70, 90, 180));
+    //    banner->decorationStyle().font().setWeight(Wt::WFont::Bold);
+    //    banner->decorationStyle().font().setSize(Wt::WFont::XXLarge);
+    //    banner->decorationStyle().font().setStyle(Wt::WFont::Italic);
+    //    banner->decorationStyle().font().setFamily(Wt::WFont::SansSerif);
+    north->addWidget(banner);
     //
-    center->addWidget(new Wt::WBreak());
+    north->addWidget(new Wt::WBreak());
     //
     Wt::WText * subtitle = new Wt::WText("Knowledge discovery through full text mining, classification and searching");
     //    subtitle->decorationStyle().font().setSize(Wt::WFont::Default);
     subtitle->decorationStyle().font().setVariant(Wt::WFont::SmallCaps);
-    center->addWidget(subtitle);
+    north->addWidget(subtitle);
     //
-    center->addWidget(new Wt::WBreak());
-    center->addWidget(new Wt::WBreak());
+//    center->addWidget(new Wt::WBreak());
+//    center->addWidget(new Wt::WBreak());
     //
     if (search != NULL) {
         querycont = new Wt::WContainerWidget();
         querycont->decorationStyle().setBackgroundColor(Wt::WColor(220, 220, 255));
         querycont->setWidth(Wt::WLength("50%"));
+        querycont->setContentAlignment(Wt::AlignMiddle);
         center->addWidget(querycont);
         Wt::WText * searchlabel = new Wt::WText("Search corpus: ");
         searchlabel->decorationStyle().font().setSize(Wt::WFont::Large);
@@ -221,7 +225,7 @@ void Home::LoadContent(Search * search) {
     newscontainer->decorationStyle().setBackgroundColor(newscolor);
     newscontainer->addWidget(newsimage);
     newscontainer->addWidget(tn);
-    */
+     */
     //
     Wt::WImage * introimage = new Wt::WImage("resources/other_images/glowingbulb.png");
     introimage->resize(Wt::WLength(4, Wt::WLength::FontEx), Wt::WLength(4, Wt::WLength::FontEx));
@@ -287,7 +291,7 @@ void Home::LoadContent(Search * search) {
         std::string news("/usr/local/textpresso/resources/resources-web/home.news.txt");
         DisplayTextAndLinksFromFile(news, newscolor, southText);
     }));
-    */
+     */
     introcontainer->clicked().connect(std::bind([ = ] (){
         southText->clear();
         timer->stop();
