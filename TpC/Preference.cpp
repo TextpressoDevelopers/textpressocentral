@@ -10,6 +10,8 @@
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string.hpp>
 
+#include "IndexManager.h"
+
 /*!
  * this class can be used to retrieve generic user preferences from the db
  *
@@ -161,29 +163,36 @@ std::vector<std::string> Preference::GetPreferencesVec() {
  * @param uid the id of the user
  */
 void Preference::LoadPreferencesFromDb(std::string uid) {
-    try {
-        pqxx::work w(cn_);
-        pqxx::result r;
-        std::stringstream pc;
-        pc << "select preference from ";
-        pc << tablename_ << " ";
-        pc << "where userid='" << uid << "'";
-        r = w.exec(pc.str());
-        for (pqxx::result::size_type i = 0; i != r.size(); i++) {
-            std::string cname;
-            if (r[i]["preference"].to(cname)) {
-                std::vector<std::string> s1;
-                boost::split(s1, cname, boost::is_any_of("|"));
-                std::vector<std::string>::iterator it;
-                for (it = s1.begin(); it != s1.end(); it++) {
-                    preferences_.insert(*it);
-                    preferencesVector.push_back(*it);
+    if (uid.compare("default") == 0) { // set default preferences as available corpora
+        for (const std::string& corpus : tpc::index::IndexManager::get_available_corpora(tpc::index::CAS_ROOT_LOCATION.c_str())) {
+            preferences_.insert(corpus);
+            preferencesVector.push_back(corpus);
+        }
+    } else {
+        try {
+            pqxx::work w(cn_);
+            pqxx::result r;
+            std::stringstream pc;
+            pc << "select preference from ";
+            pc << tablename_ << " ";
+            pc << "where userid='" << uid << "'";
+            r = w.exec(pc.str());
+            for (pqxx::result::size_type i = 0; i != r.size(); i++) {
+                std::string cname;
+                if (r[i]["preference"].to(cname)) {
+                    std::vector<std::string> s1;
+                    boost::split(s1, cname, boost::is_any_of("|"));
+                    std::vector<std::string>::iterator it;
+                    for (it = s1.begin(); it != s1.end(); it++) {
+                        preferences_.insert(*it);
+                        preferencesVector.push_back(*it);
+                    }
                 }
             }
+            w.commit();
+        } catch (const std::exception &e) {
+            std::cerr << e.what() << std::endl;
         }
-        w.commit();
-    } catch (const std::exception &e) {
-        std::cerr << e.what() << std::endl;
     }
 }
 

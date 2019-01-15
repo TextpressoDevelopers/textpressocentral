@@ -258,7 +258,7 @@ Search::Search(UrlParameters * urlparams, Session & session, Wt::WContainerWidge
     tcnw->GetCustomizationInstance()->getCustomizeColorsInstance()->signalSaveClicked().connect(
             this, &Search::updateSearchColors);
 
-    indexManager = IndexManager("/usr/local/textpresso/luceneindex");
+    indexManager = IndexManager("/usr/local/textpresso/luceneindex", "/usr/local/textpresso/tpcas");
     show_list_of_corpora_before_search = true;
     try {
         if (WApplication::instance()->environment().getCookie("show_list_of_corpora_before_search") == "false") {
@@ -320,7 +320,7 @@ void Search::SetLiteratureDescription(Wt::WContainerWidget * w) {
 }
 
 void Search::SetLiteratureContainer(Wt::WContainerWidget * literaturecontainer) {
-    vector<string> corpus_vec = IndexManager::get_available_corpora();
+    vector<string> corpus_vec = IndexManager::get_available_corpora(CAS_ROOT_LOCATION.c_str());
     vector<string> additional_corpora;
     if (session_->login().state() != 0 && indexManager.has_external_index()) {
          additional_corpora = indexManager.get_external_corpora();
@@ -2174,7 +2174,7 @@ void Search::UpdateLiteraturePrefenferences(bool checkpermissions) {
                                               PGLITERATUREPERMISSIONTABLENAME, username);
     Preference * dfpermissions = new Preference(PGLITERATUREPERMISSION,
                                                 PGLITERATUREPERMISSIONTABLENAME, "default");
-    for (const string& corpus : IndexManager::get_available_corpora()) {
+    for (const string& corpus : IndexManager::get_available_corpora(CAS_ROOT_LOCATION.c_str())) {
         // grant search rights based on individual and default permissions.
         if ((!checkpermissions || permissions->IsPreference(corpus)) || dfpermissions->IsPreference(corpus))
             if (pref->HasPreferences())

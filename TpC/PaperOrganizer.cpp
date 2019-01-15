@@ -319,7 +319,7 @@ void PaperOrganizer::AddLiterature(Wt::WLineEdit * litname) {
 void PaperOrganizer::LitNameEntered(Wt::WLineEdit * litname) {
     litname->hide();
     if (!litname->text().empty()) {
-        std::vector<std::string> takennames = tpc::index::IndexManager::get_available_corpora();
+        std::vector<std::string> takennames = tpc::index::IndexManager::get_available_corpora(tpc::index::CAS_ROOT_LOCATION.c_str());
         if (std::find(takennames.begin(), takennames.end(), litname->text().toUTF8()) == takennames.end()) {
             papers_lit_map["__all_literatures__"].insert(litname->text().toUTF8());
             litcombo->clear();

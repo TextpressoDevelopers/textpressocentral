@@ -138,7 +138,7 @@ void PickedLiteratureContents::UpdateLiteraturePreferences(bool checkpermissions
                                               PGLITERATUREPERMISSIONTABLENAME, username);
     Preference * dfpermissions = new Preference(PGLITERATUREPERMISSION,
                                                 PGLITERATUREPERMISSIONTABLENAME, "default");
-    for (const std::string& corpus : tpc::index::IndexManager::get_available_corpora()) {
+    for (const std::string& corpus : tpc::index::IndexManager::get_available_corpora(tpc::index::CAS_ROOT_LOCATION.c_str())) {
         // grant search rights based on individual and default permissions.
         if ((!checkpermissions || permissions->IsPreference(corpus)) || dfpermissions->IsPreference(corpus))
             if (pref->HasPreferences())
