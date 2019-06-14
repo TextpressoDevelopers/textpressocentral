@@ -2,26 +2,24 @@
 #
 
 function start() {
-    a2enmod cgid
-    service apache2 start
-    tail -f /var/log/apache2/error.log
+    mkdir /usr/wt; touch /usr/wt/socket
+    chmod 777 -R /usr/wt;
+    service lighttpd start
+    tail -f /var/log/postgresql/postgresql-9.5-main.log
 }
 
 function make_tpc() {
     if [ ! -e /usr/local/bin/tpc ]
     then
-	if [ -d /data/textpresso/textpressocentral ]
+	if [ -d /usr/textpresso/textpressocentral ]
 	then
-	    cd /data/textpresso/textpressocentral
-	    rm -rf build; mkdir build; cd build
+	    cd /usr/textpresso/textpressocentral
+	    #rm -rf build; mkdir build; cd build
+	    rm -rf cmake-build-debug; mkdir cmake-build-debug; cd cmake-build-debug
 	    cmake -DCMAKE_BUILD_TYPE=Release ..
 	    make -j 10 && make install && make clean
 	    /usr/local/bin/tpctl.sh activate
 	    /usr/local/bin/tpctl.sh set_literature_dir /data/textpresso
-	    cd /data/textpresso/tpctools
-	    rm -rf build; mkdir build; cd build 
-	    cmake -DCMAKE_BUILD_TYPE=Release ..;
-	    make -j 10 && make install
 	fi
     fi
 }
