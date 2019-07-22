@@ -2,17 +2,12 @@
 # Build:
 #	cd /home/mueller/docker/images/textpressocentral-dev
 #	docker build -t textpressocentral-dev .
-# update ubuntu-tpc image as well
 #
-FROM ubuntu-tpc
-ARG DEBIAN_FRONTEND=noninteractive
-RUN apt-get update; apt-get install -y libfcgi-dev lighttpd sudo
+FROM ubuntu-tpc-hmm
+RUN apt-get update
+RUN apt-get install -y apache2 libfcgi-dev libapache2-mod-fastcgi sudo
 COPY run.sh /root/run.sh
-COPY lighttpd.conf /etc/lighttpd/lighttpd.conf
-COPY postgresql.conf /etc/postgresql/9.5/main/postgresql.conf
-COPY pg_hba.conf /etc/postgresql/9.5/main/pg_hba.conf
-COPY . /usr/textpresso/textpressocentral
-EXPOSE 80 5432
+EXPOSE 80
 CMD ["default"]
 ENTRYPOINT ["/root/run.sh"]
 #
@@ -41,7 +36,4 @@ ENTRYPOINT ["/root/run.sh"]
 #       -v <postgres dir on host>:/data/postgres \
 #	-v <textpressocentral git dir on host>:/data/textpressocentral
 #	-v <tpctools git dir on host>:/data/tpctools textpressocentral-dev {default|dev|stopped}
-#
-#   sudo docker build -t textpressocentral-dev .
-#   sudo docker run --name tpc_test -d --restart=always -p 3000:80 -p 5433:5432 -v /data:/data textpressocentral-dev default
 #
