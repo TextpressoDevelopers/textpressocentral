@@ -210,7 +210,7 @@ void CreateCurationForm::PopulateEntryForm() {
     posturledit_ = new Wt::WLineEdit();
     posturledit_->enterPressed().connect(boost::bind(&CreateCurationForm::PosturlEditEnterPressed, this));
     //
-    Wt::WContainerWidget * groupcont = new Wt::WContainerWidget(this);
+    Wt::WContainerWidget * groupcont = new Wt::WContainerWidget();
     Wt::WButtonGroup * paramformatgroup = new Wt::WButtonGroup(groupcont);
     paramformatgroup->checkedChanged().connect(boost::bind(&CreateCurationForm::ParameterFormatChanged, this, paramformatgroup));
     Wt::WRadioButton * button;

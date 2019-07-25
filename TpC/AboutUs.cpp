@@ -22,7 +22,7 @@ AboutUs::AboutUs() {
     std::string date(__DATE__);
     std::string year(date.substr(date.length() - 4, 4));
     Wt::WString copyright = Wt::WString::fromUTF8(
-            "© 2000-" + year + " Textpresso, California Institute of Technology. Site build date: " + date + ", " +
+            "© " + year + " Textpresso, California Institute of Technology. Site build date: " + date + ", " +
             __TIME__ + ". Textpressocentral " + VERSION + " (" + RELEASE_NAME + ")");
     Wt::WText *ct = new Wt::WText(copyright);
     ct->decorationStyle().font().setSize(Wt::WFont::Large);

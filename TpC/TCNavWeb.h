@@ -21,10 +21,10 @@
 #include "Workflow.h"
 #include "Login.h"
 #include "Browsers.h"
-#include "ModAnnotator.h"
 #include "Customization.h"
 #include "AboutUs.h"
 #include "Download.h"
+#include "Help.h"
 #include "Permissions.h"
 #include "AuthWidget.h"
 #include <Wt/WContainerWidget>
@@ -64,21 +64,31 @@ private:
     Session session_;
     UrlParameters * urlparameters_;
     Wt::WText* loganchor_;
-    Wt::WAnchor* verifieduserlabel;
+    Wt::WAnchor* verifieduserlabel_;
     Wt::WNavigationBar * navigation_;
     Wt::WStackedWidget * contentsStack_;
     PaperAddress * singlepaperitem_;
+    //
     Home * home_;
-    Wt::WMenu * leftMenu_;
-    Wt::WMenuItem * homemenuitem_;
     Curation * curation_;
-    Wt::WMenuItem * curationmenuitem_;
     Search * search_;
-    Wt::WMenuItem * searchmenuitem_;
     Customization * customization_;
     AboutUs * aboutus_;
     Download * download_;
+    Help * help_;
     Permissions * permissions_;
+    Papers * papers_;
+    Browsers * browsers_;
+    Ontology * ontology_;
+    Lists * lists_;
+    NLP * nlp_;
+    CurationDatabase * curationdatabase_;
+    Workflow * workflow_;
+    //
+    Wt::WMenu * leftMenu_;
+    Wt::WMenuItem * homemenuitem_;
+    Wt::WMenuItem * curationmenuitem_;
+    Wt::WMenuItem * searchmenuitem_;
     void AuthEvent();
     void MenuItemTriggered(Wt::WMenuItem * x);
     void SearchEntered(Wt::WMenu * m, Wt::WLineEdit * edit);
@@ -90,9 +100,9 @@ private:
     void SetCursorHand(WWidget *w);
 
     void displayLogin();
-    AuthWidget *authWidget;
-    WDialog *dialog;
-    bool changed;
+    AuthWidget *authWidget_;
+    WDialog *dialog_;
+    bool changed_;
 };
 
 #endif	/* TCNAVWEB_H */

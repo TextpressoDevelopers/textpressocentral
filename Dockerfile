@@ -1,7 +1,6 @@
 #
 # Build:
-#	cd /home/mueller/docker/images/textpressocentral-dev
-#	docker build -t textpressocentral-dev .
+#	docker build -t textpressocentral-dev-hmm .
 #
 FROM ubuntu-tpc-hmm
 RUN apt-get update

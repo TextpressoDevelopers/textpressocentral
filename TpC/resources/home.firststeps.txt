@@ -1,4 +1,4 @@
-The site is not well documented, but if you do find a question mark, click on it. 
+If you do find a question mark, click on it. 
 If you think there are places where a question mark (i.e., more documentation) 
 would be helpful, let us know by going to the Contact Us section on this page.
 

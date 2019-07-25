@@ -40,6 +40,7 @@ Customization::Customization(Session & session, Wt::WContainerWidget * parent) {
     //
     ccol = new CustomizeColors(session_);
     ccol->signalSaveClicked().connect(boost::bind(&Customization::colorSaveClicked, this));
+    //
     tabwidget_ = new Wt::WTabWidget(this);
     tabwidget_->addTab(plc, "Literature Preference");
     //tabwidget_->addTab(new Wt::WContainerWidget(), "Categories Choices");

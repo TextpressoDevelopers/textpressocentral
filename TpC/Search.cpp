@@ -118,7 +118,6 @@ Search::Search(UrlParameters * urlparams, Session & session, Wt::WContainerWidge
     north->addWidget(northInnerLiterature);
     north->addWidget(northInnerAdditional);
     north->addWidget(northInnerButtons);
-    mainlayout_->addWidget(north, Wt::WBorderLayout::North);
     //
     // C E N T E R
     Wt::WContainerWidget * center = new Wt::WContainerWidget();

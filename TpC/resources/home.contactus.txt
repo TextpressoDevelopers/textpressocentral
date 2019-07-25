@@ -1,4 +1,3 @@
-At the moment this site is highly experimental. Please report any bugs, 
-suggestions, questions, praises, etc. 
+Please report any bugs, suggestions, questions, etc. 
 here	mailto:textpresso@caltech.edu
 .

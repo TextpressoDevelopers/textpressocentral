@@ -18,13 +18,9 @@ public:
     void LoadContent(Search * search = NULL);
 private:
     Wt::WContainerWidget * parent_;
-    void DisplayRandomItem(Wt::WContainerWidget * se);
-    void DisplayTextAndLinksFromFile(std::string filename,
-        Wt::WColor textcolor, Wt::WContainerWidget * container);
+    Wt::WContainerWidget * SearchBox(Search * search);
     void SetCursorHand(Wt::WWidget * w);
-
     Session* session_;
-    Wt::WContainerWidget* querycont;
 };
 
 #endif	/* HOME_H */

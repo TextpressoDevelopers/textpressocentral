@@ -37,8 +37,6 @@ include_directories(${Wt_INCLUDE_DIR})
 find_package(Textpresso REQUIRED)
 include_directories(${Textpresso_INCLUDE_DIR})
 
-include_directories("/home/valerio/workspace/caltech/textpresso/libtpc")
-
 #### Main projects ####
 
 add_executable(pdf2tpcas Pdf2Tpcas/main.cpp Pdf2Tpcas/PdfInfo.h Pdf2Tpcas/PdfInfo.cpp Pdf2Tpcas/ElementCluster.h
