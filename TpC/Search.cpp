@@ -164,7 +164,9 @@ Search::Search(UrlParameters * urlparams, Session & session, Wt::WContainerWidge
 
     this->setLayout(mainlayout_);
     // handle search via url parameters
+    SessionLoginChanged();
     if (!urlparameters_->IsEmpty()) {
+        show_list_of_corpora_before_search = false;
         bool triggersearch = false;
         Wt::Http::ParameterValues::iterator it;
         Wt::Http::ParameterValues keywords = urlparameters_->GetParameterValues("keyword");
@@ -245,6 +247,8 @@ Search::Search(UrlParameters * urlparams, Session & session, Wt::WContainerWidge
             // check whether user is logged in.
             doSearch();
 
+    } else {
+        show_list_of_corpora_before_search = true;
     }
 
     statusline->setText("");
@@ -259,7 +263,6 @@ Search::Search(UrlParameters * urlparams, Session & session, Wt::WContainerWidge
             this, &Search::updateSearchColors);
 
     indexManager = IndexManager("/usr/local/textpresso/luceneindex");
-    show_list_of_corpora_before_search = true;
     try {
         if (WApplication::instance()->environment().getCookie("show_list_of_corpora_before_search") == "false") {
             show_list_of_corpora_before_search = false;
@@ -269,8 +272,6 @@ Search::Search(UrlParameters * urlparams, Session & session, Wt::WContainerWidge
     }
     return_to_sentence_search_ = false;
     session_->login().changed().connect(boost::bind(&Search::SessionLoginChanged, this));
-    ResetSearch();
-    SessionLoginChanged();
 }
 
 void Search::SetLiteratureDescription(Wt::WContainerWidget * w) {

@@ -101,36 +101,13 @@ void Home::LoadContent(Search * search) {
     center->addWidget(new Wt::WBreak());
     //center->addWidget(new Wt::WBreak());
     //
-    Wt::WContainerWidget * notice = new Wt::WContainerWidget();
-    notice = new Wt::WContainerWidget();
-    notice->setContentAlignment(Wt::AlignLeft);
-    notice->decorationStyle().setBackgroundColor(Wt::WColor(255, 64, 129));
-    notice->decorationStyle().setForegroundColor(Wt::WColor(255, 255, 255));
-    notice->setWidth(Wt::WLength("50%"));
-    center->addWidget(notice);
-    notice->addWidget(new Wt::WText("This is the new Textpresso site. You can "
-            "still access the "));
-    Wt::WAnchor * oldsite = new Wt::WAnchor("http://textpresso.org/index_old.html");
-    oldsite->setTarget(Wt::TargetNewWindow);
-    oldsite->setText("old site");
-    oldsite->decorationStyle().setForegroundColor(Wt::WColor(200, 200, 255));
-    notice->addWidget(oldsite);
-    notice->addWidget(new Wt::WText(", but it will be retired, probably by the "
-            "end of the year 2018. This new site is described in more detail "
-            "in our "));
-    Wt::WAnchor * paper = new Wt::WAnchor("https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-018-2103-8");
-    paper->decorationStyle().setForegroundColor(Wt::WColor(200, 200, 255));
-    paper->setTarget(Wt::TargetNewWindow);
-    paper->setText("paper");
-    notice->addWidget(paper);
-    notice->addWidget(new Wt::WText(", published in March 2018."));
     Wt::WContainerWidget * sftcont = new Wt::WContainerWidget();
     sftcont->setWidth(Wt::WLength("50%"));
     center->addWidget(sftcont);
     Wt::WGroupBox * sftgroup = new Wt::WGroupBox("Search Full Text");
     sftgroup->setContentAlignment(Wt::AlignJustify);
     Wt::WText * sfttext1 = new Wt::WText("Textpresso Central contains "
-            "(roughly 1.5 million) PMCOA full text articles. Number of "
+            "(roughly 2.5 million) PMCOA full text articles. Number of "
             "articles are continuously growing.");
     sfttext1->decorationStyle().font().setSize(Wt::WFont::Large);
     sfttext1->decorationStyle().font().setVariant(Wt::WFont::SmallCaps);
