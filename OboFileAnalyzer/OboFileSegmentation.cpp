@@ -236,6 +236,12 @@ void OboFileSegmentation::PrintSingleTerms(const char * filename) {
         f.close();
     }
 }
+    OboEntry* OboFileSegmentation::GetOePtr(std::string id) {
+        OboEntry * ret(nullptr);
+        if (id2oboentryptr_.find(id) != id2oboentryptr_.end())
+            ret = id2oboentryptr_[id];
+        return ret;
+    }
 
 void OboFileSegmentation::InitializeKeyphrases() {
     // this is to catch phrases of the form (..., "") that are not target ids;
@@ -304,12 +310,13 @@ void OboFileSegmentation::InitializeKeyphrases() {
     ignoredkeyphrases_.insert(std::make_pair("intersection_of", "innervates"));
     ignoredkeyphrases_.insert(std::make_pair("intersection_of", "extends_fibers_into"));
     ignoredkeyphrases_.insert(std::make_pair("intersection_of", "dorsal_to"));
+    ignoredkeyphrases_.insert(std::make_pair("intersection_of", "happens_during"));
+    ignoredkeyphrases_.insert(std::make_pair("intersection_of", "has_relative_magnitude"));
 
     // child-parent
     cpkeyphrases_.insert(std::make_pair("is_a", ""));
-    cpkeyphrases_.insert(std::make_pair("intersection_of", ""));
+    //cpkeyphrases_.insert(std::make_pair("intersection_of", ""));
     cpkeyphrases_.insert(std::make_pair("relationship", "part_of"));
-    cpkeyphrases_.insert(std::make_pair("relationship", "DESCENDENTOF"));
 
     // parent-child
     pckeyphrases_.insert(std::make_pair("relationship", "has_part"));

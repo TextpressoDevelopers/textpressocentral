@@ -17,6 +17,7 @@ public:
     virtual ~PgList();
     void CreateListTable();
     void SaveList(std::set<std::string> & preferences);
+    void AddItem(std::string item);
     std::string GetRandomItem();
     bool IsInList(std::string s);
     bool HasList();

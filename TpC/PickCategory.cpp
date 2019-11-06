@@ -13,9 +13,11 @@ PickCategory::PickCategory(Session * session, std::set<std::string> & preloaded)
     setModal(false);
     setResizable(true);
     setClosable(true);
-    setMaximumSize(Wt::WLength::Auto, Wt::WLength(60, Wt::WLength::FontEx));
+//    setMaximumSize(Wt::WLength::Auto, Wt::WLength::Auto);
+    setMaximumSize(Wt::WLength::Auto, Wt::WLength(70, Wt::WLength::FontEx));
     //
     pcc_ = new PickCategoryContainer(session, preloaded, true);
+    pcc_->setMaximumSize(Wt::WLength::Auto, Wt::WLength(45, Wt::WLength::FontEx));
     contents()->addWidget(pcc_);
     pcc_->OkClicked().connect(this, &Wt::WDialog::accept);
     //

@@ -50,6 +50,7 @@ public:
     void LoadAll();
     void SearchDbIid(int id);
     void SearchDbString(columns col, std::string s);
+    void SearchDbPosixString(columns col, std::string s);
     void SearchDbWithWhereClause(std::string where);
     void SearchDbString(std::string colname, std::string s);
     void SearchDbTimeStamp(time_t t);

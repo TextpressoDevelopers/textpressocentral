@@ -7,6 +7,7 @@
 
 
 #include "TpOntologyBrowser.h"
+#include "PgList.h"
 
 #include <Wt/WTreeNode>
 #include <Wt/WText>
@@ -135,22 +136,25 @@ void TpOntologyBrowser::Read2Cols(std::string tablename,
         std::string col1name, std::string col2name) {
     try {
         pqxx::work w(cn_);
-        pqxx::result r;
-        std::stringstream pc;
-        pc << "select " << col1name << "," << col2name << " from ";
-        pc << tablename;
-        r = w.exec(pc.str());
-        std::set<std::string> seen;
-        for (pqxx::result::size_type i = 0; i != r.size(); i++) {
-            std::string col1;
-            std::string col2;
-            if (r[i][col1name].to(col1) && r[i][col2name].to(col2)) {
-                std::string auxstring = col1 + "+*_" + col2;
-                if (seen.find(auxstring) == seen.end()) {
-                    seen.insert(auxstring);
-                    pcrelations_.insert(std::make_pair(col1, col2));
-                    categorynames_.insert(col1);
-                    categorynames_.insert(col2);
+        PgList ontmembers(PGONTOLOGY, ONTOLOGYMEMBERSTABLENAME);
+        for (auto tbn : ontmembers.GetList()) {
+            pqxx::result r;
+            std::stringstream pc;
+            pc << "select " << col1name << "," << col2name << " from \"";
+            pc << tablename << "_" << tbn << "\"";
+            r = w.exec(pc.str());
+            std::set<std::string> seen;
+            for (pqxx::result::size_type i = 0; i != r.size(); i++) {
+                std::string col1;
+                std::string col2;
+                if (r[i][col1name].to(col1) && r[i][col2name].to(col2)) {
+                    std::string auxstring = col1 + "+*_" + col2;
+                    if (seen.find(auxstring) == seen.end()) {
+                        seen.insert(auxstring);
+                        pcrelations_.insert(std::make_pair(col1, col2));
+                        categorynames_.insert(col1);
+                        categorynames_.insert(col2);
+                    }
                 }
             }
         }

@@ -16,10 +16,10 @@ class TpCategoryBrowser : public Wt::WTree {
     typedef std::multimap<std::string, std::string> mmsstype;
     typedef std::pair<mmsstype::iterator, mmsstype::iterator> mmssrange;
 
-    struct nano {
-        std::string name;
-        Wt::WTreeNode* node;
-    };
+//    struct nano {
+//        std::string name;
+//        Wt::WTreeNode* node;
+//    };
 
 public:    
     TpCategoryBrowser(std::set<std::string> preloaded = std::set<std::string>());
@@ -30,9 +30,12 @@ public:
     std::set<std::string> GetAllDirectChildrensName(std::string x);
     std::set<Wt::WString> GetSelected();
     int getTotalNumSubCategories(std::string categoryName);
+    int getNumberChildren(std::string x);
+    mmsstype GetCat2Ont() { return cat2ont_; }
     ~TpCategoryBrowser();
 private:
     // database connection
+    mmsstype cat2ont_;
     pqxx::connection cn_;
     void LoadNextChildren(Wt::WTreeNode * x,
             std::set<std::string> preloaded = std::set<std::string>());

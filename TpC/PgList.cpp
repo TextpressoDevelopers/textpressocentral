@@ -23,9 +23,7 @@ void PgList::CreateListTable() {
     pc << "select * from pg_tables where tablename='";
     pc << tablename_ << "'";
     r = w.exec(pc.str());
-    if (r.size() != 0) {
-        std::cerr << tablename_ << " table already exists." << std::endl;
-    } else {
+    if (r.size() == 0) {
         pc.str("");
         pc << "create table ";
         pc << tablename_ << " ";
@@ -51,6 +49,23 @@ void PgList::SaveList(std::set<std::string> & list) {
                 pc << *it << "')";
                 r = w.exec(pc.str());
             }
+        }
+        w.commit();
+    }
+}
+
+void PgList::AddItem(std::string item) {
+    if (!item.empty()) {
+        pqxx::work w(cn_);
+        pqxx::result r;
+        std::set<std::string>::iterator it;
+        if (list_.find(item) == list_.end()) {
+            list_.insert(item);
+            std::stringstream pc;
+            pc << "insert into ";
+            pc << tablename_ << " values ('";
+            pc << item << "')";
+            r = w.exec(pc.str());
         }
         w.commit();
     }

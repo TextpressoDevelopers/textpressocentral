@@ -40,10 +40,10 @@ using namespace Lucene;
 using namespace std;
 using namespace tpc::index;
 
-Search::Search(UrlParameters * urlparams, Session & session, Wt::WContainerWidget * parent):
-        parent_(parent),
-        urlparameters_(urlparams),
-        Wt::WContainerWidget(parent) {
+Search::Search(UrlParameters * urlparams, Session & session, Wt::WContainerWidget * parent) :
+parent_(parent),
+urlparameters_(urlparams),
+Wt::WContainerWidget(parent) {
     session_ = &session;
     literaturestatus_ = new Wt::WText();
     literaturestatus_->setTextFormat(TextFormat::XHTMLText);
@@ -171,7 +171,6 @@ Search::Search(UrlParameters * urlparams, Session & session, Wt::WContainerWidge
             std::string kwt(*keywords.begin());
             for (it = ++keywords.begin(); it != keywords.end(); it++)
                 kwt += " " + *it;
-            std::cerr << "KWT: " << kwt << std::endl;
             keywordtext_->setText(kwt);
             stored_keyword = keywordtext_->text().value();
             triggersearch = true;
@@ -181,7 +180,6 @@ Search::Search(UrlParameters * urlparams, Session & session, Wt::WContainerWidge
             pickedcat_.clear();
             for (it = categories.begin(); it != categories.end(); it++) {
                 pickedcat_.insert(*it);
-                std::cerr << "CAT: " << std::endl;
             }
             UpdatePickedCatCont();
             triggersearch = true;
@@ -200,7 +198,6 @@ Search::Search(UrlParameters * urlparams, Session & session, Wt::WContainerWidge
             std::string ext(*excludes.begin());
             for (it = ++excludes.begin(); it != excludes.end(); it++)
                 ext += " " + *it;
-            std::cerr << "EXT: " << ext << std::endl;
             keywordnottext_->setText(ext);
         }
         Wt::Http::ParameterValues authors = urlparameters_->GetParameterValues("author");
@@ -208,7 +205,6 @@ Search::Search(UrlParameters * urlparams, Session & session, Wt::WContainerWidge
             std::string aut(*authors.begin());
             for (it = ++authors.begin(); it != authors.end(); it++)
                 aut += " " + *it;
-            std::cerr << "AUT: " << aut << std::endl;
             author_filter_->setText(aut);
         }
         Wt::Http::ParameterValues journals = urlparameters_->GetParameterValues("journal");
@@ -216,7 +212,6 @@ Search::Search(UrlParameters * urlparams, Session & session, Wt::WContainerWidge
             std::string jot(*journals.begin());
             for (it = ++journals.begin(); it != journals.end(); it++)
                 jot += " " + *it;
-            std::cerr << "JOT: " << jot << std::endl;
             journal_filter_->setText(jot);
         }
         Wt::Http::ParameterValues years = urlparameters_->GetParameterValues("year");
@@ -224,26 +219,20 @@ Search::Search(UrlParameters * urlparams, Session & session, Wt::WContainerWidge
             std::string yet(*years.begin());
             for (it = ++years.begin(); it != years.end(); it++)
                 yet += " " + *it;
-            std::cerr << "YET: " << yet << std::endl;
             year_filter_->setText(yet);
-
         }
         Wt::Http::ParameterValues accessions = urlparameters_->GetParameterValues("accession");
         if (!accessions.empty()) {
             std::string act(*accessions.begin());
             for (it = ++accessions.begin(); it != accessions.end(); it++)
                 act += " " + *it;
-            std::cerr << "ACT: " << act << std::endl;
             accession_filter_->setText(act);
         }
         Wt::Http::ParameterValues types = urlparameters_->GetParameterValues("type");
         string act = boost::join(types, " ");
-        std::cerr << "ACT: " << act << std::endl;
         type_filter_->setText(act);
         if (triggersearch)
-            // check whether user is logged in.
             doSearch();
-
     }
 
     statusline->setText("");
@@ -322,7 +311,7 @@ void Search::SetLiteratureContainer(Wt::WContainerWidget * literaturecontainer) 
     vector<string> corpus_vec = IndexManager::get_available_corpora(CAS_ROOT_LOCATION.c_str());
     vector<string> additional_corpora;
     if (session_->login().state() != 0 && indexManager.has_external_index()) {
-         additional_corpora = indexManager.get_external_corpora();
+        additional_corpora = indexManager.get_external_corpora();
     }
     literaturecontainer->clear();
     literaturecontainer->addWidget(new Wt::WText(Wt::WString(
@@ -375,29 +364,29 @@ void Search::CreateSearchInterface(Wt::WHBoxLayout* hbox) {
     setDefTypeBtn->clicked().connect(std::bind([ = ](){
         if (session_->login().state() != 0) {
             Preference *pref = new Preference(PGSEARCHPREFERENCES, PGSEARCHPREFERENCESTABLENAME,
-                                                    session_->login().user().identity("loginname").toUTF8());
-            vector<string> prefVec = pref->GetPreferencesVec();
-            set<string> prefSet;
-            copy(prefVec.begin(), prefVec.end(), inserter(prefSet, prefSet.begin()));
+                    session_->login().user().identity("loginname").toUTF8());
+                    vector<string> prefVec = pref->GetPreferencesVec();
+                    set<string> prefSet;
+                    copy(prefVec.begin(), prefVec.end(), inserter(prefSet, prefSet.begin()));
             if (keywordfield_combo_->currentText().value() == "sentence") {
                 prefSet.insert("search_type_sentences");
             } else {
                 prefSet.erase("search_type_sentences");
             }
             prefVec.clear();
-            copy(prefSet.begin(), prefSet.end(), back_inserter(prefVec));
-            pref->SavePreferencesVector(session_->login().user().identity("loginname").toUTF8(), prefVec);
-            statusline->setText("Preferences have been saved.");
-            statusline->decorationStyle().setForegroundColor(Wt::green);
-            Wt::WTimer * timer = new Wt::WTimer();
-            timer->setInterval(2000);
-            timer->setSingleShot(true);
-            timer->timeout().connect(std::bind([ = ] (Wt::WTimer * timer){
+                    copy(prefSet.begin(), prefSet.end(), back_inserter(prefVec));
+                    pref->SavePreferencesVector(session_->login().user().identity("loginname").toUTF8(), prefVec);
+                    statusline->setText("Preferences have been saved.");
+                    statusline->decorationStyle().setForegroundColor(Wt::green);
+                    Wt::WTimer * timer = new Wt::WTimer();
+                    timer->setInterval(2000);
+                    timer->setSingleShot(true);
+                    timer->timeout().connect(std::bind([ = ] (Wt::WTimer * timer){
                 timer->stop();
                 delete timer;
                 statusline->setText("");
             }, timer));
-            timer->start();
+                    timer->start();
         }
     }));
     setDefTypeBtn->hide();
@@ -527,18 +516,19 @@ void Search::createAdditionalOptionsRow(Wt::WHBoxLayout* hbox) {
     imAcc->setVerticalAlignment(Wt::AlignTop);
     imAcc->setInline(true);
     imAcc->mouseWentOver().connect(boost::bind(&Search::SetCursorHand, this, imAcc));
-    imAcc->clicked().connect(std::bind([ = ] () {
+    imAcc->clicked().connect(std::bind([ = ] (){
         Wt::WDialog *dialog = new Wt::WDialog("Info");
         dialog->contents()->addWidget(new Wt::WText("<p>Search the field containing the identifier(s) for th paper. "
-                                                            "For example, for Pubmed ids, insert \"PMID:xxxxxxx\". "
-                                                            "Other possible fields are DOI and WBPaper id.</p>"));
+        "For example, for Pubmed ids, insert \"PMID:xxxxxxx\". "
+        "Other possible fields are DOI and WBPaper id.</p>"));
         dialog->contents()->addStyleClass("form-group");
         dialog->setWidth(Wt::WLength("70%"));
         Wt::WPushButton *ok = new Wt::WPushButton("Close");
         dialog->footer()->addWidget(ok);
         ok->setDefault(true);
         dialog->rejectWhenEscapePressed();
-        ok->clicked().connect(std::bind([=]() {
+        ok->clicked().connect(std::bind([ = ]()
+        {
             dialog->accept();
         }));
         dialog->show();
@@ -634,7 +624,6 @@ void Search::createSearchButtonsRow(Wt::WHBoxLayout* hbox) {
 }
 
 void Search::ResetSearch() {
-    keywordfield_combo_->setCurrentIndex(1);
     if (session_->login().state() != 0) {
         std::string username("");
         username = session_->login().user().identity("loginname").toUTF8();
@@ -650,6 +639,7 @@ void Search::ResetSearch() {
         }
     }
     if (!skip_resetui) {
+        keywordfield_combo_->setCurrentIndex(1);
         keywordtext_->setText("");
         stored_keyword = L"";
         keywordnottext_->setText("");
@@ -712,8 +702,8 @@ void Search::UpdatePickedCatCont() {
             pickedcatcont_->addWidget(new Wt::WBreak());
             std::string aux = (*it);
             string aux_title(aux);
-            if (aux.find("pAaCh") != std::string::npos) aux_title += " (incl. children)";
-            boost::replace_first(aux_title, "pAaCh", "");
+            if (aux.substr(0, 5) == "PTCAT") aux_title += " (incl. children)";
+            boost::replace_first(aux_title, "PTCAT", "");
             //
             Wt::WImage * im = new Wt::WImage("resources/icons/cancel.png");
             im->setInline(true);
@@ -842,8 +832,8 @@ void Search::HelpLongSentenceDialog() {
     WDialog* helpLongSentDialog = new Wt::WDialog("Long Sentences");
     helpLongSentDialog->setWidth(Wt::WLength(80, Wt::WLength::FontEx));
     Wt::WText *t1 = new Wt::WText("Long sentences are truncated after 50 words. Click the \"show more ..\" button at "
-                                          "the end of the sentence to see the full text.",
-                                  helpLongSentDialog->contents());
+            "the end of the sentence to see the full text.",
+            helpLongSentDialog->contents());
     t1->setWordWrap(true);
     helpLongSentDialog->contents()->addWidget(new Wt::WBreak());
     helpLongSentDialog->contents()->addWidget(new Wt::WBreak());
@@ -864,7 +854,7 @@ void Search::HelpLongSentenceDialog() {
  */
 void Search::ShowLongSentenceInDialog(string title, wstring rawText, wstring categories) {
     auto wt_sentence = getSingleSentenceHighlightedWidgetFromText(rawText, categories, getCleanKeywords(),
-                                                                  0, nullptr);
+            0, nullptr);
     WDialog* longSentenceDialog = new WDialog(title);
     longSentenceDialog->contents()->addWidget(wt_sentence);
     longSentenceDialog->contents()->addWidget(new WBreak());
@@ -884,8 +874,8 @@ void Search::ListAllCats() {
     int maxl(0);
     for (it = pickedcat_.begin(); it != pickedcat_.end(); it++) {
         std::string aux = (*it);
-        if (aux.find("pAaCh") != std::string::npos) aux += " (incl. children)";
-        boost::replace_first(aux, "pAaCh", "");
+        if (aux.substr(0, 5) == "PTCAT") aux += " (incl. children)";
+        boost::replace_first(aux, "PTCAT", "");
         maxl = (aux.length() > maxl) ? aux.length() : maxl;
         //
         Wt::WImage * im = new Wt::WImage("resources/icons/cancel.png");
@@ -997,13 +987,13 @@ void Search::DoSearchUpdates() {
             Wt::WPushButton *reject = new Wt::WPushButton("Cancel");
             dialog->footer()->addWidget(reject);
             dialog->rejectWhenEscapePressed();
-            ok->clicked().connect(std::bind([=]() {
+            ok->clicked().connect(std::bind([ = ](){
                 dialog->accept();
                 updatetext_->setText("Combining results ...");
                 searchstatus_++;
                 updatetimer_->start();
             }));
-            reject->clicked().connect(std::bind([=]() {
+            reject->clicked().connect(std::bind([ = ](){
                 dialog->reject();
                 delete updatetimer_;
                 searchstatus_ = 0;
@@ -1018,13 +1008,13 @@ void Search::DoSearchUpdates() {
         }
     } else if (searchstatus_ == 3) {
         bt_ = std::chrono::system_clock::now();
-        searchResults = indexManager.search_documents(query, false, {}, searchResults);
+        searchResults = indexManager.search_documents(query, false,{}, searchResults);
         et_ = std::chrono::system_clock::now();
         searchstatus_++;
         updatetimer_->start();
     } else {
         long hits = searchResults.query.type == QueryType::document ? searchResults.hit_documents.size() :
-                      searchResults.total_num_sentences;
+                searchResults.total_num_sentences;
         long size = searchResults.hit_documents.size();
         totalresults_ = size;
         int total_page = 0;
@@ -1034,7 +1024,7 @@ void Search::DoSearchUpdates() {
             total_page = totalresults_ / RECORDS_PER_PAGE + 1;
         }
         std::string matchtext("There were matches in " + std::to_string(size) +
-                              "  documents");
+                "  documents");
         if (keywordfield_combo_->currentText().value() == "sentence") {
             if (hits < 1000000) {
                 matchtext += " (" + std::to_string(hits) + " sentences)";
@@ -1045,13 +1035,13 @@ void Search::DoSearchUpdates() {
         matchtext += ".";
         size_text_->setText(matchtext);
         page_number_text_->setText("Page: " + std::to_string(currentpage_ + 1) +
-                                   " of " + std::to_string(total_page));
+                " of " + std::to_string(total_page));
         displayTable(0, 0, 1);
         et_ = std::chrono::system_clock::now();
         std::chrono::duration<double> elapsed_seconds = et_ - bt_;
         std::string aux("Index lookup took " + std::to_string(partial_search_time) + " seconds. Combining results "
-                                                                                             "took " +
-                                std::to_string(elapsed_seconds.count()) + " seconds. ");
+                "took " +
+                std::to_string(elapsed_seconds.count()) + " seconds. ");
         updatetext_->decorationStyle().setBackgroundColor(Wt::white);
         updatetext_->setText(aux);
         if (return_to_sentence_search_) {
@@ -1085,14 +1075,14 @@ void Search::doSearch() {
     } else {
         Wt::WDialog *dialog = new Wt::WDialog("Error");
         dialog->contents()->addWidget(new Wt::WText("<p>Searches requires at least a keyword, an additional field or a "
-                                                            "category.</p>"));
+                "category.</p>"));
         dialog->contents()->addStyleClass("form-group");
         dialog->setWidth(Wt::WLength("50%"));
         Wt::WPushButton *ok = new Wt::WPushButton("Close");
         dialog->footer()->addWidget(ok);
         ok->setDefault(true);
         dialog->rejectWhenEscapePressed();
-        ok->clicked().connect(std::bind([=]() {
+        ok->clicked().connect(std::bind([ = ](){
             dialog->accept();
         }));
         dialog->show();
@@ -1103,26 +1093,26 @@ void Search::startSearchProcess() {
     if (show_list_of_corpora_before_search) {
         Wt::WDialog *dialog = new Wt::WDialog("Info");
         dialog->contents()->addWidget(new Wt::WText("<p>Your search will be performed on the following corpora:</p>"
-                                                            "<p>" +
-                                                    boost::algorithm::join(getSelectedLiteratures(), ", ") +
-                                                    ".</p><p>To modify the search, click 'Cancel' and select the "
-                                                            "corpora from the literature option.</p>"));
+                "<p>" +
+                boost::algorithm::join(getSelectedLiteratures(), ", ") +
+                ".</p><p>To modify the search, click 'Cancel' and select the "
+                "corpora from the literature option.</p>"));
         dialog->contents()->addStyleClass("form-group");
         dialog->setWidth(Wt::WLength("70%"));
         Wt::WCheckBox *cb = new Wt::WCheckBox("don't show this message again");
-        cb->checked().connect(std::bind([=]() {
+        cb->checked().connect(std::bind([ = ](){
             show_list_of_corpora_before_search = false;
             WApplication::instance()->setCookie("show_list_of_corpora_before_search", "false", 60000);
             if (session_->login().state() != 0) {
                 Preference *dialogPref = new Preference(PGDIALOGPREFERENCES, PGDIALOGPREFERENCESTABLENAME,
-                                                        session_->login().user().identity("loginname").toUTF8());
-                vector<string> prefVec = dialogPref->GetPreferencesVec();
-                set<string> prefSet;
-                copy(prefVec.begin(), prefVec.end(), inserter(prefSet, prefSet.begin()));
-                prefSet.insert("show_list_of_corpora_before_search");
-                prefVec.clear();
-                copy(prefSet.begin(), prefSet.end(), back_inserter(prefVec));
-                dialogPref->SavePreferencesVector(session_->login().user().identity("loginname").toUTF8(), prefVec);
+                        session_->login().user().identity("loginname").toUTF8());
+                        vector<string> prefVec = dialogPref->GetPreferencesVec();
+                        set<string> prefSet;
+                        copy(prefVec.begin(), prefVec.end(), inserter(prefSet, prefSet.begin()));
+                        prefSet.insert("show_list_of_corpora_before_search");
+                        prefVec.clear();
+                        copy(prefSet.begin(), prefSet.end(), back_inserter(prefVec));
+                        dialogPref->SavePreferencesVector(session_->login().user().identity("loginname").toUTF8(), prefVec);
             }
         }));
         dialog->contents()->addWidget(cb);
@@ -1132,7 +1122,7 @@ void Search::startSearchProcess() {
         Wt::WPushButton *cancel = new Wt::WPushButton("Cancel");
         dialog->footer()->addWidget(cancel);
         dialog->rejectWhenEscapePressed();
-        ok->clicked().connect(std::bind([=]() {
+        ok->clicked().connect(std::bind([ = ](){
             dialog->accept();
             updatetimer_ = new Wt::WTimer();
             updatetimer_->setInterval(5);
@@ -1141,7 +1131,7 @@ void Search::startSearchProcess() {
             updatetimer_->start();
             bt_ = std::chrono::system_clock::now();
         }));
-        cancel->clicked().connect(std::bind([=]() {
+        cancel->clicked().connect(std::bind([ = ](){
             dialog->reject();
         }));
         dialog->show();
@@ -1167,10 +1157,12 @@ void Search::prepareKeywordColorsForSearch() {
     eraseAllOccurrencesOfStr(keyword_string, "OR");
     boost::split(keyword_entities, keyword_string, boost::is_any_of(" "));
     keyword_entities.erase(std::remove(keyword_entities.begin(), keyword_entities.end(), ""),
-                           keyword_entities.end());
+            keyword_entities.end());
     int colorIndex = 0;
     for (auto entity : keyword_entities) {
-        keywordColorsMap.insert({{entity, colorIndex++}});
+        keywordColorsMap.insert({
+            {entity, colorIndex++}
+        });
     }
 }
 
@@ -1224,7 +1216,7 @@ map<string, string> Search::getFilters() {
     filters["journal"] = WtString2string(journal_filter_->text().value());
     filters["year"] = WtString2string(year_filter_->text().value());
     filters["accession"] = WtString2string(accession_filter_->text().value());
-    filters["type"] = WtString2string(type_filter_->text().value());;
+    filters["type"] = WtString2string(type_filter_->text().value());
     return filters;
 }
 
@@ -1315,8 +1307,11 @@ void Search::displayTable(int start, int end, int direction) {
     set<string> fields_to_exclude;
     vector<DocumentDetails> docsDetails = indexManager.get_documents_details(
             doc_summaries, cb_year_->isChecked(), false,
-            DOCUMENTS_FIELDS_DETAILED, SENTENCE_FIELDS_DETAILED,
-            {"fulltext_compressed", "fulltext_cat_compressed"}, {});
+            DOCUMENTS_FIELDS_DETAILED, SENTENCE_FIELDS_DETAILED, {
+                "fulltext_compressed", "fulltext_cat_compressed"
+            },
+    {
+    });
     n_row = 0;
     bool use_identifiers = all_of(doc_summaries.begin(), doc_summaries.end(), [](DocumentSummary d) {
         return !d.identifier.empty();
@@ -1402,7 +1397,7 @@ void Search::displayTable(int start, int end, int direction) {
     table_->clear();
     table_->refresh();
     std::vector<std::wstring> labels = {L"", L"Accession", L"journal", L"year", L"Type", L"Paper Title", L"Doc Score",
-                                        L"Select"};
+        L"Select"};
     table_->elementAt(0, 0)
             ->addWidget(new Wt::WText(labels[0])); //serial
     table_->elementAt(0, 1)
@@ -1490,18 +1485,19 @@ void Search::displayTable(int start, int end, int direction) {
         imLit->setVerticalAlignment(Wt::AlignTop);
         imLit->setInline(true);
         imLit->mouseWentOver().connect(boost::bind(&Search::SetCursorHand, this, imLit));
-        imLit->clicked().connect(std::bind([ = ] () {
+        imLit->clicked().connect(std::bind([ = ] (){
             Wt::WDialog *dialog = new Wt::WDialog("Info");
             dialog->contents()->addWidget(new Wt::WText("<p>This field contains all the corpora into which the document "
-                                                                "has been classified, which might not be limited to the "
-                                                                "set of corpora selected for the search.</p>"));
+            "has been classified, which might not be limited to the "
+            "set of corpora selected for the search.</p>"));
             dialog->contents()->addStyleClass("form-group");
             dialog->setWidth(Wt::WLength("70%"));
             Wt::WPushButton *ok = new Wt::WPushButton("Close");
             dialog->footer()->addWidget(ok);
             ok->setDefault(true);
             dialog->rejectWhenEscapePressed();
-            ok->clicked().connect(std::bind([=]() {
+            ok->clicked().connect(std::bind([ = ]()
+            {
                 dialog->accept();
             }));
             dialog->show();
@@ -1628,7 +1624,7 @@ void Search::ViewPaperClicked(Wt::WCheckBox * cb,
         vector<string> categories;
         for (const auto& category : query.categories) {
             string cat = category;
-            if (category.substr(0, 5) == "pAaCh") {
+            if (category.substr(0, 5) == "PTCAT") {
                 cat = category.substr(5, category.size());
                 set<string> children_cat = tcp->GetAllChildrensName(cat);
                 for (const auto& child : children_cat) {
@@ -1669,10 +1665,15 @@ std::string Search::RetrieveBEString(int index) {
         q.categories_and_ed = false;
         q.type = QueryType::sentence;
         string docid = indexManager.get_document_details(
-                searchResults.hit_documents[index + current_start_], false,
-                {"doc_id", "fulltext_compressed", "fulltext_cat_compressed"}, {}, {}, {}).identifier;
+                searchResults.hit_documents[index + current_start_], false,{"doc_id", "fulltext_compressed", "fulltext_cat_compressed"},
+        {
+        },
+        {
+        },
+        {
+        }).identifier;
         try {
-            auto search_docs = indexManager.search_documents(q, false, {docid});
+            auto search_docs = indexManager.search_documents(q, false,{docid});
             if (search_docs.hit_documents.size() > 0) {
                 document = search_docs.hit_documents[0];
             } else {
@@ -1687,8 +1688,14 @@ std::string Search::RetrieveBEString(int index) {
     String identifier = StringUtils::toString(document.identifier.c_str());
     int beupperlimit = 110;
     vector<SentenceDetails> docSentencesDetails = indexManager.get_document_details(
-            document, true, {"doc_id"},
-            {"sentence_id", "begin", "end"}, {}, {}).sentences_details;
+            document, true,{"doc_id"},
+    {
+        "sentence_id", "begin", "end"
+    },
+    {
+    },
+    {
+    }).sentences_details;
     sort(docSentencesDetails.begin(), docSentencesDetails.end(), sentence_position_lt);
     vector<string> begins_ends;
     for (int i = 0; i < docSentencesDetails.size() && i < beupperlimit; i++) {
@@ -1738,11 +1745,17 @@ void Search::setHitText(int index, Wt::WGroupBox* textGroupBox) {
     int sentence_count = 0;
     if (searchResults.query.type == QueryType::sentence) {
         DocumentDetails currDocDetails = indexManager.get_document_details(
-                currDocSummary, true, {"doc_id"},
-                {"sentence_id", "sentence_compressed", "sentence_cat_compressed"}, {}, {});
+                currDocSummary, true,{"doc_id"},
+        {
+            "sentence_id", "sentence_compressed", "sentence_cat_compressed"
+        },
+        {
+        },
+        {
+        });
         sort(currDocDetails.sentences_details.begin(),
-             currDocDetails.sentences_details.end(),
-             IndexManager::sentence_greater_than);
+                currDocDetails.sentences_details.end(),
+                IndexManager::sentence_greater_than);
         for (const SentenceDetails& sentDetails : currDocDetails.sentences_details) {
             string sentence_text = sentDetails.sentence_text;
             string categories_string = sentDetails.categories_string;
@@ -1771,7 +1784,7 @@ void Search::setHitText(int index, Wt::WGroupBox* textGroupBox) {
             vector<int> keyword_positions = getKeywordPosition(subwstrings, keywords);
             sentence_count++;
             WContainerWidget* wt_sentence = getSingleSentenceHighlightedWidgetFromText(w_text, w_cat, keywords,
-                                                                                       sentence_length, textGroupBox);
+                    sentence_length, textGroupBox);
             double normFactor;
             if (min_score_ != max_score_) {
                 normFactor = (doc_score - min_score_) / max_min_;
@@ -1802,7 +1815,7 @@ void Search::setHitText(int index, Wt::WGroupBox* textGroupBox) {
             if (sentenceNumWords > SENTENCE_SEARCH_MAX_NUM_DISPLAY_WORDS) {
                 int j = 0;
                 for (int i = 0; i < sentenceNumWidgets && j < sentenceNumWords &&
-                                j < SENTENCE_SEARCH_MAX_NUM_DISPLAY_WORDS; ++i) {
+                        j < SENTENCE_SEARCH_MAX_NUM_DISPLAY_WORDS; ++i) {
                     wstring test = ((WText*) wt_sentence->widget(i))->text();
                     if (test != L"\n" && test != L"" && test != L" ") {
                         wt_sentence_truncated->addWidget(wt_sentence->widget(i));
@@ -1829,7 +1842,7 @@ void Search::setHitText(int index, Wt::WGroupBox* textGroupBox) {
                 wt_sentence_truncated->addWidget(t);
                 textGroupBox->addWidget(wt_sentence_truncated);
                 t->clicked().connect(std::bind(&Search::ShowLongSentenceInDialog, this, sentence_number_s, w_text,
-                                               w_cat));
+                        w_cat));
             } else {
                 textGroupBox->addWidget(wt_sentence);
             }
@@ -1837,7 +1850,13 @@ void Search::setHitText(int index, Wt::WGroupBox* textGroupBox) {
         }
     } else {
         DocumentDetails currDocDetails = indexManager.get_document_details(
-                currDocSummary, false, {"doc_id", "fulltext_compressed", "fulltext_cat_compressed"}, {}, {}, {});
+                currDocSummary, false,{"doc_id", "fulltext_compressed", "fulltext_cat_compressed"},
+        {
+        },
+        {
+        },
+        {
+        });
         string fulltext = currDocDetails.fulltext;
         string categories_string = currDocDetails.categories_string;
         String l_text = String(fulltext.begin(), fulltext.end());
@@ -1963,7 +1982,7 @@ void Search::PanelTitleClick(WPanel* panel, int index, Wt::WGroupBox* textGroupB
 }
 
 Wt::WContainerWidget* Search::setHitCatSentence(wstring w_cat, vector<wstring > subwstrings, int sentence_length,
-                                                Wt::WGroupBox* textGroupBox) {
+        Wt::WGroupBox* textGroupBox) {
     vector<wstring> cats;
     std::set<std::string>::iterator it;
     for (it = pickedcat_.begin(); it != pickedcat_.end(); it++) {
@@ -2170,9 +2189,9 @@ void Search::UpdateLiteraturePrefenferences(bool checkpermissions) {
     }
     Preference * pref = new Preference(PGLITERATURE, PGLITPREFTABLENAME, username);
     Preference * permissions = new Preference(PGLITERATUREPERMISSION,
-                                              PGLITERATUREPERMISSIONTABLENAME, username);
+            PGLITERATUREPERMISSIONTABLENAME, username);
     Preference * dfpermissions = new Preference(PGLITERATUREPERMISSION,
-                                                PGLITERATUREPERMISSIONTABLENAME, "default");
+            PGLITERATUREPERMISSIONTABLENAME, "default");
     for (const string& corpus : IndexManager::get_available_corpora(CAS_ROOT_LOCATION.c_str())) {
         // grant search rights based on individual and default permissions.
         if ((!checkpermissions || permissions->IsPreference(corpus)) || dfpermissions->IsPreference(corpus))
@@ -2183,8 +2202,7 @@ void Search::UpdateLiteraturePrefenferences(bool checkpermissions) {
                 pickedliterature_[corpus] = true;
     }
     if (session_->login().state() != 0 && indexManager.has_external_index()) {
-        for (const string& external_corpus : indexManager.get_external_corpora())
-        {
+        for (const string& external_corpus : indexManager.get_external_corpora()) {
             pickedliterature_[external_corpus] = true;
         }
     }
@@ -2195,11 +2213,10 @@ void Search::UpdateLiteraturePrefenferences(bool checkpermissions) {
 
 void Search::ReadIndexPrefix() {
     if (session_->login().state() != 0 && boost::filesystem::exists(
-            USERUPLOADROOTDIR + string("/") + session_->login().user().identity("loginname").toUTF8() + "/luceneindex"))
-    {
+            USERUPLOADROOTDIR + string("/") + session_->login().user().identity("loginname").toUTF8() + "/luceneindex")) {
         indexManager.set_external_index(USERUPLOADROOTDIR + string("/") +
-                                                session_->login().user().identity("loginname").toUTF8()
-                                        + "/luceneindex");
+                session_->login().user().identity("loginname").toUTF8()
+                + "/luceneindex");
     } else {
         if (indexManager.has_external_index()) {
             indexManager.remove_external_index();
@@ -2268,8 +2285,8 @@ Search::~Search() {
  * @return the container representing the sentence
  */
 WContainerWidget* Search::getSingleSentenceHighlightedWidgetFromText(std::wstring w_text, std::wstring w_cat,
-                                                                     vector<std::wstring> keywords,
-                                                                     int sentence_length, Wt::WGroupBox* textGroupBox) {
+        vector<std::wstring> keywords,
+        int sentence_length, Wt::WGroupBox* textGroupBox) {
     vector<wstring> subwstrings4cat;
     boost::split(subwstrings4cat, w_text, boost::is_any_of(" \n\t'\\/()[]{}:.;,!?"));
     Wt::WContainerWidget* wt_sentence = setHitCatSentence(w_cat, subwstrings4cat, sentence_length, textGroupBox);
@@ -2360,7 +2377,7 @@ void Search::readDialogPreferences() {
     }
     if (session_->login().state() != 0) {
         Preference *dialogPref = new Preference(PGDIALOGPREFERENCES, PGDIALOGPREFERENCESTABLENAME,
-                                                session_->login().user().identity("loginname").toUTF8());
+                session_->login().user().identity("loginname").toUTF8());
         if (dialogPref->HasPreferences())
             if (dialogPref->IsPreference("show_list_of_corpora_before_search"))
                 show_list_of_corpora_before_search = false;

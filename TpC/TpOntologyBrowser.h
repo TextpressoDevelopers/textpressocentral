@@ -19,10 +19,10 @@ class TpOntologyBrowser : public Wt::WTree {
     typedef std::multimap<std::string, std::string> mmsstype;
     typedef std::pair<mmsstype::iterator, mmsstype::iterator> mmssrange;
 
-    struct nano {
-        std::string name;
-        Wt::WTreeNode* node;
-    };
+//    struct nano {
+//        std::string name;
+//        Wt::WTreeNode* node;
+//    };
 
 public:
     TpOntologyBrowser();

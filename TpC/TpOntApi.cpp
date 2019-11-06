@@ -1033,8 +1033,8 @@ int TpOntApi::WriteDb() {
         for (std::vector<TpOntEntry*>::iterator i = result_.begin(); i != result_.end(); i++) {
             std::stringstream pc;
             int ci = (*i)->GetIid();
-            pc << "select * from ";
-            pc << ontologytablename_ << " ";
+            pc << "select * from \"";
+            pc << ontologytablename_ << "\" ";
             pc << "where iid = ";
             pc << ci;
             std::cerr << pc.str() << std::endl;
@@ -1118,7 +1118,6 @@ void TpOntApi::TpoeListFromPgResult(pqxx::result r) {
             tpoe->SetStatus(saux);
         if (r[i]["curation_use"].to(saux))
             tpoe->SetUse(saux);
-
         if (r[i]["comment"].to(saux))
             tpoe->SetComment(saux);
         result_.push_back(tpoe);
@@ -1182,8 +1181,8 @@ void TpOntApi::LoadAll() {
         pqxx::work w(cn_);
         pqxx::result r;
         std::stringstream pc;
-        pc << "select * from ";
-        pc << ontologytablename_;
+        pc << "select * from \"";
+        pc << ontologytablename_ << "\"";
         r = w.exec(pc.str());
         w.commit();
         TpoeListFromPgResult(r);
@@ -1200,8 +1199,8 @@ void TpOntApi::SearchDbIid(int id) {
         pqxx::work w(cn_);
         pqxx::result r;
         std::stringstream pc;
-        pc << "select * from ";
-        pc << ontologytablename_ << " ";
+        pc << "select * from \"";
+        pc << ontologytablename_ << "\" ";
         pc << "where iid = ";
         pc << id;
         r = w.exec(pc.str());
@@ -1262,10 +1261,73 @@ void TpOntApi::SearchDbString(columns col, std::string s) {
         pqxx::work w(cn_);
         pqxx::result r;
         std::stringstream pc;
-        pc << "select * from ";
-        pc << ontologytablename_ << " ";
+        pc << "select * from \"";
+        pc << ontologytablename_ << "\" ";
         pc << "where ";
         pc << field << " = '";
+        pc << s << "'";
+        r = w.exec(pc.str());
+        w.commit();
+        TpoeListFromPgResult(r);
+    } catch (const std::exception &e) {
+        // There's no need to check our database calls for errors.  If
+        // any of them fails, it will throw a normal C++ exception.
+
+        std::cerr << e.what() << std::endl;
+    }
+}
+
+void TpOntApi::SearchDbPosixString(columns col, std::string s) {
+    std::string field;
+    switch (col) {
+        case TpOntApi::eid:
+            field = "eid";
+            break;
+        case TpOntApi::dbxref:
+            field = "dbxref";
+            break;
+        case TpOntApi::owner:
+            field = "owner";
+            break;
+        case TpOntApi::source:
+            field = "source";
+            break;
+        case TpOntApi::version:
+            field = "version";
+            break;
+        case TpOntApi::term:
+            field = "term";
+            break;
+        case TpOntApi::category:
+            field = "category";
+            break;
+        case TpOntApi::attributes:
+            field = "attribute";
+            break;
+        case TpOntApi::annotationtype:
+            field = "annotationtype";
+            break;
+        case TpOntApi::lexicalvariations:
+            field = "lexicalvariations";
+            break;
+        case TpOntApi::status:
+            field = "status";
+            break;
+        case TpOntApi::use:
+            field = "use";
+            break;
+        case TpOntApi::comment:
+            field = "comment";
+            break;
+    }
+    try {
+        pqxx::work w(cn_);
+        pqxx::result r;
+        std::stringstream pc;
+        pc << "select * from \"";
+        pc << ontologytablename_ << "\" ";
+        pc << "where ";
+        pc << field << " ~ '";
         pc << s << "'";
         r = w.exec(pc.str());
         w.commit();
@@ -1283,8 +1345,8 @@ void TpOntApi::SearchDbString(std::string colname, std::string s) {
         pqxx::work w(cn_);
         pqxx::result r;
         std::stringstream pc;
-        pc << "select * from ";
-        pc << ontologytablename_ << " ";
+        pc << "select * from \"";
+        pc << ontologytablename_ << "\" ";
         pc << "where ";
         pc << colname << " = '";
         pc << s << "'";
@@ -1304,8 +1366,8 @@ void TpOntApi::SearchDbWithWhereClause(std::string where) {
         pqxx::work w(cn_);
         pqxx::result r;
         std::stringstream pc;
-        pc << "select * from ";
-        pc << ontologytablename_ << " ";
+        pc << "select * from \"";
+        pc << ontologytablename_ << "\" ";
         pc << where;
         r = w.exec(pc.str());
         w.commit();
@@ -1323,8 +1385,8 @@ void TpOntApi::SearchDbTimeStamp(time_t t) {
         pqxx::work w(cn_);
         pqxx::result r;
         std::stringstream pc;
-        pc << "select * from ";
-        pc << ontologytablename_ << " ";
+        pc << "select * from \"";
+        pc << ontologytablename_ << "\" ";
         pc << "where last_update = ";
         pc << t;
         r = w.exec(pc.str());

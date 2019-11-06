@@ -6,6 +6,7 @@
  */
 
 #include "TpCategoryBrowser.h"
+#include "PgList.h"
 #include "../TextpressoCentralGlobalDefinitions.h"
 #include <Wt/WText>
 #include <boost/algorithm/string.hpp>
@@ -55,16 +56,19 @@ void TpCategoryBrowser::LoadNextChildren(Wt::WTreeNode * x,
         }
     }
     for (std::set<std::string>::iterator it = childrennames.begin(); it != childrennames.end(); it++) {
+        int noc(getNumberChildren(*it));
         Wt::WTreeNode * childnode = new Wt::WTreeNode(Wt::WString(*it));
+        if (noc > 500) childnode->disable();
         childnode->expanded().connect(boost::bind(&TpCategoryBrowser::LoadNextChildren, this, childnode, std::set<std::string>()));
         childnode->label()->setWordWrap(false);
         x->addChildNode(childnode);
-        if (!GetAllDirectChildrensName(*it).empty()) {
-            //create a dummy here to make it expandable, will be replaced later.
-            Wt::WTreeNode * auxchildnode = new Wt::WTreeNode("");
-            auxchildnode->expanded().connect(boost::bind(&TpCategoryBrowser::LoadNextChildren, this, auxchildnode, std::set<std::string>()));
-            childnode->addChildNode(auxchildnode);
-        }
+        if (noc > 0)
+            if (noc < 500) {
+                //create a dummy here to make it expandable, will be replaced later.
+                Wt::WTreeNode * auxchildnode = new Wt::WTreeNode("");
+                auxchildnode->expanded().connect(boost::bind(&TpCategoryBrowser::LoadNextChildren, this, auxchildnode, std::set<std::string>()));
+                childnode->addChildNode(auxchildnode);
+            }
     }
 }
 
@@ -90,24 +94,46 @@ std::set<Wt::WString> TpCategoryBrowser::GetSelected() {
     return ret;
 }
 
-std::set<std::string> TpCategoryBrowser::GetAllDirectChildrensName(std::string x) {
-    std::set<std::string> ret;
+int TpCategoryBrowser::getNumberChildren(std::string x) {
+    int ret(0);
     try {
         pqxx::work w(cn_);
-        pqxx::result r;
-        std::stringstream pc;
-        pc << "select children from ";
-        pc << PADCRELATIONSTABLENAME << " ";
-        pc << "where parent='" << x << "'";
-        r = w.exec(pc.str());
-        for (pqxx::result::size_type i = 0; i != r.size(); i++) {
-            std::string cname;
-            if (r[i]["children"].to(cname)) {
-                std::vector<std::string> s1;
-                boost::split(s1, cname, boost::is_any_of("|"));
-                std::vector<std::string>::iterator it;
-                for (it = s1.begin(); it != s1.end(); it++)
-                    ret.insert(*it);
+        PgList ontmembers(PGONTOLOGY, ONTOLOGYMEMBERSTABLENAME);
+        for (auto tbn : ontmembers.GetList()) {
+            pqxx::result r;
+            std::stringstream pc;
+            pc << "select count(child) from \"";
+            pc << PCRELATIONSTABLENAME << "_" << tbn << "\" ";
+            pc << "where parent='" << x << "'";
+            r = w.exec(pc.str());
+            ret += r[0]["count"].as<int>();
+        }
+        w.commit();
+    } catch (const std::exception &e) {
+        std::cerr << e.what() << std::endl;
+    }
+    return ret;
+}
+
+std::set<std::string> TpCategoryBrowser::GetAllDirectChildrensName(std::string x) {
+    std::set<std::string> ret;
+    ret.clear();
+    try {
+        pqxx::work w(cn_);
+        PgList ontmembers(PGONTOLOGY, ONTOLOGYMEMBERSTABLENAME);
+        for (auto tbn : ontmembers.GetList()) {
+            pqxx::result r;
+            std::stringstream pc;
+            pc << "select child from \"";
+            pc << PCRELATIONSTABLENAME << "_" << tbn << "\" ";
+            pc << "where parent='" << x << "'";
+            r = w.exec(pc.str());
+            for (pqxx::result::size_type i = 0; i != r.size(); i++) {
+                std::string cname;
+                if (r[i]["child"].to(cname)) {
+                    ret.insert(cname);
+                    cat2ont_.insert(std::make_pair(cname, tbn));
+                }
             }
         }
         w.commit();
@@ -122,7 +148,7 @@ std::set<std::string> TpCategoryBrowser::GetAllChildrensName(std::string x) {
     ret.clear();
     for (auto cn : GetAllDirectChildrensName(x)) {
         ret.insert(cn);
-        for (auto cn2 : GetAllChildrensName(cn))ret.insert(cn2);
+        for (auto cn2 : GetAllChildrensName(cn)) ret.insert(cn2);
     }
     return ret;
 }
@@ -147,24 +173,21 @@ std::set<std::string> TpCategoryBrowser::GetCategorySet() {
     std::set<std::string> ret;
     try {
         pqxx::work w(cn_);
-        pqxx::result r;
-        std::stringstream pc;
-        pc << "select parent,children from ";
-        pc << PADCRELATIONSTABLENAME;
-        r = w.exec(pc.str());
-        for (pqxx::result::size_type i = 0; i != r.size(); i++) {
-            std::string cname;
-            if (r[i]["parent"].to(cname))
-                if (!cname.empty())
-                    ret.insert(cname);
-            if (r[i]["children"].to(cname)) {
-                std::vector<std::string> s1;
-                boost::split(s1, cname, boost::is_any_of("|"));
-                std::vector<std::string>::iterator it;
-                for (it = s1.begin(); it != s1.end(); it++) {
-                    if (!(*it).empty())
-                        ret.insert(*it);
-                }
+        PgList ontmembers(PGONTOLOGY, ONTOLOGYMEMBERSTABLENAME);
+        for (auto tbn : ontmembers.GetList()) {
+            pqxx::result r;
+            std::stringstream pc;
+            pc << "select parent,child from \"";
+            pc << PCRELATIONSTABLENAME << "_" << tbn << "\"";
+            r = w.exec(pc.str());
+            for (pqxx::result::size_type i = 0; i != r.size(); i++) {
+                std::string cname;
+                if (r[i]["child"].to(cname))
+                    if (!cname.empty())
+                        ret.insert(cname);
+                if (r[i]["parent"].to(cname))
+                    if (!cname.empty())
+                        ret.insert(cname);
             }
         }
         w.commit();

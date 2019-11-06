@@ -25,7 +25,7 @@ public:
             std::set<std::string> & preloaded, bool showmatchcriteriachoice);
     std::set<Wt::WString> GetSelected(bool explct = false);
     bool CatAnded() { return (groupAndorOr_->checkedId() > 0); }
-    
+    TpCategoryBrowser * GetTCB () { return tcb_; }
     Wt::Signal<void> & OkClicked() { return okclicked_; }
     virtual ~PickCategoryContainer();
 private:

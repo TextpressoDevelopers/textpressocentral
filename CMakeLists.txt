@@ -39,11 +39,9 @@ include_directories(${Textpresso_INCLUDE_DIR})
 
 #### Main projects ####
 
-add_executable(pdf2tpcas Pdf2Tpcas/main.cpp Pdf2Tpcas/PdfInfo.h Pdf2Tpcas/PdfInfo.cpp Pdf2Tpcas/ElementCluster.h
-        Pdf2Tpcas/ElementCluster.cpp Pdf2Tpcas/PdfMyFontInfo.h Pdf2Tpcas/PdfMyFontInfo.cpp Pdf2Tpcas/Stream2Tpcas.h
-        Pdf2Tpcas/Stream2Tpcas.cpp Pdf2Tpcas/TextElement.h Pdf2Tpcas/TextElement.cpp
-        TextpressoCentralGlobalDefinitions.h TextpressoCentralGlobals.h)
-
+add_executable(pdf2tpcas Pdf2Tpcas/main.cpp Pdf2Tpcas/PdfInfo.cpp
+        Pdf2Tpcas/ElementCluster.cpp Pdf2Tpcas/PdfMyFontInfo.cpp
+        Pdf2Tpcas/Stream2Tpcas.cpp Pdf2Tpcas/TextElement.cpp)
 target_link_libraries(pdf2tpcas lucene++ boost_system boost_filesystem podofo fontconfig freetype pthread z jpeg uima icuuc boost_regex
         ${CImg_SYSTEM_LIBS})
 
@@ -59,17 +57,17 @@ add_library(libcrfasgd SHARED crfasgd/assert.h crfasgd/crfasgd.cpp crfasgd/crfas
         crfasgd/timer.cpp crfasgd/vectors.h crfasgd/vectors.cpp crfasgd/wrapper.h)
 
 add_executable(generatelexicalvariations GenerateLexicalVariations/main.cpp
-        GenerateLexicalVariations/LexicalVariations.h GenerateLexicalVariations/LexicalVariations.cpp
-        GenerateLexicalVariations/TpOntApi.h GenerateLexicalVariations/TpOntApi.cpp
-        GenerateLexicalVariations/TpOntEntry.h GenerateLexicalVariations/TpOntEntry.cpp
-        GenerateLexicalVariations/tree.h)
+        GenerateLexicalVariations/LexicalVariations.cpp
+        GenerateLexicalVariations/TpOntApi.cpp
+        GenerateLexicalVariations/TpOntEntry.cpp)
 target_link_libraries(generatelexicalvariations boost_system boost_filesystem pqxx)
 
-add_executable(lexicalvariations LexicalVariations/main.cpp LexicalVariations/LexicalVariations.h
+add_executable(lexicalvariations LexicalVariations/main.cpp
         LexicalVariations/LexicalVariations.cpp)
 
-add_executable(obofileanalyzer OboFileAnalyzer/main.cpp OboFileAnalyzer/OboEntry.cpp OboFileAnalyzer/OboEntry.h
-        OboFileAnalyzer/OboFileSegmentation.h OboFileAnalyzer/OboFileSegmentation.cpp)
+add_executable(obofileanalyzer OboFileAnalyzer/main.cpp 
+        OboFileAnalyzer/OboEntry.cpp
+        OboFileAnalyzer/OboFileSegmentation.cpp)
 
 # main web application - tpc
 file(GLOB TpC_SRC "TpC/*.h" "TpC/*.cpp" "TpC/*.C" "TpC/*.hpp" "TpC/lucene/CaseSensitiveAnalyzer.h"
@@ -87,19 +85,23 @@ ELSE(CMAKE_BUILD_TYPE MATCHES Debug)
             ${CImg_SYSTEM_LIBS} ${Textpresso_LIBRARY} boost_serialization)
 ENDIF(CMAKE_BUILD_TYPE MATCHES Debug)
 
-add_executable(tpcuration TpCuration/main.cpp TpCuration/TextpressoCentralGlobalDefinitions.h TpCuration/TpCurApi.h
-        TpCuration/TpCurApi.cpp)
+add_executable(tpcuration TpCuration/main.cpp TpCuration/TpCurApi.cpp)
 target_link_libraries(tpcuration pqxx)
 
 add_executable(tpflat2oboconverter TpFlat2OboConverter/main.cpp)
 
-add_executable(tpontology TpOntology/main.cpp TpOntology/TpOntApi.h TpOntology/TpOntApi.cpp TpOntology/TpOntEntry.h
-        TpOntology/TpOntEntry.cpp TpOntology/tree.h)
+add_executable(tpso Tpso/main.cpp OboFileAnalyzer/OboFileSegmentation.cpp
+        OboFileAnalyzer/OboEntry.cpp TpC/PgList.cpp
+        LexicalVariations/LexicalVariations.cpp)
+target_link_libraries(tpso pthread boost_regex boost_program_options boost_filesystem boost_system pqxx)
+
+add_executable(tpontology TpOntology/main.cpp TpOntology/TpOntApi.cpp
+        TpOntology/TpOntEntry.cpp)
 target_link_libraries(tpontology pqxx boost_filesystem boost_system)
 
-add_executable(xml2tpcas Xml2Tpcas/main.cpp Xml2Tpcas/pugiconfig.hpp Xml2Tpcas/pugixml.hpp Xml2Tpcas/pugixml.cpp
-        Xml2Tpcas/PugiXml2Tpcas.h Xml2Tpcas/PugiXml2Tpcas.cpp Xml2Tpcas/ReadXml2Stream.h Xml2Tpcas/ReadXml2Stream.cpp
-        Xml2Tpcas/Stream2Tpcas.cpp Xml2Tpcas/Stream2Tpcas.h)
+add_executable(xml2tpcas Xml2Tpcas/main.cpp Xml2Tpcas/pugixml.cpp
+        Xml2Tpcas/PugiXml2Tpcas.cpp Xml2Tpcas/ReadXml2Stream.cpp
+        Xml2Tpcas/Stream2Tpcas.cpp)
 target_link_libraries(xml2tpcas uima icuuc boost_system boost_filesystem)
 
 #### Subprojects ####
@@ -133,7 +135,7 @@ install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/dirs/etc DESTINATION ${CMAKE_INSTA
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/dirs/conf DESTINATION ${CMAKE_INSTALL_PREFIX})
 
 install(TARGETS generatelexicalvariations
-        obofileanalyzer pdf2tpcas tpc tpflat2oboconverter tpontology xml2tpcas
+        obofileanalyzer pdf2tpcas tpc tpflat2oboconverter tpontology tpcuration tpso xml2tpcas
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION lib)
 install(FILES tpctl.sh DESTINATION bin PERMISSIONS OWNER_EXECUTE GROUP_EXECUTE WORLD_EXECUTE)

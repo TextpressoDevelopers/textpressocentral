@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
         std::stringstream pc;
         pc << "select * from ";
         pc << tbn;
-        pc << " where owner = 'textpresso'";
+        pc << " where owner = 'Textpresso'";
         r = w.exec(pc.str());
         std::cerr << r.size() << " results returned." << std::endl;
         std::vector<std::string> terms;
@@ -30,22 +30,12 @@ int main(int argc, char** argv) {
         for (pqxx::result::size_type i = 0; i != r.size(); i++) {
             std::string saux;
             r[i]["term"].to(saux);
-//            std::cerr << saux << "\t";
             boost::to_lower(saux);
             terms.push_back(saux);
             r[i]["iid"].to(saux);
-//            std::cerr << saux << std::endl;
             iids.push_back(saux);
         }
         LexicalVariations * lv = new LexicalVariations(terms);
-//        for (int i = 0; i < lv->Size(); i++) {
-//            std::cout << iids[i];
-//            std::cout << "\t";
-//            std::cout << lv->GetBasicLexicalForm(i);
-//            std::cout << "\t";
-//            std::cout << lv->GetForms(i);
-//            std::cout << "\n";
-//        }
         for (int i = 0; i < lv->Size(); i++) {
             std::stringstream pc;
             pc << "update ";

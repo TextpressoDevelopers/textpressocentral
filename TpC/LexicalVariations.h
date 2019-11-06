@@ -6,7 +6,7 @@
  */
 
 #ifndef LEXICALVARIATIONS_H
-#define	LEXICALVARIATIONS_H
+#define LEXICALVARIATIONS_H
 
 #define ALLVERBSFILE "resources/allverbs.txt"
 #define IRRVERBSFILE "resources/irrverbs.txt"
@@ -18,12 +18,27 @@
 
 class LexicalVariations {
 public:
-    LexicalVariations(std::vector<std::string> & blfinp);
+    LexicalVariations(std::vector<std::string> & blfinp,
+            std::string irrverbsfilename = "",
+            std::string irrpluralfilename = "",
+            std::string allverbsfile = "");
     LexicalVariations(const LexicalVariations & orig);
-    std::string GetBasicLexicalForm(int i) { return BasicLexicalForm_[i]; }
-    void SetBasicLexicalForm(int i, std::string s) { BasicLexicalForm_[i] = s; }
-    std::string GetForms(int i) { return Forms_[i]; }
-    long unsigned int Size() { return BasicLexicalForm_.size(); }
+
+    std::string GetBasicLexicalForm(int i) {
+        return BasicLexicalForm_[i];
+    }
+
+    void SetBasicLexicalForm(int i, std::string s) {
+        BasicLexicalForm_[i] = s;
+    }
+
+    std::string GetForms(int i) {
+        return Forms_[i];
+    }
+
+    long unsigned int Size() {
+        return BasicLexicalForm_.size();
+    }
     void GenerateForms();
 private:
     void Capitalize(std::vector<std::string> & inp);
@@ -37,5 +52,5 @@ private:
     std::map<std::string, std::string> irrplurals_;
 };
 
-#endif	/* LEXICALVARIATIONS_H */
+#endif /* LEXICALVARIATIONS_H */
 

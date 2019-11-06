@@ -21,6 +21,8 @@ public:
     virtual ~OboFileSegmentation();
     long unsigned int GetTermSetSize() { return termset_.size(); }
     OboEntry * GetEntry(long unsigned int i) { return termset_[i]; }
+    const mms & GetElementaryPcRelationships () { return pcelementaryrelationships_; }
+    OboEntry* GetOePtr(std::string id);
     void PrintElementaryPcRelationships(const char * filename);
     void CalculateAndPrintCompositePcRelationships(const char * filename);
     void PrintIdNames (const char * filename);

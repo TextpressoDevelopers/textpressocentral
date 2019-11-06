@@ -14,9 +14,11 @@
 #include <Wt/WCssDecorationStyle>
 #include <Wt/WComboBox>
 #include <boost/algorithm/string/predicate.hpp>
+#include <thread>
 
 #define CELLHEIGHT 2
 #define CELLWIDTH 20
+#define MAXENTRIES 5000
 
 OntologyDisplay::OntologyDisplay(PickCategoryContainer *pcc,
         OntologyTermQuery *otc, Wt::WLength h, Wt::WContainerWidget *parent)
@@ -67,11 +69,10 @@ void OntologyDisplay::SelectionOkClicked(PickCategoryContainer *pcc) {
     PopulateTable(pcc, "", "");
     ftvalue_->setText("");
     ftc_->show();
-    ftvalue_->keyWentUp().connect(std::bind([ = ](){
+    ftvalue_->enterPressed().connect(std::bind([ = ](){
         PopulateTable(pcc, ftcolname_->currentText().toUTF8(),
         ftvalue_->text().toUTF8());
     }));
-
 }
 
 void OntologyDisplay::SearchTermEntered(OntologyTermQuery *otc) {
@@ -81,12 +82,56 @@ void OntologyDisplay::SearchTermEntered(OntologyTermQuery *otc) {
     csc_->addWidget(statusline_);
     std::vector<std::string> headers(toa_->GetColumnHeaders());
     toa_->DeleteAllResults();
-    std::string where =  "where term ~ '\\m" + (otc->GetTerm()).toUTF8() + "\\M'";
+    std::string where = "where term ~ '\\m" + (otc->GetTerm()).toUTF8() + "\\M'";
     toa_->SearchDbWithWhereClause(where);
-    Wt::WStandardItemModel * model = new Wt::WStandardItemModel(0, 0);
-    Wt::WTableView * table(CreateTableHeader(model, headers));
-    AddToModel(model, toa_->GetResultList(), "", "");
-    csc_->addWidget(table);
+    PgList ontmembers(PGONTOLOGY, ONTOLOGYMEMBERSTABLENAME);
+    if (!ontmembers.GetList().empty()) {
+        std::string ont(*ontmembers.GetList().begin());
+        TpOntApi * toa = new TpOntApi(
+                PGONTOLOGYTABLENAME + std::string("_") + ont,
+                PCRELATIONSTABLENAME + std::string("_") + ont,
+                PADCRELATIONSTABLENAME + std::string("_") + ont);
+        std::vector<std::string> headers(toa->GetColumnHeaders());
+        delete toa;
+        Wt::WStandardItemModel * model = new Wt::WStandardItemModel(0, 0);
+        Wt::WTableView * table(CreateTableHeader(model, headers));
+        int resultcount(0);
+        std::vector<TpOntApi*> toa_vec;
+        toa_vec.clear();
+        std::vector<std::thread*> thread_vec;
+        thread_vec.clear();
+        for (ont : ontmembers.GetList())
+            if (resultcount < MAXENTRIES) {
+                toa_vec.push_back(new TpOntApi(
+                        PGONTOLOGYTABLENAME + std::string("_") + ont,
+                        PCRELATIONSTABLENAME + std::string("_") + ont,
+                        PADCRELATIONSTABLENAME + std::string("_") + ont));
+                thread_vec.push_back(new std::thread([ = ](TpOntApi * toa){
+                    toa->DeleteAllResults();
+                    toa->SearchDbWithWhereClause(where);
+                }, toa_vec.back()));
+                if (thread_vec.size() > 25)
+                    while (thread_vec.size() > 0) {
+                        thread_vec.back()->join();
+                        delete thread_vec.back();
+                        thread_vec.pop_back();
+                        resultcount += toa_vec.back()->GetResultListSize();
+                        AddToModel(model, toa_vec.back()->GetResultList(), "", "");
+                        delete toa_vec.back();
+                        toa_vec.pop_back();
+                    }
+            }
+        while (!thread_vec.empty()) {
+            thread_vec.back()->join();
+            delete thread_vec.back();
+            thread_vec.pop_back();
+            resultcount += toa_vec.back()->GetResultListSize();
+            AddToModel(model, toa_vec.back()->GetResultList(), "", "");
+            delete toa_vec.back();
+            toa_vec.pop_back();
+        }
+        csc_->addWidget(table);
+    }
 }
 
 void OntologyDisplay::PopulateTable(PickCategoryContainer *pcc,
@@ -95,18 +140,56 @@ void OntologyDisplay::PopulateTable(PickCategoryContainer *pcc,
     statusline_ = new Wt::WText();
     csc_->addWidget(statusline_);
     std::set<Wt::WString> selected(pcc->GetSelected(true));
-    if (selected.size() > 15) {
-        statusline_->setText("Too many categories. Reduce your selection.");
-        statusline_->decorationStyle().setForegroundColor(Wt::red);
-    } else {
-        statusline_->setText("");
-        std::vector<std::string> headers(toa_->GetColumnHeaders());
+    PgList ontmembers(PGONTOLOGY, ONTOLOGYMEMBERSTABLENAME);
+    if (!ontmembers.GetList().empty()) {
+        std::string ont(*ontmembers.GetList().begin());
+        TpOntApi * toa = new TpOntApi(
+                PGONTOLOGYTABLENAME + std::string("_") + ont,
+                PCRELATIONSTABLENAME + std::string("_") + ont,
+                PADCRELATIONSTABLENAME + std::string("_") + ont);
+        std::vector<std::string> headers(toa->GetColumnHeaders());
+        delete toa;
         Wt::WStandardItemModel * model = new Wt::WStandardItemModel(0, 0);
         Wt::WTableView * table(CreateTableHeader(model, headers));
+        int resultcount(0);
+        std::vector<TpOntApi*> toa_vec;
+        toa_vec.clear();
+        std::vector<std::thread*> thread_vec;
+        thread_vec.clear();
+        mmsstype cat2ont(pcc->GetTCB()->GetCat2Ont());
         for (auto cat : selected) {
-            toa_->DeleteAllResults();
-            toa_->SearchDbString(TpOntApi::category, cat.toUTF8());
-            AddToModel(model, toa_->GetResultList(), ftcolname, ftvalue);
+            std::pair<mmsstype::iterator, mmsstype::iterator> catrange
+                    = cat2ont.equal_range(cat.toUTF8());
+            for (auto it = catrange.first; it != catrange.second; it++)
+                if (resultcount < MAXENTRIES) {
+                    toa_vec.push_back(new TpOntApi(
+                            PGONTOLOGYTABLENAME + std::string("_") + (*it).second,
+                            PCRELATIONSTABLENAME + std::string("_") + (*it).second,
+                            PADCRELATIONSTABLENAME + std::string("_") + (*it).second));
+                    thread_vec.push_back(new std::thread([ = ](TpOntApi * toa){
+                        toa->DeleteAllResults();
+                        toa->SearchDbString(TpOntApi::category, cat.toUTF8());
+                    }, toa_vec.back()));
+                    if (thread_vec.size() > 25)
+                        while (thread_vec.size() > 0) {
+                            thread_vec.back()->join();
+                            delete thread_vec.back();
+                            thread_vec.pop_back();
+                            resultcount += toa_vec.back()->GetResultListSize();
+                            AddToModel(model, toa_vec.back()->GetResultList(), ftcolname, ftvalue);
+                            delete toa_vec.back();
+                            toa_vec.pop_back();
+                        }
+                }
+        }
+        while (!thread_vec.empty()) {
+            thread_vec.back()->join();
+            delete thread_vec.back();
+            thread_vec.pop_back();
+            resultcount += toa_vec.back()->GetResultListSize();
+            AddToModel(model, toa_vec.back()->GetResultList(), ftcolname, ftvalue);
+            delete toa_vec.back();
+            toa_vec.pop_back();
         }
         csc_->addWidget(table);
     }
@@ -154,24 +237,22 @@ void OntologyDisplay::AddToModel(Wt::WStandardItemModel * model,
                     GetColumn(boost::any_cast<std::string>(ftcolname)));
             if (boost::starts_with(v, ftvalue)) filtered.push_back(items[r]);
         }
+    if (model->rowCount() + filtered.size() > MAXENTRIES) {
+        std::string taux;
+        taux = "Table has more than "
+                + std::to_string(MAXENTRIES) + " entries. "
+                + "Please reduce your selection or use filter.";
+        statusline_->setText(taux);
+        statusline_->decorationStyle().setForegroundColor(Wt::red);
+    }
     if (model->columnCount() > 0) {
-        int upperlimit = 5000;
-        int noaddableitems =
-                std::min(int(filtered.size()), upperlimit - model->rowCount());
-        if (int(filtered.size()) + model->rowCount() > upperlimit) {
-            std::string taux = "More than ";
-            taux += std::to_string(upperlimit);
-            taux += " items returned. Use filter function or modify search term.";
-            statusline_->setText(taux);
-            statusline_->decorationStyle().setForegroundColor(Wt::red);
-        } else
-            statusline_->setText("");
-        model->insertRows(0, noaddableitems);
-        for (int r = 0; r < noaddableitems; r++)
+        model->insertRows(0, std::min(int(filtered.size()), MAXENTRIES));
+        for (int r = 0; r < std::min(int(filtered.size()), MAXENTRIES); r++)
             for (int c = 0; c < model->columnCount(); c++) {
                 std::string s = filtered[r]->GetColumn(boost::any_cast<std::string>
                         (model->headerData(c)));
                 model->setData(r, c, boost::any(s));
             }
     }
+
 }

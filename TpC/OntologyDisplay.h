@@ -6,7 +6,7 @@
  */
 
 #ifndef ONTOLOGYDISPLAY_H
-#define	ONTOLOGYDISPLAY_H
+#define ONTOLOGYDISPLAY_H
 
 #include "PickCategoryContainer.h"
 #include "OntologyTermQuery.h"
@@ -15,15 +15,16 @@
 #include <Wt/WStandardItemModel>
 
 class OntologyDisplay : public Wt::WContainerWidget {
+    typedef std::multimap<std::string, std::string> mmsstype;
 public:
-    OntologyDisplay(PickCategoryContainer *pcc, OntologyTermQuery *otc, 
+    OntologyDisplay(PickCategoryContainer *pcc, OntologyTermQuery *otc,
             Wt::WLength h, Wt::WContainerWidget *parent = NULL);
     OntologyDisplay(const OntologyDisplay& orig);
     virtual ~OntologyDisplay();
 private:
     TpOntApi * toa_;
     Wt::WContainerWidget * ftc_;
-     Wt::WComboBox * ftcolname_;
+    Wt::WComboBox * ftcolname_;
     Wt::WLineEdit * ftvalue_;
     Wt::WContainerWidget * csc_;
     Wt::WText * statusline_;
@@ -38,5 +39,5 @@ private:
             std::string ftcolname, std::string ftvalue);
 };
 
-#endif	/* ONTOLOGYDISPLAY_H */
+#endif /* ONTOLOGYDISPLAY_H */
 

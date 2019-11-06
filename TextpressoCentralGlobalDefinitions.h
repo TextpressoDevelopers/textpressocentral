@@ -11,6 +11,7 @@
 #define AVAILABLELITERATUREFILE "/usr/local/textpresso/luceneindex/subindex.config"
 #define USERUPLOADROOTDIR "/usr/local/textpresso/useruploads"
 
+#define ONTOLOGYMEMBERSTABLENAME "ontologymembers"
 #define PGONTOLOGYBROWSER "dbname=www-data"
 #define PGONTOLOGYBROWSWERCOLUMNS "ontologybrowsercolumnnames"
 #define PGONTOLOGY "dbname=www-data"
@@ -50,5 +51,7 @@
 #define PGSEARCHPREFERENCES "dbname=www-data"
 #define PGSEARCHPREFERENCESTABLENAME "searchpreferencestable"
 #define SENTENCE_SEARCH_MAX_NUM_DISPLAY_WORDS 50
+
+#define CATEGORYCOLUMNWIDTH 1023
 
 #endif

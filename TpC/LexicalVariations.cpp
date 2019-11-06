@@ -34,10 +34,16 @@ namespace {
     }
 }
 
-LexicalVariations::LexicalVariations(std::vector<std::string> & blfinp) {
-    irrverbs_ = LoadFromFile(IRRVERBSFILE);
-    irrplurals_ = LoadFromFile(IRRPLURALFILE);
-    allverbs_ = LoadFromFile(ALLVERBSFILE);
+LexicalVariations::LexicalVariations(std::vector<std::string> & blfinp,
+        std::string irrverbsfilename,
+        std::string irrpluralfilename,
+        std::string allverbsfile) {
+    if (irrverbsfilename.empty()) irrverbsfilename = IRRVERBSFILE;
+    if (irrpluralfilename.empty()) irrpluralfilename = IRRPLURALFILE;
+    if (allverbsfile.empty()) allverbsfile = ALLVERBSFILE;
+    irrverbs_ = LoadFromFile(irrverbsfilename);
+    irrplurals_ = LoadFromFile(irrpluralfilename);
+    allverbs_ = LoadFromFile(allverbsfile);
     std::vector<std::string>::iterator vsit;
     for (vsit = blfinp.begin(); vsit != blfinp.end(); vsit++)
         BasicLexicalForm_.push_back(*vsit);

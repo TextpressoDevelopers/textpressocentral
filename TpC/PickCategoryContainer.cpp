@@ -183,7 +183,7 @@ std::set<Wt::WString> PickCategoryContainer::GetSelected(bool explct) {
                     ret.insert(Wt::WString(*itc));
                 delete tcp;
             } else
-                ret.insert("pAaCh" + (*it));
+                ret.insert("PTCAT" + (*it));
         else
             ret.insert(*it);
     return ret;
@@ -199,8 +199,8 @@ void PickCategoryContainer::DisplaySelectedCategories() {
         for (std::set<Wt::WString>::iterator it = list.begin();
                 it != list.end(); it++) {
             std::string aux = (*it).toUTF8();
-            if (aux.find("pAaCh") != std::string::npos) {
-                boost::replace_first(aux, "pAaCh", "");
+            if (aux.substr(0, 5) == "PTCAT") {
+                boost::replace_first(aux, "PTCAT", "");
                 int numChildren = tcb_->getTotalNumSubCategories(aux);
                 aux += " (incl. " + std::to_string(numChildren) + " children)";
             }
