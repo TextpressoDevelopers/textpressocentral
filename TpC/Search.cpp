@@ -1,6 +1,6 @@
 /* 
  * File:   Search.cpp
- * Author: liyuling with contributions from mueller
+ * Author: liyuling with contributions from valerio and mueller
  * 
  * Created on April 4, 2013, 10:20 AM
  */
@@ -39,6 +39,138 @@ using namespace Wt;
 using namespace Lucene;
 using namespace std;
 using namespace tpc::index;
+
+namespace {
+
+    bool is_number(const std::wstring& s) {
+        std::wstring::const_iterator it = s.begin();
+        while (it != s.end() && std::isdigit(*it)) it++;
+        return !s.empty() && it == s.end();
+    }
+
+    std::string wstring2string(const std::wstring& wstring) {
+        string str(wstring.begin(), wstring.end());
+        return (str);
+    }
+
+    std::string WtString2string(const Wt::WString& wstring) {
+        return wstring.toUTF8();
+    }
+
+    std::string LString2string(const Lucene::String& lstring) {
+        wstring w_str = lstring.c_str();
+        return (wstring2string(w_str));
+    }
+
+    std::wstring LString2wstring(const Lucene::String& lstring) {
+        wstring w_str = lstring.c_str();
+        return w_str;
+    }
+
+    Wt::WString LString2WtString(const Lucene::String& lstring) {
+        return Wt::WString(lstring.c_str());
+    }
+
+    vector<pair<int, int> > searchregex(string regex, string text) {
+        vector<pair<int, int> > matches;
+        boost::regex regex_to_match(regex.c_str(), boost::regex::icase);
+        boost::smatch author_matches;
+        int sum_length = 0;
+        while (boost::regex_search(text, author_matches, regex_to_match)) {
+            int pos = author_matches.position();
+            int len = author_matches.length();
+            const unsigned int param = 0;
+            pair<int, int> pos_len = make_pair(pos + sum_length, len);
+            matches.push_back(pos_len);
+            text = author_matches.suffix().str();
+            sum_length += pos;
+            sum_length += len;
+        }
+        return matches;
+    }
+
+    std::vector<std::string> RemovePhrases(std::string & s) {
+
+        std::vector<std::string> ret;
+        ret.clear();
+        std::string quote = "\"";
+        size_t spos(0);
+        while (spos != std::string::npos) {
+            spos = s.find(quote, spos);
+            size_t epos = s.find(quote, spos + 1);
+            if (epos > spos) {
+                std::string extract(s.substr(spos + 1, epos - spos - 1));
+                ret.push_back(extract);
+                spos = epos + 1;
+            }
+        }
+        for (auto x : ret) {
+            size_t p = s.find(quote + x + quote, 0);
+            s.erase(p, x.length() + 2);
+        }
+        return ret;
+    }
+
+    std::vector<std::wstring> RemovePhrases(std::wstring & s) {
+        std::vector<std::wstring> ret;
+        ret.clear();
+        std::wstring quote = L"\"";
+        size_t spos(0);
+        while (spos != std::wstring::npos) {
+            spos = s.find(quote, spos);
+            size_t epos = s.find(quote, spos + 1);
+            if (epos > spos) {
+                std::wstring extract(s.substr(spos + 1, epos - spos - 1));
+                ret.push_back(extract);
+                spos = epos + 1;
+            }
+        }
+        for (auto x : ret) {
+            size_t p = s.find(quote + x + quote, 0);
+            s.erase(p, x.length() + 2);
+        }
+        return ret;
+    }
+
+    bool keyword_is_match(std::wstring w_word, std::wstring keyword) {
+        bool ret(false);
+        if (boost::iequals(w_word, keyword) && (keyword != "AND") && (keyword != "OR") && !is_number(keyword))
+            ret = true;
+        else {
+            boost::replace_all(keyword, "*", ".+");
+            boost::replace_all(keyword, "?", ".");
+            if ((searchregex('^' + wstring2string(keyword) + '$', wstring2string(w_word)).size() > 0)
+                    && (keyword != "AND") && (keyword != "OR") && !is_number(keyword))
+                ret = true;
+            else if ((searchregex("\\W" + wstring2string(keyword) + '$', wstring2string(w_word)).size() > 0)
+                    && (keyword != "AND") && (keyword != "OR") && !is_number(keyword))
+                ret = true;
+            else if ((searchregex('^' + wstring2string(keyword) + "\\W$", wstring2string(w_word)).size() > 0)
+                    && (keyword != "AND") && (keyword != "OR") && !is_number(keyword))
+                ret = true;
+            else if ((searchregex("\\W" + wstring2string(keyword) + "\\W", wstring2string(w_word)).size() > 0)
+                    && (keyword != "AND") && (keyword != "OR") && !is_number(keyword))
+                ret = true;
+            else if ((searchregex("^" + wstring2string(keyword) + "\\W", wstring2string(w_word)).size() > 0)
+                    && (keyword != "AND") && (keyword != "OR") && !is_number(keyword))
+                ret = true;
+        }
+        return ret;
+    }
+
+    bool phrase_is_match(const vector<std::wstring> & subwstrings,
+            const vector<std::wstring> & phrasewords, int i) {
+        bool ret(true);
+        for (int j = i; j < i + phrasewords.size(); j++) {
+            if (!keyword_is_match(subwstrings[j], phrasewords[j - i])) {
+                ret = false;
+                break;
+            }
+        }
+        return ret;
+    }
+
+}
 
 Search::Search(UrlParameters * urlparams, Session & session, Wt::WContainerWidget * parent) :
 parent_(parent),
@@ -428,7 +560,7 @@ void Search::CreateSearchInterface(Wt::WHBoxLayout* hbox) {
     keywordcont->addWidget(new WBreak());
     keywordcont->addWidget(label_casesens);
     keywordcont->addWidget(cb_casesens_);
-
+    //
     Wt::WContainerWidget * catcont = new Wt::WContainerWidget();
     Wt::WText * label_category_ = new WText("Category: ");
     label_category_->decorationStyle().font().setVariant(Wt::WFont::SmallCaps);
@@ -445,6 +577,8 @@ void Search::CreateSearchInterface(Wt::WHBoxLayout* hbox) {
     UpdatePickedCatCont();
     catcont->addWidget(pickedcatcont_);
     //
+    //    combinedlitscope->setWidth(Wt::WLength(10,Wt::WLength::Percentage));
+    //    catcont->setWidth(Wt::WLength(50,Wt::WLength::Percentage));
     //
     hbox->addWidget(combinedlitscope);
     hbox->addWidget(keywordcont);
@@ -689,6 +823,8 @@ void Search::PickLiteratureDialogDone(Wt::WDialog::DialogCode code) {
 
 void Search::UpdatePickedCatCont() {
     pickedcatcont_->clear();
+    pickedcatcont_->setInline(true);
+    pickedcatcont_->setContentAlignment(Wt::AlignMiddle);
     if (!pickedcat_.empty()) {
         Wt::WText * labelpcc = new Wt::WText("Picked Categories:");
         labelpcc->decorationStyle().font().setVariant(Wt::WFont::SmallCaps);
@@ -706,7 +842,6 @@ void Search::UpdatePickedCatCont() {
             boost::replace_first(aux_title, "PTCAT", "");
             //
             Wt::WImage * im = new Wt::WImage("resources/icons/cancel.png");
-            im->setInline(true);
             im->mouseWentOver().connect(boost::bind(&Search::SetCursorHand, this, im));
             im->clicked().connect(std::bind([ = ](){
                 std::set<std::string>::iterator fit(pickedcat_.find(aux));
@@ -718,7 +853,6 @@ void Search::UpdatePickedCatCont() {
             Wt::WText * t = new Wt::WText(aux_title);
             t->decorationStyle().font().setSize(Wt::WFont::Medium);
             t->setWordWrap(false);
-            t->setInline(true);
             pickedcatcont_->addWidget(t);
         }
         if (count > 3) {
@@ -753,7 +887,7 @@ void Search::UpdatePickedCatCont() {
                 categoriesanded_ = !categoriesanded_;
                 UpdatePickedCatCont();
             }));
-            toggle->setInline(true);
+            //            toggle->setInline(true);
             toggle->decorationStyle().font().setVariant(Wt::WFont::SmallCaps);
             toggle->decorationStyle().font().setSize(Wt::WFont::Small);
             toggle->decorationStyle().setBackgroundColor(Wt::WColor(220, 220, 220));
@@ -785,16 +919,43 @@ void Search::HelpCurationCheckBoxDialogDone(Wt::WDialog::DialogCode code) {
 
 void Search::HelpLuceneDialog() {
     helplucenedialog_ = new Wt::WDialog("Lucene Query Language");
-    new Wt::WText("Quick boolean query examples: ", helplucenedialog_->contents());
-    new Wt::WText("\"Worm AND Protein\"      ", helplucenedialog_->contents());
-    new Wt::WText("\"Worm OR Protein\" . ", helplucenedialog_->contents());
-    helplucenedialog_->contents()->addWidget(new Wt::WBreak());
-    new Wt::WText("The keyword search adheres to the Lucene query language. ", helplucenedialog_->contents());
-    new Wt::WText("You can find a tutorial ", helplucenedialog_->contents());
+    helplucenedialog_->setClosable(true);
+    new Wt::WText("Textpresso search engine is based on Lucene and "
+            "follows its query language as well as the scoring method for "
+            "the search results. In this example, let\'s assume the user is "
+            "interested in plant defense. She could type the words plant "
+            "and defense in the keyword text field and choose the document scope. "
+            "That means Textpresso searches the words plant or defense in each "
+            "document. The scoring method is tf*idf (see ", helplucenedialog_->contents());
+    Wt::WAnchor * aw = new Wt::WAnchor("https://en.wikipedia.org/wiki/Tf%E2%80%93idf", helplucenedialog_->contents());
+    aw->setText("Wikipedia ");
+    aw->setTarget(Wt::TargetNewWindow);
+    new Wt::WText("for an explanation how it works). The word plant is probably "
+            "a very common word in the biomedical literature, while the word "
+            "defense probably not so much. This affects how the documents are scored. "
+            "One probably gets better results by searching for the phrase plant "
+            "defense by typing \"plant defense\" (with quotes) in the keyword "
+            "text box. This search guarantees the phrase to be present somewhere in "
+            "the document. Another possibility is typing", helplucenedialog_->contents());
+    new Wt::WBreak(helplucenedialog_->contents());
+    new Wt::WBreak(helplucenedialog_->contents());
+    new Wt::WText("plant AND defense", helplucenedialog_->contents());
+    new Wt::WBreak(helplucenedialog_->contents());
+    new Wt::WBreak(helplucenedialog_->contents());
+    new Wt::WText("in the box (AND capitalized). This requires Lucene to find "
+            "both words to be in the document, just not right next to "
+            "each other. Finally, one could also do all these searches on a"
+            " sentence scope level. It requires the matches to be present in a "
+            "sentence, and not in a document. In this case, unless one "
+            "restricts the number of literatures to be searched significantly, "
+            "these searches take a considerably longer time. ", helplucenedialog_->contents());
+    new Wt::WBreak(helplucenedialog_->contents());
+    new Wt::WBreak(helplucenedialog_->contents());
+    new Wt::WText("More information can be found in a ", helplucenedialog_->contents());
     Wt::WAnchor * at = new Wt::WAnchor("https://www.drupal.org/node/375446", helplucenedialog_->contents());
-    at->setText("here ");
+    at->setText("tutorial ");
     at->setTarget(Wt::TargetNewWindow);
-    new Wt::WText("or search for your preferred documentation via ", helplucenedialog_->contents());
+    new Wt::WText("or by searching for a preferred documentation via ", helplucenedialog_->contents());
     Wt::WAnchor * ag = new Wt::WAnchor("https://www.google.com/?gws_rd=ssl#q=lucene+query+language", helplucenedialog_->contents());
     ag->setText("Google");
     ag->setTarget(Wt::TargetNewWindow);
@@ -879,7 +1040,7 @@ void Search::ListAllCats() {
         maxl = (aux.length() > maxl) ? aux.length() : maxl;
         //
         Wt::WImage * im = new Wt::WImage("resources/icons/cancel.png");
-        im->setInline(true);
+        //im->setInline(true);
         im->mouseWentOver().connect(boost::bind(&Search::SetCursorHand, this, im));
         im->clicked().connect(std::bind([ = ](){
             std::set<std::string>::iterator fit(pickedcat_.find(aux));
@@ -891,7 +1052,7 @@ void Search::ListAllCats() {
         listallcatsdialog_->contents()->addWidget(im);
         //
         Wt::WText * t = new Wt::WText(aux);
-        t->setInline(true);
+        //t->setInline(true);
         listallcatsdialog_->contents()->addWidget(t);
         new Wt::WBreak(listallcatsdialog_->contents());
     }
@@ -1150,12 +1311,14 @@ void Search::prepareKeywordColorsForSearch() {
     vector<string> keyword_entities;
     keywordColorsMap = unordered_map<string, int>();
     string keyword_string(keyword.begin(), keyword.end());
+    std::vector<std::string> phrases(RemovePhrases(keyword_string));
     eraseAllOccurrencesOfStr(keyword_string, "*");
     eraseAllOccurrencesOfStr(keyword_string, "+");
     eraseAllOccurrencesOfStr(keyword_string, "?");
     eraseAllOccurrencesOfStr(keyword_string, "AND");
     eraseAllOccurrencesOfStr(keyword_string, "OR");
     boost::split(keyword_entities, keyword_string, boost::is_any_of(" "));
+    for (auto x : phrases) keyword_entities.push_back(x);
     keyword_entities.erase(std::remove(keyword_entities.begin(), keyword_entities.end(), ""),
             keyword_entities.end());
     int colorIndex = 0;
@@ -1781,7 +1944,7 @@ void Search::setHitText(int index, Wt::WGroupBox* textGroupBox) {
             boost::split(subwstrings, w_cleantext, boost::is_any_of(" "));
 
             int n_words = subwstrings.size();
-            vector<int> keyword_positions = getKeywordPosition(subwstrings, keywords);
+            vector<int> keyword_positions = getKeywordPositions(subwstrings, stored_keyword);
             sentence_count++;
             WContainerWidget* wt_sentence = getSingleSentenceHighlightedWidgetFromText(w_text, w_cat, keywords,
                     sentence_length, textGroupBox);
@@ -1880,7 +2043,7 @@ void Search::setHitText(int index, Wt::WGroupBox* textGroupBox) {
         boost::split(subwstrings, w_cleantext, boost::is_any_of(" "));
 
         int n_words = subwstrings.size();
-        vector<int> keyword_positions = getKeywordPosition(subwstrings, keywords);
+        vector<int> keyword_positions = getKeywordPositions(subwstrings, stored_keyword);
         for (int i = 0; i < keyword_positions.size(); i++) {
             vector<int> hit_positions; //to collect hit positions for one sentence
             int current_position = keyword_positions[i];
@@ -2060,7 +2223,6 @@ Wt::WContainerWidget* Search::setHitCatSentence(wstring w_cat, vector<wstring > 
                 }
             }
             for (int i = 0; i < wtexts.size(); i++) {
-
                 wt_sentence->addWidget(wtexts[i]);
                 wt_sentence->addWidget(new Wt::WText(" "));
             }
@@ -2069,91 +2231,39 @@ Wt::WContainerWidget* Search::setHitCatSentence(wstring w_cat, vector<wstring > 
     return wt_sentence;
 }
 
-bool Search::is_number(const std::wstring& s) {
-    std::wstring::const_iterator it = s.begin();
-    while (it != s.end() && std::isdigit(*it)) it++;
-
-    return !s.empty() && it == s.end();
-}
-
-std::string Search::WtString2string(const Wt::WString& wstring) {
-
-    return wstring.toUTF8();
-}
-
-std::string Search::LString2string(const Lucene::String& lstring) {
-    wstring w_str = lstring.c_str();
-
-    return (wstring2string(w_str));
-}
-
-std::wstring Search::LString2wstring(const Lucene::String& lstring) {
-    wstring w_str = lstring.c_str();
-
-    return w_str;
-}
-
-Wt::WString Search::LString2WtString(const Lucene::String& lstring) {
-
-    return Wt::WString(lstring.c_str());
-}
-
-std::string Search::wstring2string(const std::wstring& wstring) {
-    string str(wstring.begin(), wstring.end());
-
-    return (str);
-}
-
-vector<pair<int, int> > Search::searchregex(string regex, string text) {
-    vector<pair<int, int> > matches;
-    boost::regex regex_to_match(regex.c_str(), boost::regex::icase);
-    boost::smatch author_matches;
-    int sum_length = 0;
-    while (boost::regex_search(text, author_matches, regex_to_match)) {
-
-        int pos = author_matches.position();
-        int len = author_matches.length();
-        const unsigned int param = 0;
-        pair<int, int> pos_len = make_pair(pos + sum_length, len);
-        matches.push_back(pos_len);
-        text = author_matches.suffix().str();
-        sum_length += pos;
-        sum_length += len;
-    }
-    return matches;
-}
-
-vector<int> Search::getKeywordPosition(vector<wstring> subwstrings, vector<wstring> keywords) {
-    vector<int> keyword_positions;
+vector<int> Search::getKeywordPositions(vector<wstring> subwstrings, wstring keyword) {
+    vector<int> ret;
+    ret.clear();
+    boost::replace_all(keyword, "AND", "");
+    boost::replace_all(keyword, "OR", "");
+    boost::replace_all(keyword, "(", "");
+    boost::replace_all(keyword, ")", "");
+    boost::wregex re_boostfactor(L"\\^\\d+");
+    keyword = boost::regex_replace(keyword, re_boostfactor, L"");
+    keyword = boost::regex_replace(keyword, boost::wregex(L"\\s+"), L" ");
+    std::vector<std::wstring> phrases = RemovePhrases(keyword);
+    vector<std::wstring> keywords;
+    boost::split(keywords, keyword, boost::is_any_of(" \"\'~"));
+    keywords.erase(std::remove(keywords.begin(), keywords.end(), L""), keywords.end());
+    // do keywords first
     for (int i = 0; i < subwstrings.size(); i++) {
         wstring w_word = subwstrings[i];
-        for (int j = 0; j < keywords.size(); j++) {
-            if (boost::iequals(w_word, keywords[j]) && keywords[j] != "AND" && keywords[j] != "OR" && !is_number(keywords[j])) {
-                keyword_positions.push_back(i);
-            } else {
-                boost::replace_all(keywords[j], "*", ".+");
-                boost::replace_all(keywords[j], "?", ".");
-                if (searchregex('^' + wstring2string(keywords[j]) + '$', wstring2string(w_word)).size() > 0 && keywords[j] != "AND" && keywords[j] != "OR" && !is_number(keywords[j])) {
-                    wcout << w_word << "hit1 at " << i << " " << w_word << endl;
-                    keyword_positions.push_back(i);
-                } else if (searchregex("\\W" + wstring2string(keywords[j]) + '$', wstring2string(w_word)).size() > 0 && keywords[j] != "AND" && keywords[j] != "OR" && !is_number(keywords[j])) {
-                    wcout << w_word << "hit2 at " << i << " " << w_word << endl;
-                    keyword_positions.push_back(i);
-                } else if (searchregex('^' + wstring2string(keywords[j]) + "\\W$", wstring2string(w_word)).size() > 0 && keywords[j] != "AND" && keywords[j] != "OR" && !is_number(keywords[j])) {
-                    wcout << w_word << "hit3 at " << i << " " << w_word << endl;
-                    keyword_positions.push_back(i);
-                } else if (searchregex("\\W" + wstring2string(keywords[j]) + "\\W", wstring2string(w_word)).size() > 0 && keywords[j] != "AND" && keywords[j] != "OR" && !is_number(keywords[j])) {
-                    wcout << w_word << "hit4 at " << i << " " << w_word << endl;
-                    keyword_positions.push_back(i);
-                } else if (searchregex("^" + wstring2string(keywords[j]) + "\\W", wstring2string(w_word)).size() > 0 && keywords[j] != "AND" && keywords[j] != "OR" && !is_number(keywords[j])) {
-
-                    wcout << w_word << "hit5 at " << i << " " << w_word << endl;
-                    keyword_positions.push_back(i);
-                }
-            }
+        for (int j = 0; j < keywords.size(); j++)
+            if (keyword_is_match(w_word, keywords[j]))
+                ret.push_back(i);
+    }
+    // now process phrases
+    for (int i = 0; i < subwstrings.size(); i++) {
+        for (int j = 0; j < phrases.size(); j++) {
+            vector<std::wstring> phrasewords;
+            boost::split(phrasewords, phrases[j], boost::is_any_of(" \"\'~"));
+            phrasewords.erase(std::remove(phrasewords.begin(), phrasewords.end(), L""), phrasewords.end());
+            if (phrase_is_match(subwstrings, phrasewords, i))
+                for (int k = i; k < i + phrasewords.size(); k++) ret.push_back(k);
         }
     }
-    return keyword_positions;
+    std::sort(ret.begin(), ret.end());
+    return ret;
 }
 
 void Search::ReadPreloadedCategories() {
@@ -2298,7 +2408,7 @@ WContainerWidget* Search::getSingleSentenceHighlightedWidgetFromText(std::wstrin
             Wt::WText* wt_word = (Wt::WText*)wt_sentence->widget(i);
             stringwords.push_back(wt_word->text());
         }
-        vector<int> keyword_positions = getKeywordPosition(stringwords, keywords);
+        vector<int> keyword_positions = getKeywordPositions(stringwords, stored_keyword);
         for (int j = 0; j < count; j++) {
             for (int l = 0; l < keyword_positions.size(); l++) //loop over all hits within sentence_length
             {
@@ -2318,7 +2428,7 @@ WContainerWidget* Search::getSingleSentenceHighlightedWidgetFromText(std::wstrin
         }
     } else {
         boost::split(stringwords, w_text, boost::is_any_of(" "));
-        vector<int> keyword_positions = getKeywordPosition(stringwords, keywords);
+        vector<int> keyword_positions = getKeywordPositions(stringwords, stored_keyword);
         int words_count = stringwords.size();
         for (int j = 0; j < words_count; j++) {
             wstring w_word = stringwords[j];

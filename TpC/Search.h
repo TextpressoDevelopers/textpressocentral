@@ -6,7 +6,7 @@
  */
 
 #ifndef SEARCH_H
-#define	SEARCH_H
+#define SEARCH_H
 
 #include "Session.h"
 
@@ -78,7 +78,7 @@ const int NUM_SENTENCES_HITS_WARN_THRESHOLD = 50000;
 const string CAS_ROOTDIR = "/usr/local/textpresso/tpcas/";
 
 static const set<string> urlparamset = {"accession", "author", "category", "exclude", "journal", "keyword",
-                                        "literature", "scope", "tpcrootpasswd", "type", "year"};
+    "literature", "scope", "tpcrootpasswd", "type", "year"};
 
 class Search : public Wt::WContainerWidget {
 public:
@@ -182,35 +182,28 @@ private:
     void ResetSearch();
     void displayTable(int start, int end, int shift);
     void ViewPaperClicked(Wt::WCheckBox * cb, const std::string& papertitle,
-                          const std::string& paperauthor, const std::string& paperjournal, const std::string& paperyear,
-                          const std::string& filepath, int index, const std::string& accession);
+            const std::string& paperauthor, const std::string& paperjournal, const std::string& paperyear,
+            const std::string& filepath, int index, const std::string& accession);
     std::string RetrieveBEString(int index);
-        void changePage(int shift);
+    void changePage(int shift);
 
     void deleteMessagebox(Wt::WMessageBox *messageBox);
     map<string, string> getFilters();
-    vector<pair<int, int> > searchregex(string regex, string text);
     void PanelTitleClick(WPanel* panel, int index, Wt::WGroupBox* textGroupBox);
     void setHitText(int index, Wt::WGroupBox* textGroupBox);
     Wt::WContainerWidget* setHitCatSentence(wstring w_cat, vector<wstring > subwstrings, int sentence_length, Wt::WGroupBox* textGroupBox);
     void showMessagebox(WString message);
-    std::string WtString2string(const Wt::WString& wstring);
-    std::string LString2string(const Lucene::String& lstring);
-    Wt::WString LString2WtString(const Lucene::String& lstring);
-    std::string wstring2string(const std::wstring& wstring);
-    std::wstring LString2wstring(const Lucene::String& lstring);
-    bool is_number(const std::wstring& s);
     void UpdateLiteraturePrefenferences(bool checkpermissions);
     void ReadIndexPrefix();
     void UpdateLiteratureStatus();
     void CheckAgainstPickedLiteratureMap(Wt::Http::ParameterValues literatures);
-    vector<int> getKeywordPosition(vector<wstring> subwstrings, vector<wstring> keywords);
+    vector<int> getKeywordPositions(vector<wstring> subwstrings, wstring keyword);
     wstring RemoveTags(wstring w_cleantext);
     void SetLiteratureContainer(Wt::WContainerWidget * literaturecontainer);
 
     // added by valerio
     Wt::WContainerWidget* getSingleSentenceHighlightedWidgetFromText(std::wstring, std::wstring,
-                                                                     std::vector<std::wstring>, int, Wt::WGroupBox*);
+            std::vector<std::wstring>, int, Wt::WGroupBox*);
     std::vector<std::wstring> getCleanKeywords();
     void ShowLongSentenceInDialog(std::string, std::wstring, std::wstring);
     void eraseAllOccurrencesOfStr(string &str, const string &pattern);
@@ -264,4 +257,4 @@ private:
     TpCategoryBrowser *tcp;
 };
 
-#endif	/* SEARCH_H */
+#endif /* SEARCH_H */
