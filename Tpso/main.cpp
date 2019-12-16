@@ -128,7 +128,7 @@ namespace {
                 "\tgenerating postgres tables\n"
                 "\t" << PGONTOLOGYTABLENAME << "_<base of obofilename>,\n"
                 "\t" << PCRELATIONSTABLENAME << "_<base of obofilename> and\n"
-//                "\t" << PADCRELATIONSTABLENAME << "_<base of obofilename>.\n"
+                //                "\t" << PADCRELATIONSTABLENAME << "_<base of obofilename>.\n"
                 "\t<base of obofilename> is the base filename of each\n"
                 "\tobo file in \"obo directory\".\n"
                 "\tEach <base of obofilename> will be added to table "
@@ -424,15 +424,7 @@ namespace {
             "child varchar(" + std::to_string(CATEGORYCOLUMNWIDTH) + std::string(")")};
         std::string tablenamepc(PCRELATIONSTABLENAME + std::string("_") + stem);
         CreateTable(cn, tablenamepc, tablecolspc);
-//        std::vector<std::string> tablecolspadc{
-//            "parent varchar(" + std::to_string(CATEGORYCOLUMNWIDTH) + std::string(")"),
-//            "children text"};
-//        std::string tablenamepadc(PADCRELATIONSTABLENAME + std::string("_") + stem);
-//        CreateTable(cn, tablenamepadc, tablecolspadc);
-        // populate pcrelations and padcrelations
-        // populate pcrelations
         std::multimap<std::string, std::string> pcs;
-        //std::multimap<std::string, std::string> padcs;
         std::set<std::string> seen;
         auto rootit = growntree.begin();
         std::string allchildren("");
@@ -449,8 +441,6 @@ namespace {
                 if (it != nexttolast) allchildren += "|";
             }
         }
-//        if (!allchildren.empty())
-//            padcs.insert(std::make_pair(rootname, allchildren));
         tree<pss>::pre_order_iterator it;
         for (it = rootit.begin(); it != rootit.end(); it++) {
             auto nexttolast = it.end()--;
@@ -468,12 +458,9 @@ namespace {
                         if (cit != nexttolast) allchildren += "|";
                     }
                 }
-//                if (!allchildren.empty())
-//                    padcs.insert(std::make_pair(p, allchildren));
             }
         }
         WriteRelationsToPg(pcs, cn, "parent", "child", tablenamepc);
-        //WriteRelationsToPg(padcs, cn, "parent", "children", tablenamepadc);
     }
 
     void WriteOntologytable(pqxx::connection & cn, OboFileSegmentation * ofs,
@@ -500,26 +487,31 @@ namespace {
             "lexicalvariations", "curation_status", "curation_use", "comment",
             "owner", "source", "version", "last_update"};
         std::string tablenameontology(PGONTOLOGYTABLENAME + std::string("_") + stem);
-        CreateTable(cn, tablenameontology, tablecols);
         auto rootit = grownidtree.begin();
         tree<pss>::pre_order_iterator it;
-        int ct(1);
+        int ct(0);
         std::vector<std::vector < std::string>> collector;
         collector.clear();
+        std::string actualtablename("");
         for (it = rootit.begin(); it != rootit.end(); it++) {
+            if (ct++ % 1000000 == 0) {
+                actualtablename = tablenameontology + std::string("_")
+                        + std::to_string(int(ct / 1000000));
+                CreateTable(cn, actualtablename, tablecols);
+            }
             std::vector<std::vector < std::string >>
                     d(PopulateDataVector(grownidtree, it, ofs,
                     irrverbfilename, irrpluralfilename, allverbsfilename));
             collector.insert(collector.end(), d.begin(), d.end());
-            if (++ct % 30000 == 0) {
-                WriteOntologyToPg(cn, tablenameontology, cols, collector);
+            if (ct % 30000 == 0) {
+                WriteOntologyToPg(cn, actualtablename, cols, collector);
                 std::cout << "                                              \r";
-                std::cout << stem << " " << ct << "/" << grownidtree.size() << "\r" << std::flush;
+                std::cout << stem << " " << ct + 1 << "/" << grownidtree.size() << "\r" << std::flush;
                 collector.clear();
             }
         }
         if (!collector.empty()) {
-            WriteOntologyToPg(cn, tablenameontology, cols, collector);
+            WriteOntologyToPg(cn, actualtablename, cols, collector);
             std::cout << std::endl << stem << " " << ct << "/" << grownidtree.size();
             collector.clear();
         }

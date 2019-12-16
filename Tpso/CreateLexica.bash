@@ -12,6 +12,6 @@ cd $1/GenerateLexicalVariations # need subdirectory resources
 LIST=`echo "select tablename from pg_tables" | psql www-data | grep tpontology`
 for i in $LIST
 do
-    generatelexicalvariations $i
+    generatelexicalvariations $i &
 done
 wait
