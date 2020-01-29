@@ -10,8 +10,15 @@ tpso -j $1/Tpso/input.json
 echo "grant all privileges on table ontologymembers to \"www-data\"" | psql www-data
 cd $1/GenerateLexicalVariations # need subdirectory resources
 LIST=`echo "select tablename from pg_tables" | psql www-data | grep tpontology`
+jmax=$(nproc)
+jct=0
 for i in $LIST
 do
     generatelexicalvariations $i &
+    jct=$((jct+1))
+    if [[ $(($jct % $jmax)) == 0 ]]
+    then
+	wait
+    fi
 done
 wait

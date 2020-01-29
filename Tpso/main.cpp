@@ -512,7 +512,7 @@ namespace {
         }
         if (!collector.empty()) {
             WriteOntologyToPg(cn, actualtablename, cols, collector);
-            std::cout << std::endl << stem << " " << ct << "/" << grownidtree.size();
+            std::cout << std::endl << stem << " " << ct + 1 << "/" << grownidtree.size();
             collector.clear();
         }
         std::cout << std::endl;

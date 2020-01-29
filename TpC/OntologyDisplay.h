@@ -22,7 +22,7 @@ public:
     OntologyDisplay(const OntologyDisplay& orig);
     virtual ~OntologyDisplay();
 private:
-    TpOntApi * toa_;
+    //TpOntApi * toa_;
     Wt::WContainerWidget * ftc_;
     Wt::WComboBox * ftcolname_;
     Wt::WLineEdit * ftvalue_;

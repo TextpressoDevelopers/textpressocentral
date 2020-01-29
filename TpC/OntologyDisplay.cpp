@@ -15,10 +15,34 @@
 #include <Wt/WComboBox>
 #include <boost/algorithm/string/predicate.hpp>
 #include <thread>
+#include <pqxx/pqxx>
 
 #define CELLHEIGHT 2
 #define CELLWIDTH 20
 #define MAXENTRIES 5000
+
+namespace {
+
+    std::vector<std::string> GetAllSubTables(std::string stem) {
+        std::vector<std::string> ret;
+        ret.clear();
+        pqxx::connection cn(PGONTOLOGY);
+        pqxx::work w(cn);
+        pqxx::result r;
+        std::stringstream pc;
+        pc << "select tablename from pg_tables where tablename like '";
+        pc << stem << "_%" << "'";
+        r = w.exec(pc.str());
+        for (pqxx::result::size_type i = 0; i != r.size(); i++) {
+            std::string name;
+            if (r[i]["tablename"].to(name))
+                ret.push_back(name);
+        }
+        w.commit();
+        cn.disconnect();
+        return ret;
+    }
+}
 
 OntologyDisplay::OntologyDisplay(PickCategoryContainer *pcc,
         OntologyTermQuery *otc, Wt::WLength h, Wt::WContainerWidget *parent)
@@ -52,8 +76,8 @@ OntologyDisplay::OntologyDisplay(PickCategoryContainer *pcc,
     addWidget(cs);
     csc_ = new Wt::WContainerWidget();
     cs->setWidget(csc_);
-    toa_ = new TpOntApi(PGONTOLOGYTABLENAME,
-            PCRELATIONSTABLENAME, PADCRELATIONSTABLENAME);
+    //toa_ = new TpOntApi(PGONTOLOGYTABLENAME,
+    //        PCRELATIONSTABLENAME, PADCRELATIONSTABLENAME);
     pcc->OkClicked().connect(boost::bind(&OntologyDisplay::SelectionOkClicked, this, pcc));
     otc->TermEntered().connect(boost::bind(&OntologyDisplay::SearchTermEntered, this, otc));
 }
@@ -62,7 +86,7 @@ OntologyDisplay::OntologyDisplay(const OntologyDisplay& orig) {
 }
 
 OntologyDisplay::~OntologyDisplay() {
-    delete toa_;
+    //delete toa_;
 }
 
 void OntologyDisplay::SelectionOkClicked(PickCategoryContainer *pcc) {
@@ -80,15 +104,15 @@ void OntologyDisplay::SearchTermEntered(OntologyTermQuery *otc) {
     csc_->clear();
     statusline_ = new Wt::WText();
     csc_->addWidget(statusline_);
-    std::vector<std::string> headers(toa_->GetColumnHeaders());
-    toa_->DeleteAllResults();
+    //std::vector<std::string> headers(toa_->GetColumnHeaders());
+    //toa_->DeleteAllResults();
     std::string where = "where term ~ '\\m" + (otc->GetTerm()).toUTF8() + "\\M'";
-    toa_->SearchDbWithWhereClause(where);
+    //toa_->SearchDbWithWhereClause(where);
     PgList ontmembers(PGONTOLOGY, ONTOLOGYMEMBERSTABLENAME);
     if (!ontmembers.GetList().empty()) {
         std::string ont(*ontmembers.GetList().begin());
         TpOntApi * toa = new TpOntApi(
-                PGONTOLOGYTABLENAME + std::string("_") + ont,
+                PGONTOLOGYTABLENAME + std::string("_") + ont + std::string("_0"),
                 PCRELATIONSTABLENAME + std::string("_") + ont,
                 PADCRELATIONSTABLENAME + std::string("_") + ont);
         std::vector<std::string> headers(toa->GetColumnHeaders());
@@ -102,24 +126,28 @@ void OntologyDisplay::SearchTermEntered(OntologyTermQuery *otc) {
         thread_vec.clear();
         for (ont : ontmembers.GetList())
             if (resultcount < MAXENTRIES) {
-                toa_vec.push_back(new TpOntApi(
-                        PGONTOLOGYTABLENAME + std::string("_") + ont,
-                        PCRELATIONSTABLENAME + std::string("_") + ont,
-                        PADCRELATIONSTABLENAME + std::string("_") + ont));
-                thread_vec.push_back(new std::thread([ = ](TpOntApi * toa){
-                    toa->DeleteAllResults();
-                    toa->SearchDbWithWhereClause(where);
-                }, toa_vec.back()));
-                if (thread_vec.size() > 25)
-                    while (thread_vec.size() > 0) {
-                        thread_vec.back()->join();
-                        delete thread_vec.back();
-                        thread_vec.pop_back();
-                        resultcount += toa_vec.back()->GetResultListSize();
-                        AddToModel(model, toa_vec.back()->GetResultList(), "", "");
-                        delete toa_vec.back();
-                        toa_vec.pop_back();
-                    }
+                std::vector<std::string> st(GetAllSubTables(
+                        PGONTOLOGYTABLENAME + std::string("_") + ont));
+                for (auto xst : st) {
+                    toa_vec.push_back(new TpOntApi(
+                            xst,
+                            PCRELATIONSTABLENAME + std::string("_") + ont,
+                            PADCRELATIONSTABLENAME + std::string("_") + ont));
+                    thread_vec.push_back(new std::thread([ = ](TpOntApi * toa){
+                        toa->DeleteAllResults();
+                        toa->SearchDbWithWhereClause(where);
+                    }, toa_vec.back()));
+                    if (thread_vec.size() > 25)
+                        while (thread_vec.size() > 0) {
+                            thread_vec.back()->join();
+                            delete thread_vec.back();
+                            thread_vec.pop_back();
+                            resultcount += toa_vec.back()->GetResultListSize();
+                            AddToModel(model, toa_vec.back()->GetResultList(), "", "");
+                            delete toa_vec.back();
+                            toa_vec.pop_back();
+                        }
+                }
             }
         while (!thread_vec.empty()) {
             thread_vec.back()->join();
@@ -144,7 +172,7 @@ void OntologyDisplay::PopulateTable(PickCategoryContainer *pcc,
     if (!ontmembers.GetList().empty()) {
         std::string ont(*ontmembers.GetList().begin());
         TpOntApi * toa = new TpOntApi(
-                PGONTOLOGYTABLENAME + std::string("_") + ont,
+                PGONTOLOGYTABLENAME + std::string("_") + ont + std::string("_0"),
                 PCRELATIONSTABLENAME + std::string("_") + ont,
                 PADCRELATIONSTABLENAME + std::string("_") + ont);
         std::vector<std::string> headers(toa->GetColumnHeaders());
@@ -162,24 +190,28 @@ void OntologyDisplay::PopulateTable(PickCategoryContainer *pcc,
                     = cat2ont.equal_range(cat.toUTF8());
             for (auto it = catrange.first; it != catrange.second; it++)
                 if (resultcount < MAXENTRIES) {
-                    toa_vec.push_back(new TpOntApi(
-                            PGONTOLOGYTABLENAME + std::string("_") + (*it).second,
-                            PCRELATIONSTABLENAME + std::string("_") + (*it).second,
-                            PADCRELATIONSTABLENAME + std::string("_") + (*it).second));
-                    thread_vec.push_back(new std::thread([ = ](TpOntApi * toa){
-                        toa->DeleteAllResults();
-                        toa->SearchDbString(TpOntApi::category, cat.toUTF8());
-                    }, toa_vec.back()));
-                    if (thread_vec.size() > 25)
-                        while (thread_vec.size() > 0) {
-                            thread_vec.back()->join();
-                            delete thread_vec.back();
-                            thread_vec.pop_back();
-                            resultcount += toa_vec.back()->GetResultListSize();
-                            AddToModel(model, toa_vec.back()->GetResultList(), ftcolname, ftvalue);
-                            delete toa_vec.back();
-                            toa_vec.pop_back();
-                        }
+                    std::vector<std::string> st(GetAllSubTables(
+                            PGONTOLOGYTABLENAME + std::string("_") + (*it).second));
+                    for (auto xst : st) {
+                        toa_vec.push_back(new TpOntApi(
+                                xst,
+                                PCRELATIONSTABLENAME + std::string("_") + (*it).second,
+                                PADCRELATIONSTABLENAME + std::string("_") + (*it).second));
+                        thread_vec.push_back(new std::thread([ = ](TpOntApi * toa){
+                            toa->DeleteAllResults();
+                            toa->SearchDbString(TpOntApi::category, cat.toUTF8());
+                        }, toa_vec.back()));
+                        if (thread_vec.size() > 25)
+                            while (thread_vec.size() > 0) {
+                                thread_vec.back()->join();
+                                delete thread_vec.back();
+                                thread_vec.pop_back();
+                                resultcount += toa_vec.back()->GetResultListSize();
+                                AddToModel(model, toa_vec.back()->GetResultList(), ftcolname, ftvalue);
+                                delete toa_vec.back();
+                                toa_vec.pop_back();
+                            }
+                    }
                 }
         }
         while (!thread_vec.empty()) {
