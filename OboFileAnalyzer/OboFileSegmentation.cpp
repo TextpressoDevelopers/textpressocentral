@@ -316,10 +316,10 @@ void OboFileSegmentation::InitializeKeyphrases() {
     // child-parent
     cpkeyphrases_.insert(std::make_pair("is_a", ""));
     //cpkeyphrases_.insert(std::make_pair("intersection_of", ""));
-    cpkeyphrases_.insert(std::make_pair("relationship", "part_of"));
+    //cpkeyphrases_.insert(std::make_pair("relationship", "part_of"));
 
     // parent-child
-    pckeyphrases_.insert(std::make_pair("relationship", "has_part"));
+    //pckeyphrases_.insert(std::make_pair("relationship", "has_part"));
 
     /*
     is_obsolete: true
