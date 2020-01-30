@@ -12,6 +12,7 @@
 
 #include <Wt/WVBoxLayout>
 #include <Wt/WHBoxLayout>
+#include <Wt/WCssDecorationStyle>
 
 OntologyBrowser::OntologyBrowser(Session & session, Wt::WContainerWidget * parent) {
     session_ = &session;
@@ -25,17 +26,25 @@ OntologyBrowser::OntologyBrowser(Session & session, Wt::WContainerWidget * paren
     std::set<std::string> preloaded;
     PickCategoryContainer * pcc = new PickCategoryContainer(session_,
             preloaded, false);
-    pcc->setMaximumSize(Wt::WLength::Auto, h1);
+    pcc->setMaximumSize(Wt::WLength(45,Wt::WLength::Percentage), h1);
+    //
+    Wt::WText * ortext = new Wt::WText("-- or --");
+    ortext->decorationStyle().font().setWeight(Wt::WFont::Bold);
+    ortext->decorationStyle().font().setSize(Wt::WFont::Large);
+    ortext->setVerticalAlignment(Wt::AlignMiddle);
+    //
     OntologyTermQuery * otq = new OntologyTermQuery();
-    otq->setMaximumSize(Wt::WLength::Auto, h1);
+    otq->setMaximumSize(Wt::WLength(45, Wt::WLength::Percentage), h1);
+    //
     Wt::WHBoxLayout * qlayout = new Wt::WHBoxLayout();
     qlayout->addWidget(pcc);
+    qlayout->addWidget(ortext);
     qlayout->addWidget(otq);
     Wt::WContainerWidget * querycont = new Wt::WContainerWidget();
     querycont->setLayout(qlayout);
     //
     OntologyDisplay * od = new OntologyDisplay(pcc, otq, h2);
-    od->setMaximumSize(Wt::WLength::Auto, h2);
+    od->setMaximumSize(Wt::WLength(100, Wt::WLength::Percentage), h2);
     layout->addWidget(querycont);
     layout->addWidget(od);
     

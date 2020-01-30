@@ -18,7 +18,7 @@
 #include <pqxx/pqxx>
 
 #define CELLHEIGHT 2
-#define CELLWIDTH 20
+//#define CELLWIDTH 20
 #define MAXENTRIES 5000
 
 namespace {
@@ -76,8 +76,6 @@ OntologyDisplay::OntologyDisplay(PickCategoryContainer *pcc,
     addWidget(cs);
     csc_ = new Wt::WContainerWidget();
     cs->setWidget(csc_);
-    //toa_ = new TpOntApi(PGONTOLOGYTABLENAME,
-    //        PCRELATIONSTABLENAME, PADCRELATIONSTABLENAME);
     pcc->OkClicked().connect(boost::bind(&OntologyDisplay::SelectionOkClicked, this, pcc));
     otc->TermEntered().connect(boost::bind(&OntologyDisplay::SearchTermEntered, this, otc));
 }
@@ -86,7 +84,6 @@ OntologyDisplay::OntologyDisplay(const OntologyDisplay& orig) {
 }
 
 OntologyDisplay::~OntologyDisplay() {
-    //delete toa_;
 }
 
 void OntologyDisplay::SelectionOkClicked(PickCategoryContainer *pcc) {
@@ -104,10 +101,7 @@ void OntologyDisplay::SearchTermEntered(OntologyTermQuery *otc) {
     csc_->clear();
     statusline_ = new Wt::WText();
     csc_->addWidget(statusline_);
-    //std::vector<std::string> headers(toa_->GetColumnHeaders());
-    //toa_->DeleteAllResults();
     std::string where = "where term ~ '\\m" + (otc->GetTerm()).toUTF8() + "\\M'";
-    //toa_->SearchDbWithWhereClause(where);
     PgList ontmembers(PGONTOLOGY, ONTOLOGYMEMBERSTABLENAME);
     if (!ontmembers.GetList().empty()) {
         std::string ont(*ontmembers.GetList().begin());
@@ -249,7 +243,7 @@ Wt::WTableView * OntologyDisplay::CreateTableHeader(Wt::WStandardItemModel * mod
             model->setHeaderData(col++, boost::any(colname));
     }
     ret->setModel(model);
-    double tablewidth = 120.;
+    double tablewidth = 100.;
     double colwidth = tablewidth / double(model->columnCount());
     for (int i = 0; i < model->columnCount(); i++)
         ret->setColumnWidth(i, Wt::WLength(colwidth, Wt::WLength::FontEm));
