@@ -138,11 +138,12 @@ install(TARGETS generatelexicalvariations
         obofileanalyzer pdf2tpcas tpc tpflat2oboconverter tpontology tpcuration tpso xml2tpcas
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION lib)
-install(FILES tpctl.sh DESTINATION bin PERMISSIONS OWNER_EXECUTE GROUP_EXECUTE WORLD_EXECUTE)
+install(FILES tpctl.sh Tpso/CreateLexica.bash DESTINATION bin
+	PERMISSIONS OWNER_EXECUTE GROUP_EXECUTE WORLD_EXECUTE OWNER_READ GROUP_READ WORLD_READ)
 
 SET(CMAKE_INSTALL_PREFIX /usr/local/textpresso)
 
-install(FILES etc/template.bib DESTINATION etc)
+install(FILES etc/template.bib etc/tpsoinput.json DESTINATION etc)
 install(FILES LexicalVariations/resources/allverbs.txt TpC/resources/authstrings.xml TpC/resources/authtemplates.xml
         TpC/resources/curation-form.xml TpC/resources/home.contactus.txt TpC/resources/home.firststeps.txt
         TpC/resources/home.introduction.txt TpC/resources/home.news.txt LexicalVariations/resources/irrplurals.txt

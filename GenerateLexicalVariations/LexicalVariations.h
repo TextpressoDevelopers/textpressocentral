@@ -8,9 +8,9 @@
 #ifndef LEXICALVARIATIONS_H
 #define LEXICALVARIATIONS_H
 
-#define ALLVERBSFILE "resources/allverbs.txt"
-#define IRRVERBSFILE "resources/irrverbs.txt"
-#define IRRPLURALFILE "resources/irrplurals.txt"
+#define ALLVERBSFILE "/usr/local/textpresso/resources/resources-tpc/allverbs.txt"
+#define IRRVERBSFILE "/usr/local/textpresso/resources/resources-tpc/irrverbs.txt"
+#define IRRPLURALFILE "/usr/local/textpresso/resources/resources-tpc/irrplurals.txt"
 
 #include<string>
 #include<vector>
