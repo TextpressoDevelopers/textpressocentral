@@ -63,6 +63,28 @@ namespace {
         return ret;
     }
 
+    void ReadConfigurationFile(std::string filename,
+            std::map<std::string, int> & depthmap) {
+        std::ifstream ifsfile(filename);
+        if (ifsfile.is_open()) {
+            std::string line;
+            while (getline(ifsfile, line)) {
+                if (!line.empty()) {
+                    std::vector<std::string> splits;
+                    boost::split(splits, line, boost::is_any_of(" "));
+                    std::string word(splits[0]);
+                    int d(stof(splits[1]));
+                    if (!word.empty())
+                        depthmap.insert(std::make_pair(word, d));
+                }
+            }
+            ifsfile.close();
+        } else {
+            std::cerr << "Unable to open file ";
+            std::cerr << filename << std::endl;
+        }
+    }
+
     std::string ConcatenateStrings(const std::vector<std::string> & sv, std::string separator) {
         std::string ret(sv.empty() ? "" : sv[0]);
         for (int i = 1; i < sv.size(); i++)
@@ -564,8 +586,14 @@ int main(int argc, char** argv) {
             const std::string allverbsfilename =
                     node_pod.get<std::string>("all verbs filename", "allverbs.txt");
             std::cout << "all verbs filename:" << allverbsfilename << std::endl;
-            const int depth = node_pod.get<unsigned int>("ontology depth", 3);
-            std::cout << "ontology depth:" << depth << std::endl;
+            const std::string conf = node_pod.get<std::string>("ontology configuration file", "ontology.conf");
+            std::cout << "ontology configuration file:" << conf << std::endl;
+            const int depth = node_pod.get<unsigned int>("ontology default depth", 3);
+            std::cout << "ontology default depth:" << depth << std::endl;
+
+            std::map<std::string, int> depthmap;
+            depthmap.clear();
+            ReadConfigurationFile(conf, depthmap);
             std::set<std::string> obofiles;
             obofiles.clear();
             GetFilesFromDir(obodir, obofiles);
@@ -573,16 +601,18 @@ int main(int argc, char** argv) {
             std::vector<std::thread*> thread_vec;
             thread_vec.clear();
             for (auto x : obofiles) {
+                int d(depth);
+                if (depthmap.find(x) != depthmap.end()) d = depthmap[x];
                 std::string obofile(ConcatenateFiles(masterobofile, x));
                 boost::filesystem::path p(x);
                 std::string stem(p.stem().string());
                 ontmembers.AddItem(stem);
                 thread_vec.push_back(new std::thread([ = ]
-                        (std::string stem, std::string x){
+                        (std::string stem, std::string x, int d){
                     pqxx::connection cn(PGONTOLOGY);
                     OboFileSegmentation * ofs = new OboFileSegmentation(x.c_str());
                     tree<pss> growntree;
-                    GrowTreeFromObo(ofs, growntree, depth);
+                    GrowTreeFromObo(ofs, growntree, d);
                     std::ofstream treefile(stem + ".tree");
                     if (treefile.is_open()) {
                         PrintTree(growntree, growntree.begin(), growntree.end(),
@@ -595,7 +625,7 @@ int main(int argc, char** argv) {
                             irrverbfilename, irrpluralfilename, allverbsfilename);
                             delete ofs;
                             cn.disconnect();
-                    }, stem, obofile));
+                    }, stem, obofile, d));
             }
             while (thread_vec.size() > 0) {
                 thread_vec.back()->join();

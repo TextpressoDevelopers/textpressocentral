@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+wget http://purl.obolibrary.org/obo/chebi.obo
+wget http://purl.obolibrary.org/obo/doid.obo
+wget http://purl.obolibrary.org/obo/fbbt.obo
+wget http://purl.obolibrary.org/obo/fbcv.obo
+wget http://purl.obolibrary.org/obo/fbdv.obo
+wget http://purl.obolibrary.org/obo/go.obo
+wget http://purl.obolibrary.org/obo/pato.obo
+wget http://purl.obolibrary.org/obo/pw.obo
+wget http://purl.obolibrary.org/obo/so.obo
+wget http://purl.obolibrary.org/obo/wbbt.obo
+wget http://purl.obolibrary.org/obo/wbls.obo
+wget http://purl.obolibrary.org/obo/wbphenotype.obo

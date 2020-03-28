@@ -16,7 +16,7 @@ function activate() {
     then
         mv /etc/wt/wt_config.xml /etc/wt/orig_wt_config.xml_orig
     fi
-    mkdir $CGI_BIN/tc
+    mkdir -p $CGI_BIN/tc
     if [[ $1 == "debug" ]]
     then
         cp $TPC_HOME/conf/wt_config_debug.xml /etc/wt/
@@ -38,7 +38,7 @@ function set_literature_dir() {
     ln -s $literature_dir/luceneindex $TPC_HOME/luceneindex
     rmdir $TPC_HOME/tpcas
     ln -s $literature_dir/tpcas-2 $TPC_HOME/tpcas
-    mkdir $CGI_BIN/tc
+    mkdir -p $CGI_BIN/tc
     ln -s $TPC_HOME/tpcas $CGI_BIN/tc/images
 }
 

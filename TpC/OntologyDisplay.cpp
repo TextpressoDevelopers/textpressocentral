@@ -118,15 +118,15 @@ void OntologyDisplay::SearchTermEntered(OntologyTermQuery *otc) {
         toa_vec.clear();
         std::vector<std::thread*> thread_vec;
         thread_vec.clear();
-        for (ont : ontmembers.GetList())
+        for (auto ovar : ontmembers.GetList())
             if (resultcount < MAXENTRIES) {
                 std::vector<std::string> st(GetAllSubTables(
-                        PGONTOLOGYTABLENAME + std::string("_") + ont));
+                        PGONTOLOGYTABLENAME + std::string("_") + ovar));
                 for (auto xst : st) {
                     toa_vec.push_back(new TpOntApi(
                             xst,
-                            PCRELATIONSTABLENAME + std::string("_") + ont,
-                            PADCRELATIONSTABLENAME + std::string("_") + ont));
+                            PCRELATIONSTABLENAME + std::string("_") + ovar,
+                            PADCRELATIONSTABLENAME + std::string("_") + ovar));
                     thread_vec.push_back(new std::thread([ = ](TpOntApi * toa){
                         toa->DeleteAllResults();
                         toa->SearchDbWithWhereClause(where);

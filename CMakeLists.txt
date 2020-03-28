@@ -143,7 +143,7 @@ install(FILES tpctl.sh Tpso/CreateLexica.bash DESTINATION bin
 
 SET(CMAKE_INSTALL_PREFIX /usr/local/textpresso)
 
-install(FILES etc/template.bib etc/tpsoinput.json DESTINATION etc)
+install(FILES etc/template.bib etc/tpsoinput.json etc/ontology.conf DESTINATION etc)
 install(FILES LexicalVariations/resources/allverbs.txt TpC/resources/authstrings.xml TpC/resources/authtemplates.xml
         TpC/resources/curation-form.xml TpC/resources/home.contactus.txt TpC/resources/home.firststeps.txt
         TpC/resources/home.introduction.txt TpC/resources/home.news.txt LexicalVariations/resources/irrplurals.txt
