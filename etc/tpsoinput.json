@@ -7,6 +7,6 @@
 	"irregular plurals filename" : "/usr/local/textpresso/resources/resources-tpc/irrplurals.txt",
 	"all verbs filename" : "/usr/local/textpresso/resources/resources-tpc/allverbs.txt",
         "ontology configuration file" : "/usr/local/etc/ontology.conf",
-        "ontology default depth" : 4
+        "ontology default depth" : 5
     }
 }

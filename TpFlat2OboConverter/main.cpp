@@ -24,17 +24,9 @@ std::string OboHeader() {
 
 std::string RootTerms(std::string categoryname, std::string idabbrevation) {
     std::string ret;
-    ret = "\n[Term]\n";
-    ret += "id: Tp:0000001\n";
-    ret += "name: Textpresso ontology\n";
     ret += "\n[Term]\n";
-    ret += "id: Tp:0000002\n";
-    ret += "name: Customized ontology\n";
-    ret += "is_a: Tp:0000001 ! Textpresso ontology\n";
-    ret += "\n[Term]\n";
-    ret += "id: " + idabbrevation + ":0000001\n";
+    ret += "id: " + idabbrevation + ":0000000\n";
     ret += "name: " + categoryname + "\n";
-    ret += "is_a: Tp:0000002 ! Customized ontology\n";
     ret += "\n";
     return ret;
 }
@@ -47,14 +39,14 @@ int main(int argc, char** argv) {
     std::string categoryname = std::string(argv[1]);
     std::string idabbrevation = std::string(argv[2]);
     std::cout << OboHeader() << RootTerms(categoryname, idabbrevation);
-    int count = 2;
+    int count = 1;
     std::string in;
     while (getline(std::cin, in)) {
         std::cout << "[Term]" << std::endl;
         std::cout << "id: " << idabbrevation << ":";
         std::cout << std::setfill('0') << std::setw(7) << count++ << std::endl;
         std::cout << "name: " << in << std::endl;
-        std::cout << "is_a: " << idabbrevation << ":0000001 ! " <<categoryname << std::endl;
+        std::cout << "is_a: " << idabbrevation << ":0000000 ! " <<categoryname << std::endl;
         std::cout << std::endl;
     }
     return 0;

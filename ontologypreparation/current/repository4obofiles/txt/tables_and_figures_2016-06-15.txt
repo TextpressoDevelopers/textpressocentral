@@ -1,0 +1,4 @@
+fig
+figure
+table
+tab

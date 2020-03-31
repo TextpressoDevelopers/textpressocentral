@@ -6,7 +6,6 @@ wget http://purl.obolibrary.org/obo/fbcv.obo
 wget http://purl.obolibrary.org/obo/fbdv.obo
 wget http://purl.obolibrary.org/obo/go.obo
 wget http://purl.obolibrary.org/obo/pato.obo
-wget http://purl.obolibrary.org/obo/pw.obo
 wget http://purl.obolibrary.org/obo/so.obo
 wget http://purl.obolibrary.org/obo/wbbt.obo
 wget http://purl.obolibrary.org/obo/wbls.obo
