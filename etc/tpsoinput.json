@@ -1,7 +1,7 @@
 {
     "process obofiles in directory" :
     {
-        "master obofile" : "/data/textpresso/textpresso.obo",
+        "headerfile directory" : "/data/textpresso/oboheaderfiles",
 	"obo directory" : "/data/textpresso/obofiles4production",
 	"irregular verbs filename" : "/usr/local/textpresso/resources/resources-tpc/irrverbs.txt",
 	"irregular plurals filename" : "/usr/local/textpresso/resources/resources-tpc/irrplurals.txt",

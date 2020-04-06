@@ -236,6 +236,10 @@ void OboFileSegmentation::PrintSingleTerms(const char * filename) {
         f.close();
     }
 }
+    bool OboFileSegmentation::IsInSubset(std::string id, std::string subsetname) {
+        return GetOePtr(id)->IsInSubset(subsetname);
+    }
+
     OboEntry* OboFileSegmentation::GetOePtr(std::string id) {
         OboEntry * ret(nullptr);
         if (id2oboentryptr_.find(id) != id2oboentryptr_.end())
@@ -315,8 +319,8 @@ void OboFileSegmentation::InitializeKeyphrases() {
 
     // child-parent
     cpkeyphrases_.insert(std::make_pair("is_a", ""));
+    cpkeyphrases_.insert(std::make_pair("relationship", "part_of"));
     //cpkeyphrases_.insert(std::make_pair("intersection_of", ""));
-    //cpkeyphrases_.insert(std::make_pair("relationship", "part_of"));
 
     // parent-child
     //pckeyphrases_.insert(std::make_pair("relationship", "has_part"));

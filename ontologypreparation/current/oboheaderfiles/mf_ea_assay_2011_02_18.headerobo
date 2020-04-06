@@ -1,0 +1,28 @@
+format-version: 1.2
+data-version: 27:10:2019 03:11
+date: 27:10:2019 03:11
+saved-by: Textpresso
+
+[Term]
+id: Tp:0000016
+name: WormBase Curation
+
+[Term]
+id: Tp:0000008
+name: Gene Ontology Curation
+is_a: Tp:0000016 ! WormBase Curation
+
+[Term]
+id: Tp:0000010
+name: Molecular Function
+is_a: Tp:0000008 ! Gene Ontology Curation
+
+[Term]
+id: Tp:0000011
+name: Enzymatic Activity
+is_a: Tp:0000010 ! Molecular Function
+
+[Term]
+id: tpmfeaat:0000001
+name: MFEA assay terms
+is_a: Tp:0000011 ! Enzymatic Activity

@@ -1,0 +1,36 @@
+format-version: 1.2
+data-version: 27:10:2019 03:11
+date: 27:10:2019 03:11
+saved-by: Textpresso
+
+[Term]
+id: Tp:0000101
+name: D. melanogaster
+
+[Term]
+id: Tp:0000102
+name: Drosophila Development
+is_a: Tp:0000101
+
+[Term]
+id: FBdv:00007013
+name: age
+def: "Temporal subdivision of life based on time elapsed since some key developmental transition, such as fertilization, hatching or eclosion." [FBC:DOS]
+created_by: djs93
+creation_date: 2010-09-29T12:25:36Z
+is_a: Tp:0000102
+
+[Term]
+id: FBdv:00007024
+name: biological process
+xref: GO:0008150
+is_a: Tp:0000102
+
+[Term]
+id: FBdv:00005259
+name: developmental stage
+alt_id: FBdv:00007010
+def: "A temporal subdivision of a developmental process." [FBC:DOS]
+created_by: djs93
+creation_date: 2009-10-01T05:56:56Z
+is_a: Tp:0000102

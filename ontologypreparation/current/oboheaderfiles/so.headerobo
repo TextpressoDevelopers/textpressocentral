@@ -1,0 +1,48 @@
+format-version: 1.2
+data-version: 27:10:2019 03:11
+date: 27:10:2019 03:11
+saved-by: Textpresso
+
+[Term]
+id: SO:0000000
+name: Sequence_Ontology
+subset: SOFA
+is_obsolete: true
+
+[Term]
+id: SO:0000400
+name: sequence_attribute
+def: "An attribute describes a quality of sequence." [SO:ke]
+synonym: "sequence attribute" EXACT []
+is_a: SO:0000000
+
+[Term]
+id: SO:0001260
+name: sequence_collection
+def: "A collection of discontinuous sequences." [SO:ke]
+synonym: "sequence collection" EXACT []
+is_a: SO:0000000
+
+[Term]
+id: SO:0000110
+name: sequence_feature
+def: "Any extent of continuous biological sequence." [LAMHDI:mb, SO:ke]
+subset: SOFA
+synonym: "INSDC_feature:misc_feature" EXACT []
+synonym: "INSDC_note:other" EXACT []
+synonym: "INSDC_note:sequence_feature" EXACT []
+synonym: "located sequence feature" RELATED []
+synonym: "located_sequence_feature" EXACT []
+synonym: "sequence feature" EXACT []
+disjoint_from: SO:0000400 ! sequence_attribute
+is_a: SO:0000000
+
+[Term]
+id: SO:0001060
+name: sequence_variant
+def: "A sequence_variant is a non exact copy of a sequence_feature or genome exhibiting one or more sequence_alteration." [SO:ke]
+synonym: "ANNOVAR:unknown" RELATED VAR [http://www.openbioinformatics.org/annovar/annovar_download.html]
+synonym: "Jannovar:sequence_variant" EXACT VAR [http://doc-openbio.readthedocs.org/projects/jannovar/en/master/var_effects.html]
+synonym: "sequence variant" EXACT []
+synonym: "VAAST:sequence_variant" EXACT VAR []
+is_a: SO:0000000

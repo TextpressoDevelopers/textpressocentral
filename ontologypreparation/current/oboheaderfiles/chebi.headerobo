@@ -1,0 +1,31 @@
+format-version: 1.2
+data-version: 27:10:2019 03:11
+date: 27:10:2019 03:11
+saved-by: Textpresso
+
+[Term]
+id: Tp:0000100
+name: ChEBI
+
+[Term]
+id: CHEBI:24431
+name: chemical entity
+subset: 3_STAR
+def: "A chemical entity is a physical entity of interest in chemistry including molecular entities, parts thereof, and chemical substances." []
+synonym: "chemical entity" EXACT [UniProt]
+is_a: Tp:0000100
+
+[Term]
+id: CHEBI:50906
+name: role
+subset: 3_STAR
+def: "A role is particular behaviour which a material entity may exhibit." []
+is_a: Tp:0000100
+
+[Term]
+id: CHEBI:36342
+name: subatomic particle
+subset: 3_STAR
+def: "A particle smaller than an atom." []
+synonym: "subatomic particles" RELATED [ChEBI]
+is_a: Tp:0000100

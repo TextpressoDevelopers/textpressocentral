@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <set>
 
 typedef std::multimap<std::string, std::string> mmss;
 class OboEntry {
@@ -23,6 +24,8 @@ public:
     std::vector<std::string> GetKeys();
     std::string PrintEntry2String();
     std::string GetName(std::string key) { return id_name_[key]; }
+    bool IsInSubset(const std::string subsetname);
+    bool IsInSubsets(const std::set<std::string> & subsetnames);
 private:
     mmss mmdata_;
     std::map<std::string, std::string> id_name_;

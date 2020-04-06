@@ -1,0 +1,36 @@
+format-version: 1.2
+data-version: 27:10:2019 03:11
+date: 27:10:2019 03:11
+saved-by: Textpresso
+
+[Term]
+id: Tp:0000101
+name: D. melanogaster
+
+[Term]
+id: FBcv:0000000
+name: FlyBase CV
+is_a: Tp:0000101
+
+[Term]
+id: BFO:0000002
+name: continuant
+def: "An entity that exists in full at any time in which it exists at all, persists through time while maintaining its identity and has no temporal parts." []
+disjoint_from: BFO:0000003 ! occurrent
+relationship: part_of BFO:0000002 ! continuant
+is_a: FBcv:0000000
+
+[Term]
+id: BFO:0000003
+name: occurrent
+def: "An entity that has temporal parts and that happens, unfolds or develops through time." []
+relationship: part_of BFO:0000003 ! occurrent
+is_a: FBcv:0000000
+
+[Term]
+id: RO:0002532
+name: sequentially ordered entity
+def: "Any entity that is ordered in discrete units along a linear axis." []
+relationship: RO:0002524 RO:0002533 ! has subsequence sequence atomic unit
+property_value: IAO:0000117 "Chris Mungall" xsd:string
+is_a: FBcv:0000000

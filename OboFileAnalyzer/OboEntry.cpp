@@ -39,7 +39,7 @@ std::vector<std::string> OboEntry::GetKeys() {
     mmss::iterator mmsit;
     for (mmsit = mmdata_.begin(); mmsit != mmdata_.end(); mmsit++)
         ret.push_back((*mmsit).first);
-    
+
     return ret;
 }
 
@@ -65,3 +65,15 @@ void OboEntry::SetData(std::string key, std::string value) {
     mmdata_.insert(std::make_pair(key, value));
 }
 
+bool OboEntry::IsInSubset(const std::string subsetname) {
+    std::vector<std::string> subsetdata(GetData("subset"));
+    return (std::find(subsetdata.begin(), subsetdata.end(), subsetname) != subsetdata.end());
+}
+
+bool OboEntry::IsInSubsets(const std::set<std::string> & subsetnames) {
+    std::vector<std::string> subsetdata(GetData("subset"));
+    for (auto it = subsetnames.begin(); it != subsetnames.end(); it++)
+        if (std::find(subsetdata.begin(), subsetdata.end(), *it) != subsetdata.end())
+            return true;
+    return false;
+}

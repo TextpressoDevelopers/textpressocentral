@@ -1,0 +1,19 @@
+format-version: 1.2
+data-version: 27:10:2019 03:11
+date: 27:10:2019 03:11
+saved-by: Textpresso
+
+[Term]
+id: Tp:0000104
+name: C. elegans
+
+[Term]
+id: WBPhenotype:0000886
+name: nematode phenotype
+def: "Animals exhibit variations compared to a given control." [WB:WBPerson557]
+subset: phenotype_slim_wb
+synonym: "Abnormal" EXACT []
+synonym: "not wildtype" RELATED []
+synonym: "not WT" RELATED []
+synonym: "variant" EXACT []
+is_a: Tp:0000104

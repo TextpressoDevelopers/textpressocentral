@@ -64,7 +64,8 @@ namespace {
     }
 
     void ReadConfigurationFile(std::string filename,
-            std::map<std::string, int> & depthmap) {
+            std::map<std::string, int> & depthmap,
+            std::map<std::string, std::set<std::string>> &subsetmap) {
         std::ifstream ifsfile(filename);
         if (ifsfile.is_open()) {
             std::string line;
@@ -74,8 +75,11 @@ namespace {
                     boost::split(splits, line, boost::is_any_of(" "));
                     std::string word(splits[0]);
                     int d(stof(splits[1]));
-                    if (!word.empty())
+                    if (!word.empty()) {
                         depthmap.insert(std::make_pair(word, d));
+                        for (int i = 2; i < splits.size(); i++)
+                            subsetmap[word].insert(splits[i]);
+                    }
                 }
             }
             ifsfile.close();
@@ -364,14 +368,21 @@ namespace {
         tree<pss>::pre_order_iterator it(testit);
         while (it != growntree.begin()) {
             it = growntree.parent(it);
-
             if (*it == *testit) ret = true;
         }
         return ret;
     }
 
+    void AddAllParentsUpstream(std::set<std::string> & parents, const tree<pss> & growntree,
+            tree<pss>::iterator it) {
+        while (it != growntree.begin()) {
+            it = growntree.parent(it);
+            parents.insert((*it).first);
+        }
+    }
+
     void GrowTreeFromObo(OboFileSegmentation * ofs,
-            tree<pss> &growntree, int depth) {
+            tree<pss> &growntree, int depth, std::set<std::string> & subsets) {
         growntree.clear();
         auto root = growntree.insert(growntree.begin(), std::make_pair("root", "root"));
         mms pcr(ofs->GetElementaryPcRelationships());
@@ -392,16 +403,47 @@ namespace {
                 nextparents.pop_back();
             }
         }
+        // set restriction on category: depth of leaf
         for (auto it = growntree.begin(); it != growntree.end(); it++) {
             if (growntree.depth(it) < depth)
                 (*it).second = (*it).first;
             else
                 (*it).second = (*growntree.parent(it)).second;
         }
+        // set restriction on category: number of children
         for (auto it = growntree.begin(); it != growntree.end(); it++)
             if (it.number_of_children() > 200)
                 for (auto cit = it.begin(); cit != it.end(); cit++)
                     (*cit).second = (*it).second;
+        //        // set restriction on category: must be in subsets
+        //        for (tree<pss>::post_order_iterator it = growntree.begin_post();
+        //                it != growntree.end_post(); it++) {
+        //            OboEntry * oey(ofs->GetOePtr((*it).first));
+        //            if (oey != nullptr)
+        //                if (!subsets.empty())
+        //                    if (!(ofs->GetOePtr((*it).first)->IsInSubsets(subsets)))
+        //                        (*it).second = (*growntree.parent(it)).second;
+        //        }
+        // set restriction on category: node must be in subset, also include
+        // its parents
+        if (!subsets.empty()) {
+            std::set<std::string> included;
+            included.clear();
+            for (tree<pss>::post_order_iterator it = growntree.begin_post();
+                    it != growntree.end_post(); it++) {
+                OboEntry * oey(ofs->GetOePtr((*it).first));
+                if (oey != nullptr)
+                    if ((ofs->GetOePtr((*it).first)->IsInSubsets(subsets))) {
+                        included.insert((*it).first);
+                        AddAllParentsUpstream(included, growntree, it);
+                    }
+            }
+            for (tree<pss>::post_order_iterator it = growntree.begin_post();
+                    it != growntree.end_post(); it++) {
+                if (included.find((*it).first) == included.end())
+                    (*it).second = (*growntree.parent(it)).second;
+            }
+        }
     }
 
     void WriteOntologyToPg(pqxx::connection & cn, std::string tablename,
@@ -477,6 +519,7 @@ namespace {
                         std::string c(GetNodeName(cit, ofs));
                         pcs.insert(std::make_pair(p, c));
                         allchildren += c;
+
                         if (cit != nexttolast) allchildren += "|";
                     }
                 }
@@ -533,6 +576,7 @@ namespace {
             }
         }
         if (!collector.empty()) {
+
             WriteOntologyToPg(cn, actualtablename, cols, collector);
             std::cout << std::endl << stem << " " << ct + 1 << "/" << grownidtree.size();
             collector.clear();
@@ -571,9 +615,9 @@ int main(int argc, char** argv) {
             std::cout << "option:" << option << std::endl;
             boost::property_tree::ptree node_pod =
                     inputtree.get_child(option);
-            const std::string masterobofile
-                    = node_pod.get<std::string>("master obofile", "master.obo");
-            std::cout << "master obofile:" << masterobofile << std::endl;
+            const std::string headerfiledir
+                    = node_pod.get<std::string>("headerfile directory", "oboheaderfiles");
+            std::cout << "headerfile directory:" << headerfiledir << std::endl;
             const std::string obodir
                     = node_pod.get<std::string>("obo directory", "obodir");
             std::cout << "obo directory:" << obodir << std::endl;
@@ -593,7 +637,8 @@ int main(int argc, char** argv) {
 
             std::map<std::string, int> depthmap;
             depthmap.clear();
-            ReadConfigurationFile(conf, depthmap);
+            std::map<std::string, std::set < std::string>> subsetmap;
+            ReadConfigurationFile(conf, depthmap, subsetmap);
             std::set<std::string> obofiles;
             obofiles.clear();
             GetFilesFromDir(obodir, obofiles);
@@ -603,29 +648,33 @@ int main(int argc, char** argv) {
             for (auto x : obofiles) {
                 int d(depth);
                 if (depthmap.find(x) != depthmap.end()) d = depthmap[x];
-                std::string obofile(ConcatenateFiles(masterobofile, x));
+                std::set<std::string> subsets = {};
+                if (subsetmap.find(x) != subsetmap.end()) subsets = subsetmap[x];
                 boost::filesystem::path p(x);
                 std::string stem(p.stem().string());
                 ontmembers.AddItem(stem);
+                std::string headerfile(headerfiledir + "/" + stem + ".headerobo");
+                std::string obofile(ConcatenateFiles(headerfile, x));
                 thread_vec.push_back(new std::thread([ = ]
-                        (std::string stem, std::string x, int d){
+                        (std::string stem, std::string x, int d, std::set<std::string> subsets){
                     pqxx::connection cn(PGONTOLOGY);
                     OboFileSegmentation * ofs = new OboFileSegmentation(x.c_str());
                     tree<pss> growntree;
-                    GrowTreeFromObo(ofs, growntree, d);
+                    GrowTreeFromObo(ofs, growntree, d, subsets);
                     std::ofstream treefile(stem + ".tree");
                     if (treefile.is_open()) {
                         PrintTree(growntree, growntree.begin(), growntree.end(),
                                 treefile, ofs);
                                 treefile.close();
-                    } else
+                    } else {
                         std::cerr << stem + ".tree could not be opened." << std::endl;
-                            WriteRelationstables(cn, growntree, stem, ofs);
-                            WriteOntologytable(cn, ofs, growntree, stem,
-                            irrverbfilename, irrpluralfilename, allverbsfilename);
-                            delete ofs;
-                            cn.disconnect();
-                    }, stem, obofile, d));
+                    }
+                    WriteRelationstables(cn, growntree, stem, ofs);
+                    WriteOntologytable(cn, ofs, growntree, stem,
+                    irrverbfilename, irrpluralfilename, allverbsfilename);
+                    delete ofs;
+                    cn.disconnect();
+                }, stem, obofile, d, subsets));
             }
             while (thread_vec.size() > 0) {
                 thread_vec.back()->join();

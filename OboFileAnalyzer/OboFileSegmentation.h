@@ -27,6 +27,7 @@ public:
     void CalculateAndPrintCompositePcRelationships(const char * filename);
     void PrintIdNames (const char * filename);
     void PrintSingleTerms(const char * filename);
+    bool IsInSubset(std::string id, std::string subsetname);
 //    void PrintCompositePcRelationships(const char * filename);
 private:
     std::vector<OboEntry*> termset_;
