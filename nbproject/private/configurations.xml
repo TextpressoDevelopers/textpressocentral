@@ -1,0 +1,577 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="100">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <df root="." name="0">
+      <df name=".settings">
+      </df>
+      <df name="build">
+        <df name="CMakeFiles">
+          <df name="3.10.2">
+            <df name="CompilerIdC">
+              <df name="tmp">
+              </df>
+              <in>CMakeCCompilerId.c</in>
+            </df>
+            <df name="CompilerIdCXX">
+              <df name="tmp">
+              </df>
+              <in>CMakeCXXCompilerId.cpp</in>
+            </df>
+          </df>
+          <df name="CMakeTmp">
+          </df>
+          <in>feature_tests.c</in>
+          <in>feature_tests.cxx</in>
+        </df>
+      </df>
+      <df name="build-default">
+        <df name="CMakeFiles">
+          <df name="3.10.2">
+            <df name="CompilerIdC">
+              <df name="tmp">
+              </df>
+              <in>CMakeCCompilerId.c</in>
+            </df>
+            <df name="CompilerIdCXX">
+              <df name="tmp">
+              </df>
+              <in>CMakeCXXCompilerId.cpp</in>
+            </df>
+          </df>
+          <df name="3.5.1">
+            <df name="CompilerIdC">
+              <in>CMakeCCompilerId.c</in>
+            </df>
+            <df name="CompilerIdCXX">
+              <in>CMakeCXXCompilerId.cpp</in>
+            </df>
+          </df>
+          <df name="CMakeTmp">
+          </df>
+          <df name="createlistofontologies.dir">
+            <df name="CreateListofOntologies">
+            </df>
+          </df>
+          <df name="generatelexicalvariations.dir">
+            <df name="GenerateLexicalVariations">
+            </df>
+          </df>
+          <df name="lexicalvariations.dir">
+            <df name="LexicalVariations">
+            </df>
+          </df>
+          <df name="libcrfasgd.dir">
+            <df name="crfasgd">
+            </df>
+          </df>
+          <df name="libcrfsgd.dir">
+            <df name="crfsgd">
+            </df>
+          </df>
+          <df name="obofileanalyzer.dir">
+            <df name="OboFileAnalyzer">
+            </df>
+          </df>
+          <df name="pdf2tpcas.dir">
+            <df name="Pdf2Tpcas">
+            </df>
+          </df>
+          <df name="tpc.dir">
+            <df name="TpC">
+              <df name="lucene">
+              </df>
+            </df>
+          </df>
+          <df name="tpcuration.dir">
+            <df name="TpCuration">
+            </df>
+          </df>
+          <df name="tpflat2oboconverter.dir">
+            <df name="TpFlat2OboConverter">
+            </df>
+          </df>
+          <df name="tpontology.dir">
+            <df name="TpOntology">
+            </df>
+          </df>
+          <df name="tpso.dir">
+            <df name="GenerateLexicalVariations">
+            </df>
+            <df name="LexicalVariations">
+            </df>
+            <df name="OboFileAnalyzer">
+            </df>
+            <df name="TpC">
+            </df>
+            <df name="Tpso">
+            </df>
+          </df>
+          <df name="xml2tpcas.dir">
+            <df name="Xml2Tpcas">
+            </df>
+          </df>
+          <in>feature_tests.c</in>
+          <in>feature_tests.cxx</in>
+        </df>
+        <df name="dirs">
+          <df name="conf">
+          </df>
+          <df name="cronjobs">
+          </df>
+          <df name="etc">
+          </df>
+          <df name="html">
+          </df>
+          <df name="luceneindex">
+          </df>
+          <df name="resources">
+            <df name="resources-tpc">
+            </df>
+            <df name="resources-web">
+            </df>
+          </df>
+          <df name="tpcas">
+          </df>
+          <df name="tpontology">
+          </df>
+          <df name="useful">
+          </df>
+          <df name="useruploads">
+          </df>
+        </df>
+        <df name="resources">
+        </df>
+      </df>
+      <df name="cmake">
+        <df name="Modules">
+        </df>
+      </df>
+      <df name="ConfigurationFiles">
+      </df>
+      <df name="CreateListofOntologies">
+        <in>main.cpp</in>
+      </df>
+      <df name="crfasgd">
+        <in>assert.h</in>
+        <in>crfasgd.cpp</in>
+        <in>crfasgd.h</in>
+        <in>gzstream.cpp</in>
+        <in>gzstream.h</in>
+        <in>matrices.cpp</in>
+        <in>matrices.h</in>
+        <in>pstream.cpp</in>
+        <in>pstream.h</in>
+        <in>timer.cpp</in>
+        <in>timer.h</in>
+        <in>vectors.cpp</in>
+        <in>vectors.h</in>
+        <in>wrapper.h</in>
+      </df>
+      <df name="crfsgd">
+        <in>assert.h</in>
+        <in>crfsgd.cpp</in>
+        <in>crfsgd.h</in>
+        <in>gzstream.cpp</in>
+        <in>gzstream.h</in>
+        <in>matrices.cpp</in>
+        <in>matrices.h</in>
+        <in>pstream.cpp</in>
+        <in>pstream.h</in>
+        <in>timer.cpp</in>
+        <in>timer.h</in>
+        <in>vectors.cpp</in>
+        <in>vectors.h</in>
+        <in>wrapper.h</in>
+      </df>
+      <df name="dirs">
+        <df name="conf">
+        </df>
+        <df name="cronjobs">
+        </df>
+        <df name="etc">
+        </df>
+        <df name="html">
+        </df>
+        <df name="luceneindex">
+        </df>
+        <df name="resources">
+          <df name="resources-tpc">
+          </df>
+          <df name="resources-web">
+          </df>
+        </df>
+        <df name="tpcas">
+        </df>
+        <df name="tpontology">
+        </df>
+        <df name="useful">
+        </df>
+        <df name="useruploads">
+        </df>
+      </df>
+      <df name="etc">
+        <df name="Autocomplete">
+        </df>
+        <df name="Noctua">
+        </df>
+      </df>
+      <df name="GenerateLexicalVariations">
+        <df name="resources">
+        </df>
+        <in>LexicalVariations.cpp</in>
+        <in>LexicalVariations.h</in>
+        <in>TpOntApi.cpp</in>
+        <in>TpOntApi.h</in>
+        <in>TpOntEntry.cpp</in>
+        <in>TpOntEntry.h</in>
+        <in>main.cpp</in>
+        <in>tree.h</in>
+      </df>
+      <df name="LexicalVariations">
+        <df name="resources">
+        </df>
+        <in>LexicalVariations.cpp</in>
+        <in>LexicalVariations.h</in>
+        <in>main.cpp</in>
+      </df>
+      <df name="OboFileAnalyzer">
+        <in>OboEntry.cpp</in>
+        <in>OboEntry.h</in>
+        <in>OboFileSegmentation.cpp</in>
+        <in>OboFileSegmentation.h</in>
+        <in>main.cpp</in>
+      </df>
+      <df name="ontologypreparation">
+        <df name="current">
+          <df name="repository4obofiles">
+            <df name="local">
+            </df>
+            <df name="public">
+            </df>
+            <df name="txt">
+            </df>
+          </df>
+        </df>
+        <df name="old_2019-06-28">
+          <df name="hand_crafted_categories">
+            <df name="disease.categories">
+            </df>
+          </df>
+          <df name="plainlists">
+          </df>
+          <df name="raw_obofiles">
+          </df>
+          <df name="resources">
+          </df>
+          <df name="scripts">
+            <df name="relevant_for_current_pipeline">
+            </df>
+            <df name="wrappers">
+            </df>
+          </df>
+        </df>
+      </df>
+      <df name="Pdf2Tpcas">
+        <in>ElementCluster.cpp</in>
+        <in>ElementCluster.h</in>
+        <in>PdfInfo.cpp</in>
+        <in>PdfInfo.h</in>
+        <in>PdfMyFontInfo.cpp</in>
+        <in>PdfMyFontInfo.h</in>
+        <in>Stream2Tpcas.cpp</in>
+        <in>Stream2Tpcas.h</in>
+        <in>TextElement.cpp</in>
+        <in>TextElement.h</in>
+        <in>main.cpp</in>
+      </df>
+      <df name="supportingscripts">
+        <df name="data_aquisition">
+        </df>
+        <df name="pipelines">
+          <df name="latest">
+          </df>
+        </df>
+        <df name="pipelines4sandbox">
+        </df>
+        <df name="useruploadpipelines">
+        </df>
+      </df>
+      <df name="TpC">
+        <df name="lucene">
+          <in>CaseSensitiveAnalyzer.cpp</in>
+          <in>CaseSensitiveAnalyzer.h</in>
+          <in>LazySelector.h</in>
+        </df>
+        <df name="resources">
+          <df name="icons">
+          </df>
+          <df name="other_images">
+          </df>
+        </df>
+        <in>AboutUs.cpp</in>
+        <in>AboutUs.h</in>
+        <in>AnnotationGroupBox.cpp</in>
+        <in>AnnotationGroupBox.h</in>
+        <in>AnnotatorContainer.cpp</in>
+        <in>AnnotatorContainer.h</in>
+        <in>AssistedFieldValueForm.cpp</in>
+        <in>AssistedFieldValueForm.h</in>
+        <in>AuthSingleton.h</in>
+        <in>AuthWidget.C</in>
+        <in>AuthWidget.h</in>
+        <in>AutocompleteAndValidationDialog.cpp</in>
+        <in>AutocompleteAndValidationDialog.h</in>
+        <in>Browsers.cpp</in>
+        <in>Browsers.h</in>
+        <in>CategoryPreferences.cpp</in>
+        <in>CategoryPreferences.h</in>
+        <in>Chunk.cpp</in>
+        <in>Chunk.h</in>
+        <in>ColorSet.cpp</in>
+        <in>ColorSet.h</in>
+        <in>ConfigurableAnnotatorContainer.cpp</in>
+        <in>ConfigurableAnnotatorContainer.h</in>
+        <in>CreateCurationForm.cpp</in>
+        <in>CreateCurationForm.h</in>
+        <in>Curation.cpp</in>
+        <in>Curation.h</in>
+        <in>CurationDatabase.cpp</in>
+        <in>CurationDatabase.h</in>
+        <in>CurationFieldConfiguration.cpp</in>
+        <in>CurationFieldConfiguration.h</in>
+        <in>CurationFormView.hpp</in>
+        <in>CurationFormsConfiguration.cpp</in>
+        <in>CurationFormsConfiguration.h</in>
+        <in>CurationGroupBox.cpp</in>
+        <in>CurationGroupBox.h</in>
+        <in>Customization.cpp</in>
+        <in>Customization.h</in>
+        <in>CustomizeColors.cpp</in>
+        <in>CustomizeColors.h</in>
+        <in>Download.cpp</in>
+        <in>Download.h</in>
+        <in>FetchList.cpp</in>
+        <in>FetchList.h</in>
+        <in>FrequencyAnalyzer.cpp</in>
+        <in>FrequencyAnalyzer.h</in>
+        <in>Help.cpp</in>
+        <in>Help.h</in>
+        <in>HelpDialog.cpp</in>
+        <in>HelpDialog.h</in>
+        <in>Home.cpp</in>
+        <in>Home.h</in>
+        <in>LexicalVariations.cpp</in>
+        <in>LexicalVariations.h</in>
+        <in>Lists.cpp</in>
+        <in>Lists.h</in>
+        <in>LiteratureProcessProgress.cpp</in>
+        <in>LiteratureProcessProgress.h</in>
+        <in>Login.cpp</in>
+        <in>Login.h</in>
+        <in>ModAnnotator.cpp</in>
+        <in>ModAnnotator.h</in>
+        <in>MyAuthService.cpp</in>
+        <in>MyAuthService.h</in>
+        <in>MyAuthWidget.cpp</in>
+        <in>MyAuthWidget.h</in>
+        <in>MyLostPasswordWidget.cpp</in>
+        <in>MyLostPasswordWidget.h</in>
+        <in>NLP.cpp</in>
+        <in>NLP.h</in>
+        <in>Ontology.cpp</in>
+        <in>Ontology.h</in>
+        <in>OntologyBrowser.cpp</in>
+        <in>OntologyBrowser.h</in>
+        <in>OntologyDisplay.cpp</in>
+        <in>OntologyDisplay.h</in>
+        <in>OntologyTable.cpp</in>
+        <in>OntologyTable.h</in>
+        <in>OntologyTermQuery.cpp</in>
+        <in>OntologyTermQuery.h</in>
+        <in>PaperBrowser.cpp</in>
+        <in>PaperBrowser.h</in>
+        <in>PaperOrganizer.cpp</in>
+        <in>PaperOrganizer.h</in>
+        <in>Papers.cpp</in>
+        <in>Papers.h</in>
+        <in>PdfTag.cpp</in>
+        <in>PdfTag.h</in>
+        <in>PdfToken.cpp</in>
+        <in>PdfToken.h</in>
+        <in>Permissions.cpp</in>
+        <in>Permissions.h</in>
+        <in>PgColorPick.cpp</in>
+        <in>PgColorPick.h</in>
+        <in>PgColumn.cpp</in>
+        <in>PgColumn.h</in>
+        <in>PgCurationDataFromViewer.cpp</in>
+        <in>PgCurationDataFromViewer.h</in>
+        <in>PgList.cpp</in>
+        <in>PgList.h</in>
+        <in>PgPrepopulation.cpp</in>
+        <in>PgPrepopulation.h</in>
+        <in>PgTableEditor.cpp</in>
+        <in>PgTableEditor.h</in>
+        <in>PgTableEditorButtons.cpp</in>
+        <in>PgTableEditorButtons.h</in>
+        <in>PgTableEditorItemDelegate.cpp</in>
+        <in>PgTableEditorItemDelegate.h</in>
+        <in>PgTableQuery.cpp</in>
+        <in>PgTableQuery.h</in>
+        <in>PickCategory.cpp</in>
+        <in>PickCategory.h</in>
+        <in>PickCategoryContainer.cpp</in>
+        <in>PickCategoryContainer.h</in>
+        <in>PickLiterature.cpp</in>
+        <in>PickLiterature.h</in>
+        <in>PickedLiteratureContents.cpp</in>
+        <in>PickedLiteratureContents.h</in>
+        <in>PrePopulationDialog.cpp</in>
+        <in>PrePopulationDialog.h</in>
+        <in>Preference.cpp</in>
+        <in>Preference.h</in>
+        <in>RegistrationView.C</in>
+        <in>RegistrationView.h</in>
+        <in>Search.cpp</in>
+        <in>Search.h</in>
+        <in>Session.cpp</in>
+        <in>Session.h</in>
+        <in>SpiralPainting.cpp</in>
+        <in>SpiralPainting.h</in>
+        <in>StopWords.cpp</in>
+        <in>StopWords.h</in>
+        <in>SuggestionBoxFromPg.cpp</in>
+        <in>SuggestionBoxFromPg.h</in>
+        <in>SuggestionBoxFromPgOntology.cpp</in>
+        <in>SuggestionBoxFromPgOntology.h</in>
+        <in>SuggestionBoxFromPgOrWeb.cpp</in>
+        <in>SuggestionBoxFromPgOrWeb.h</in>
+        <in>TCNavWeb.cpp</in>
+        <in>TCNavWeb.h</in>
+        <in>TextpressoCentralGlobalDefinitions.h</in>
+        <in>TpCategoryBrowser.cpp</in>
+        <in>TpCategoryBrowser.h</in>
+        <in>TpCurApi.cpp</in>
+        <in>TpCurApi.h</in>
+        <in>TpOntApi.cpp</in>
+        <in>TpOntApi.h</in>
+        <in>TpOntEntry.cpp</in>
+        <in>TpOntEntry.h</in>
+        <in>TpOntologyBrowser.cpp</in>
+        <in>TpOntologyBrowser.h</in>
+        <in>UploadManager.cpp</in>
+        <in>UploadManager.h</in>
+        <in>UrlParameters.cpp</in>
+        <in>UrlParameters.h</in>
+        <in>User.cpp</in>
+        <in>User.h</in>
+        <in>UserDetailsModel.C</in>
+        <in>UserDetailsModel.h</in>
+        <in>Viewer.cpp</in>
+        <in>Viewer.h</in>
+        <in>Workflow.cpp</in>
+        <in>Workflow.h</in>
+        <in>XmlTag.cpp</in>
+        <in>XmlTag.h</in>
+        <in>main.cpp</in>
+        <in>tree.h</in>
+      </df>
+      <df name="TpCuration">
+        <in>TextpressoCentralGlobalDefinitions.h</in>
+        <in>TpCurApi.cpp</in>
+        <in>TpCurApi.h</in>
+        <in>main.cpp</in>
+      </df>
+      <df name="TpFlat2OboConverter">
+        <in>main.cpp</in>
+      </df>
+      <df name="TpOntology">
+        <df name="tree-2.81">
+          <df name="doc">
+          </df>
+          <df name="src">
+            <in>simple tree.hpp</in>
+            <in>test1.cc</in>
+            <in>test_tree.cc</in>
+            <in>tree_example.cc</in>
+          </df>
+        </df>
+        <in>TpOntApi.cpp</in>
+        <in>TpOntApi.h</in>
+        <in>TpOntEntry.cpp</in>
+        <in>TpOntEntry.h</in>
+        <in>main.cpp</in>
+        <in>tree.h</in>
+      </df>
+      <df name="Tpso">
+        <in>main.cpp</in>
+        <in>tpso.config.h</in>
+      </df>
+      <df name="Xml2Tpcas">
+        <in>PugiXml2Tpcas.cpp</in>
+        <in>PugiXml2Tpcas.h</in>
+        <in>ReadXml2Stream.cpp</in>
+        <in>ReadXml2Stream.h</in>
+        <in>Stream2Tpcas.cpp</in>
+        <in>Stream2Tpcas.h</in>
+        <in>main.cpp</in>
+        <in>pugiconfig.hpp</in>
+        <in>pugixml.cpp</in>
+        <in>pugixml.hpp</in>
+      </df>
+      <in>TextpressoCentralGlobalDefinitions.h</in>
+      <in>TextpressoCentralGlobals.h</in>
+    </df>
+    <itemPath>Tpso/CreateLexica.bash</itemPath>
+  </logicalFolder>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Default" type="0">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <platform>2</platform>
+      </toolsSet>
+      <compile>
+        <compiledirpicklist>
+          <compiledirpicklistitem>.</compiledirpicklistitem>
+          <compiledirpicklistitem>${AUTO_FOLDER}</compiledirpicklistitem>
+        </compiledirpicklist>
+        <compiledir>${AUTO_FOLDER}</compiledir>
+        <compilecommandpicklist>
+          <compilecommandpicklistitem>${MAKE} ${ITEM_NAME}.o</compilecommandpicklistitem>
+          <compilecommandpicklistitem>${AUTO_COMPILE}</compilecommandpicklistitem>
+        </compilecommandpicklist>
+        <compilecommand>${AUTO_COMPILE}</compilecommand>
+      </compile>
+      <dbx_gdbdebugger version="1">
+        <gdb_pathmaps>
+        </gdb_pathmaps>
+        <gdb_interceptlist>
+          <gdbinterceptoptions gdb_all="false" gdb_unhandled="true" gdb_unexpected="true"/>
+        </gdb_interceptlist>
+        <gdb_options>
+          <DebugOptions>
+          </DebugOptions>
+        </gdb_options>
+        <gdb_buildfirst gdb_buildfirst_overriden="false" gdb_buildfirst_old="false"/>
+      </dbx_gdbdebugger>
+      <nativedebugger version="1">
+        <engine>gdb</engine>
+      </nativedebugger>
+      <runprofile version="9">
+        <runcommandpicklist>
+          <runcommandpicklistitem>"${OUTPUT_PATH}"</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" -j ../Tpso/input.json</runcommandpicklistitem>
+        </runcommandpicklist>
+        <runcommand>"${OUTPUT_PATH}" -j ../Tpso/input.json</runcommand>
+        <rundir>/data/textpresso/textpressocentral/./build-default</rundir>
+        <buildfirst>false</buildfirst>
+        <console-type>2</console-type>
+        <terminal-type>0</terminal-type>
+        <remove-instrumentation>0</remove-instrumentation>
+        <environment>
+        </environment>
+      </runprofile>
+    </conf>
+  </confs>
+</configurationDescriptor>

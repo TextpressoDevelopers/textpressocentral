@@ -1,0 +1,99 @@
+Scanning dependencies of target xml2tpcas
+[  1%] Building CXX object CMakeFiles/xml2tpcas.dir/Xml2Tpcas/main.cpp.o
+[  1%] Building CXX object CMakeFiles/xml2tpcas.dir/Xml2Tpcas/pugixml.cpp.o
+[  2%] Building CXX object CMakeFiles/xml2tpcas.dir/Xml2Tpcas/PugiXml2Tpcas.cpp.o
+[  3%] Building CXX object CMakeFiles/xml2tpcas.dir/Xml2Tpcas/ReadXml2Stream.cpp.o
+[  4%] Building CXX object CMakeFiles/xml2tpcas.dir/Xml2Tpcas/Stream2Tpcas.cpp.o
+[  5%] Linking CXX executable xml2tpcas
+[  5%] Built target xml2tpcas
+Scanning dependencies of target libcrfasgd
+[  6%] Building CXX object CMakeFiles/libcrfasgd.dir/crfasgd/crfasgd.cpp.o
+[  7%] Building CXX object CMakeFiles/libcrfasgd.dir/crfasgd/gzstream.cpp.o
+[  7%] Building CXX object CMakeFiles/libcrfasgd.dir/crfasgd/matrices.cpp.o
+[  8%] Building CXX object CMakeFiles/libcrfasgd.dir/crfasgd/pstream.cpp.o
+[  9%] Building CXX object CMakeFiles/libcrfasgd.dir/crfasgd/timer.cpp.o
+[ 10%] Building CXX object CMakeFiles/libcrfasgd.dir/crfasgd/vectors.cpp.o
+[ 10%] Linking CXX shared library libcrfasgd.so
+[ 10%] Built target libcrfasgd
+Scanning dependencies of target lexicalvariations
+[ 11%] Building CXX object CMakeFiles/lexicalvariations.dir/LexicalVariations/main.cpp.o
+[ 11%] Building CXX object CMakeFiles/lexicalvariations.dir/LexicalVariations/LexicalVariations.cpp.o
+[ 12%] Linking CXX executable lexicalvariations
+[ 12%] Built target lexicalvariations
+Scanning dependencies of target tpontology
+[ 13%] Building CXX object CMakeFiles/tpontology.dir/TpOntology/main.cpp.o
+[ 13%] Building CXX object CMakeFiles/tpontology.dir/TpOntology/TpOntApi.cpp.o
+[ 14%] Building CXX object CMakeFiles/tpontology.dir/TpOntology/TpOntEntry.cpp.o
+[ 15%] Linking CXX executable tpontology
+[ 15%] Built target tpontology
+Scanning dependencies of target createlistofontologies
+[ 15%] Building CXX object CMakeFiles/createlistofontologies.dir/CreateListofOntologies/main.cpp.o
+[ 16%] Linking CXX executable createlistofontologies
+[ 16%] Built target createlistofontologies
+Scanning dependencies of target tpflat2oboconverter
+[ 17%] Building CXX object CMakeFiles/tpflat2oboconverter.dir/TpFlat2OboConverter/main.cpp.o
+[ 18%] Linking CXX executable tpflat2oboconverter
+[ 18%] Built target tpflat2oboconverter
+Scanning dependencies of target pdf2tpcas
+[ 18%] Building CXX object CMakeFiles/pdf2tpcas.dir/Pdf2Tpcas/main.cpp.o
+[ 19%] Building CXX object CMakeFiles/pdf2tpcas.dir/Pdf2Tpcas/PdfInfo.cpp.o
+[ 20%] Building CXX object CMakeFiles/pdf2tpcas.dir/Pdf2Tpcas/ElementCluster.cpp.o
+[ 21%] Building CXX object CMakeFiles/pdf2tpcas.dir/Pdf2Tpcas/PdfMyFontInfo.cpp.o
+[ 21%] Building CXX object CMakeFiles/pdf2tpcas.dir/Pdf2Tpcas/Stream2Tpcas.cpp.o
+[ 22%] Building CXX object CMakeFiles/pdf2tpcas.dir/Pdf2Tpcas/TextElement.cpp.o
+[ 23%] Linking CXX executable pdf2tpcas
+[ 23%] Built target pdf2tpcas
+Scanning dependencies of target generatelexicalvariations
+[ 24%] Building CXX object CMakeFiles/generatelexicalvariations.dir/GenerateLexicalVariations/main.cpp.o
+[ 25%] Building CXX object CMakeFiles/generatelexicalvariations.dir/GenerateLexicalVariations/LexicalVariations.cpp.o
+[ 25%] Building CXX object CMakeFiles/generatelexicalvariations.dir/GenerateLexicalVariations/TpOntApi.cpp.o
+[ 26%] Building CXX object CMakeFiles/generatelexicalvariations.dir/GenerateLexicalVariations/TpOntEntry.cpp.o
+[ 27%] Linking CXX executable generatelexicalvariations
+[ 27%] Built target generatelexicalvariations
+Scanning dependencies of target obofileanalyzer
+[ 27%] Building CXX object CMakeFiles/obofileanalyzer.dir/OboFileAnalyzer/main.cpp.o
+[ 28%] Building CXX object CMakeFiles/obofileanalyzer.dir/OboFileAnalyzer/OboEntry.cpp.o
+[ 29%] Building CXX object CMakeFiles/obofileanalyzer.dir/OboFileAnalyzer/OboFileSegmentation.cpp.o
+[ 30%] Linking CXX executable obofileanalyzer
+[ 30%] Built target obofileanalyzer
+Scanning dependencies of target libcrfsgd
+[ 31%] Building CXX object CMakeFiles/libcrfsgd.dir/crfsgd/crfsgd.cpp.o
+[ 32%] Building CXX object CMakeFiles/libcrfsgd.dir/crfsgd/gzstream.cpp.o
+[ 33%] Building CXX object CMakeFiles/libcrfsgd.dir/crfsgd/matrices.cpp.o
+[ 33%] Building CXX object CMakeFiles/libcrfsgd.dir/crfsgd/pstream.cpp.o
+[ 34%] Building CXX object CMakeFiles/libcrfsgd.dir/crfsgd/timer.cpp.o
+[ 35%] Building CXX object CMakeFiles/libcrfsgd.dir/crfsgd/vectors.cpp.o
+[ 36%] Linking CXX shared library libcrfsgd.so
+[ 36%] Built target libcrfsgd
+Scanning dependencies of target tpcuration
+[ 37%] Building CXX object CMakeFiles/tpcuration.dir/TpCuration/main.cpp.o
+[ 38%] Building CXX object CMakeFiles/tpcuration.dir/TpCuration/TpCurApi.cpp.o
+[ 38%] Linking CXX executable tpcuration
+[ 38%] Built target tpcuration
+Scanning dependencies of target tpc
+[ 39%] Building CXX object CMakeFiles/tpc.dir/TpC/Download.cpp.o
+[ 39%] Building CXX object CMakeFiles/tpc.dir/TpC/ModAnnotator.cpp.o
+[ 40%] Building CXX object CMakeFiles/tpc.dir/TpC/ColorSet.cpp.o
+[ 41%] Building CXX object CMakeFiles/tpc.dir/TpC/PickCategoryContainer.cpp.o
+[ 42%] Building CXX object CMakeFiles/tpc.dir/TpC/LexicalVariations.cpp.o
+[ 42%] Building CXX object CMakeFiles/tpc.dir/TpC/AboutUs.cpp.o
+[ 43%] Building CXX object CMakeFiles/tpc.dir/TpC/PgColumn.cpp.o
+[ 44%] Building CXX object CMakeFiles/tpc.dir/TpC/StopWords.cpp.o
+[ 45%] Building CXX object CMakeFiles/tpc.dir/TpC/PdfTag.cpp.o
+[ 45%] Building CXX object CMakeFiles/tpc.dir/TpC/SuggestionBoxFromPg.cpp.o
+[ 46%] Building CXX object CMakeFiles/tpc.dir/TpC/FrequencyAnalyzer.cpp.o
+[ 47%] Building CXX object CMakeFiles/tpc.dir/TpC/CreateCurationForm.cpp.o
+[ 48%] Building CXX object CMakeFiles/tpc.dir/TpC/XmlTag.cpp.o
+[ 48%] Building CXX object CMakeFiles/tpc.dir/TpC/LiteratureProcessProgress.cpp.o
+[ 49%] Building CXX object CMakeFiles/tpc.dir/TpC/Papers.cpp.o
+[ 50%] Building CXX object CMakeFiles/tpc.dir/TpC/PickedLiteratureContents.cpp.o
+/data/textpressocentral/TpC/PickedLiteratureContents.cpp: In member function 'void PickedLiteratureContents::UpdateLiteraturePreferences(bool)':
+/data/textpressocentral/TpC/PickedLiteratureContents.cpp:141:86: error: 'CAS_ROOT_LOCATION' is not a member of 'tpc::index'
+     for (const std::string& corpus : tpc::index::IndexManager::get_available_corpora(tpc::index::CAS_ROOT_LOCATION.c_str())) {
+                                                                                      ^
+CMakeFiles/tpc.dir/build.make:422: recipe for target 'CMakeFiles/tpc.dir/TpC/PickedLiteratureContents.cpp.o' failed
+make[2]: *** [CMakeFiles/tpc.dir/TpC/PickedLiteratureContents.cpp.o] Error 1
+CMakeFiles/Makefile2:474: recipe for target 'CMakeFiles/tpc.dir/all' failed
+make[1]: *** [CMakeFiles/tpc.dir/all] Error 2
+Makefile:127: recipe for target 'all' failed
+make: *** [all] Error 2

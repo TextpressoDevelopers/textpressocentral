@@ -34,3 +34,20 @@ def: "Any entity that is ordered in discrete units along a linear axis." []
 relationship: RO:0002524 RO:0002533 ! has subsequence sequence atomic unit
 property_value: IAO:0000117 "Chris Mungall" xsd:string
 is_a: FBcv:0000000
+
+[Term]
+id: CHEBI:50906
+name: role
+namespace: chebi_ontology
+def: "A role is particular behaviour which a material entity may exhibit." []
+subset: 3_STAR
+is_a: FBcv:0000000
+
+[Term]
+id: CHEBI:36342
+name: subatomic particle
+namespace: chebi_ontology
+def: "A particle smaller than an atom." []
+subset: 3_STAR
+synonym: "subatomic particles" RELATED [ChEBI]
+is_a: FBcv:0000000
