@@ -34,12 +34,11 @@ function activate() {
 
 function set_literature_dir() {
     literature_dir=$1
-    rmdir /usr/local/textpresso/luceneindex
-    ln -s $literature_dir/luceneindex $TPC_HOME/luceneindex
-    rmdir $TPC_HOME/tpcas
-    ln -s $literature_dir/tpcas-2 $TPC_HOME/tpcas
+    rmdir $TPC_HOME/tpcas 2>/dev/null || rm $TPC_HOME/tpcas 2>/dev/null
+    ln -s $literature_dir/luceneindex $TPC_HOME/.
     mkdir -p $CGI_BIN/tc
     ln -s $TPC_HOME/tpcas $CGI_BIN/tc/images
+    ln -s $literature_dir/tpcas-2 $TPC_HOME/tpcas
 }
 
 case "$1" in
@@ -55,5 +54,4 @@ case "$1" in
     *)
        echo "Usage: $0 {uninstall|set_literature_dir <dir_location>|activate [debug]}"
 esac
-
 exit 0
