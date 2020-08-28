@@ -74,7 +74,7 @@ using namespace std;
 
 const String LUCENE_INDEX_LOCATION = L"/usr/local/textpresso/luceneindex/";
 const int RECORDS_PER_PAGE = 20;
-const int NUM_SENTENCES_HITS_WARN_THRESHOLD = 50000;
+const int NUM_SENTENCES_HITS_WARN_THRESHOLD = 10000;
 const string CAS_ROOTDIR = "/usr/local/textpresso/tpcas/";
 
 static const set<string> urlparamset = {"accession", "author", "category", "exclude", "journal", "keyword",
