@@ -79,7 +79,7 @@ namespace {
         //
         Wt::WGroupBox * sft(DisplayGroupBox("Search Full Text",
                 "Textpresso Central contains "
-                "(roughly 2.4 million) PMCOA full text articles. "
+                "(roughly 2.85 million) PMCOA full text articles. "
                 "The number of articles is continuously growing."));
         ret->addWidget(sft);
         ret->addWidget(new Wt::WBreak());
