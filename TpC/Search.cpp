@@ -179,9 +179,6 @@ Wt::WContainerWidget(parent) {
     session_ = &session;
     literaturestatus_ = new Wt::WText();
     literaturestatus_->setTextFormat(TextFormat::XHTMLText);
-    ReadIndexPrefix();
-    ReadPreloadedCategories();
-    readPreloadedColors();
     containerforupdates_ = new Wt::WContainerWidget();
     updatetext_ = new Wt::WText();
     containerforupdates_->addWidget(updatetext_);
@@ -389,7 +386,6 @@ Wt::WContainerWidget(parent) {
     }
     return_to_sentence_search_ = false;
     session_->login().changed().connect(boost::bind(&Search::SessionLoginChanged, this));
-    ResetSearch();
     SessionLoginChanged();
 }
 

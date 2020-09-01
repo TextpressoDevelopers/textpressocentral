@@ -46,10 +46,8 @@ OntologyBrowser::OntologyBrowser(Session & session, Wt::WContainerWidget * paren
     OntologyDisplay * od = new OntologyDisplay(pcc, otq, h2);
     od->setMaximumSize(Wt::WLength(100, Wt::WLength::Percentage), h2);
     layout->addWidget(querycont);
-    layout->addWidget(od);
-    
+    layout->addWidget(od);    
 }
 
 OntologyBrowser::~OntologyBrowser() {
 }
-

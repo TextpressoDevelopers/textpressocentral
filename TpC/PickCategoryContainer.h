@@ -42,6 +42,7 @@ private:
     Wt::WCheckBox * includechildren_;
     Wt::Signal<void> okclicked_;
     void DisplaySelectedCategories();
+    void PrepareInputDisplay(Session * session,Wt::WScrollArea * cs);
     void EnterPressed();
     void ItemSelectionChanged();
     void ResetSelectedCategories();
