@@ -22,7 +22,8 @@
 class PickCategoryContainer : public Wt::WContainerWidget {
 public:
     PickCategoryContainer(Session * session, 
-            std::set<std::string> & preloaded, bool showmatchcriteriachoice);
+            std::set<std::string> & preloaded, bool showmatchcriteriachoice,
+            bool expandtree);
     std::set<Wt::WString> GetSelected(bool explct = false);
     bool CatAnded() { return (groupAndorOr_->checkedId() > 0); }
     TpCategoryBrowser * GetTCB () { return tcb_; }

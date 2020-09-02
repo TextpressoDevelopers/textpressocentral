@@ -22,78 +22,17 @@
 #include <Wt/WLabel>
 
 PickCategoryContainer::PickCategoryContainer(Session * session,
-        std::set<std::string> & preloaded, bool showmatchcriteriachoice) {
+        std::set<std::string> & preloaded, bool showmatchcriteriachoice,
+        bool expandtree) {
     showmatchcriteriachoice_ = showmatchcriteriachoice;
     preloaded_ = preloaded;
     //
     Wt::WText *caption = new Wt::WText("Pick Category from Tree");
     caption->decorationStyle().font().setWeight(Wt::WFont::Bold);
     caption->decorationStyle().font().setSize(Wt::WFont::Large);
-    //
-    //    Wt::WPushButton * changeprefs = new Wt::WPushButton("Change tree preferences");
-    //    changeprefs->clicked().connect(boost::bind(&PickCategoryContainer::ChangePreferences, this,
-    //            session));
-    //    changeprefs->setStyleClass("btn-mini");
-    //    changeprefs->setFloatSide(Wt::Right);
-    //    //
-    //    includechildren_ = new Wt::WCheckBox("include children of selected categories");
-    //    includechildren_->setFloatSide(Wt::Left);
-    //    includechildren_->setChecked();
-    //    includechildren_->changed().connect(this, &PickCategoryContainer::DisplaySelectedCategories);
-    //    //
     selectedcatdisplay_ = new Wt::WContainerWidget();
     selectedcatdisplay_->setMaximumSize(Wt::WLength(48, Wt::WLength::FontEx),
             Wt::WLength(64, Wt::WLength::FontEx));
-//    Wt::WContainerWidget * inputdisplay = new Wt::WContainerWidget();
-//    inputdisplay->setMinimumSize(Wt::WLength(80, Wt::WLength::FontEx), // max width
-//            Wt::WLength(48, Wt::WLength::FontEx)); // max height
-    //
-    //    PrepareInputDisplay(session, inputdisplay);
-    /*
-    tcb_ = new TpCategoryBrowser(preloaded_);
-    tcb_->itemSelectionChanged().connect(this, &PickCategoryContainer::ItemSelectionChanged);
-    //
-    searchbox_ = new Wt::WLineEdit();
-    searchbox_->setEmptyText("Type in category");
-    searchbox_->resize(Wt::WLength(64, Wt::WLength::FontEx), Wt::WLength(2, Wt::WLength::FontEx));
-    searchbox_->enterPressed().connect(this, &PickCategoryContainer::EnterPressed);
-    //
-    Wt::WSuggestionPopup::Options popupOption;
-    popupOption.highlightBeginTag = "<span class=\"highlight\">";
-    popupOption.highlightEndTag = "</span>";
-    popupOption.wordSeparators = "-., \";";
-    Wt::WSuggestionPopup * sp = new Wt::WSuggestionPopup(
-            Wt::WSuggestionPopup::generateMatcherJS(popupOption),
-            Wt::WSuggestionPopup::generateReplacerJS(popupOption));
-    // Populate the underlying model with suggestions:
-    std::set<std::string> aux = tcb_->GetCategorySet();
-    std::set<std::string>::iterator it;
-    for (it = aux.begin(); it != aux.end(); it++) {
-        catsetfrompg_.insert(*it);
-        sp->addSuggestion(*it);
-    }
-    inputdisplay->addWidget(includechildren_);
-    inputdisplay->addWidget(new Wt::WBreak());
-    inputdisplay->addWidget(new Wt::WBreak());
-    sp->forEdit(searchbox_);
-    sp->setMaximumSize(Wt::WLength(60, Wt::WLength::FontEx), Wt::WLength(30, Wt::WLength::FontEx));
-    sp->setFilterLength(4);
-    inputdisplay->addWidget(searchbox_);
-    searchbox_->setInline(true);
-    Wt::WPushButton * addbutton = new Wt::WPushButton("Add!");
-    addbutton->setStyleClass("btn-mini");
-    addbutton->setVerticalAlignment(Wt::AlignTop);
-    addbutton->clicked().connect(this, &PickCategoryContainer::EnterPressed);
-    addbutton->setInline(true);
-    inputdisplay->addWidget(addbutton);
-    inputdisplay->addWidget(new Wt::WBreak());
-    inputdisplay->addWidget(new Wt::WText("or pick from tree below:"));
-    inputdisplay->addWidget(new Wt::WBreak());
-    inputdisplay->addWidget(changeprefs);
-    inputdisplay->addWidget(new Wt::WBreak());
-    inputdisplay->addWidget(tcb_);
-    inputdisplay->addWidget(new Wt::WBreak());
-     */
     Wt::WContainerWidget * captionContainer = new Wt::WContainerWidget();
     captionContainer->addWidget(caption);
     captionContainer->addWidget(new Wt::WBreak());
@@ -104,11 +43,16 @@ PickCategoryContainer::PickCategoryContainer(Session * session,
     expandTreeButton->setStyleClass("btn-mini");
     expandTreeButton->setWidth(Wt::WLength(15, Wt::WLength::FontEx));
     //    expandTreeButton->setVerticalAlignment(Wt::AlignTop);
-    expandTreeButton->clicked().connect(boost::bind(&PickCategoryContainer::PrepareInputDisplay,
-            this, session, cs));
-    expandTreeButton->clicked().connect(std::bind([ = ] () {
+    if (expandtree) {
         expandTreeButton->hide();
-    }));
+        PrepareInputDisplay(session, cs);
+    } else {
+        expandTreeButton->clicked().connect(boost::bind(&PickCategoryContainer::PrepareInputDisplay,
+                this, session, cs));
+        expandTreeButton->clicked().connect(std::bind([ = ] (){
+            expandTreeButton->hide();
+        }));
+    }
     Wt::WContainerWidget * treeContainer = new Wt::WContainerWidget();
     Wt::WHBoxLayout * boxlayout = new Wt::WHBoxLayout();
     treeContainer->setLayout(boxlayout);
@@ -182,7 +126,7 @@ void PickCategoryContainer::PrepareInputDisplay(Session * session, Wt::WScrollAr
     inputdisplay->addWidget(changeprefs);
     inputdisplay->addWidget(new Wt::WBreak());
     inputdisplay->addWidget(tcb_);
-//    inputdisplay->addWidget(new Wt::WBreak());
+    //    inputdisplay->addWidget(new Wt::WBreak());
     cs->setScrollBarPolicy(Wt::WScrollArea::ScrollBarAsNeeded);
     Wt::WLength heightfx = Wt::WLength(36, Wt::WLength::FontEx);
     inputdisplay->setHeight(heightfx);

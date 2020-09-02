@@ -1072,6 +1072,7 @@ void Search::SetCursorHand(Wt::WWidget * w) {
 
 void Search::AddCatButtonPressed(Session * session) {
     addcat_button_->disable();
+    ReadPreloadedCategories();
     pc_ = new PickCategory(session, preloadedcategories_);
     pc_->finished().connect(this, &Search::PickCategoryDialogDone);
     pc_->show();
@@ -2288,24 +2289,35 @@ void Search::readPreloadedColors() {
     colorSet.loadColorsFromDB(username);
 }
 
-void Search::UpdateLiteraturePrefenferences(bool checkpermissions) {
+void Search::UpdateLiteraturePreferences(bool checkpermissions) {
     std::string username("default");
     if (session_->login().state() != 0) {
         username = session_->login().user().identity("loginname").toUTF8();
     }
+
     Preference * pref = new Preference(PGLITERATURE, PGLITPREFTABLENAME, username);
-    Preference * permissions = new Preference(PGLITERATUREPERMISSION,
+    Preference * permissions;
+    if (checkpermissions)
+        permissions = new Preference(PGLITERATUREPERMISSION,
             PGLITERATUREPERMISSIONTABLENAME, username);
-    Preference * dfpermissions = new Preference(PGLITERATUREPERMISSION,
+    Preference * dfpermissions;
+    if (checkpermissions)
+        dfpermissions = new Preference(PGLITERATUREPERMISSION,
             PGLITERATUREPERMISSIONTABLENAME, "default");
     for (const string& corpus : IndexManager::get_available_corpora(CAS_ROOT_LOCATION.c_str())) {
         // grant search rights based on individual and default permissions.
-        if ((!checkpermissions || permissions->IsPreference(corpus)) || dfpermissions->IsPreference(corpus))
+        if (checkpermissions) {
+            if (permissions->IsPreference(corpus) || dfpermissions->IsPreference(corpus))
+                if (pref->HasPreferences())
+                    pickedliterature_[corpus] = (pref->IsPreference(corpus)) ? true : false;
+                else
+                    pickedliterature_[corpus] = true;
+        } else {
             if (pref->HasPreferences())
                 pickedliterature_[corpus] = (pref->IsPreference(corpus)) ? true : false;
-
             else
                 pickedliterature_[corpus] = true;
+        }
     }
     if (session_->login().state() != 0 && indexManager.has_external_index()) {
         for (const string& external_corpus : indexManager.get_external_corpora()) {
@@ -2313,8 +2325,10 @@ void Search::UpdateLiteraturePrefenferences(bool checkpermissions) {
         }
     }
     delete pref;
-    delete permissions;
-    delete dfpermissions;
+    if (checkpermissions) {
+        delete permissions;
+        delete dfpermissions;
+    }
 }
 
 void Search::ReadIndexPrefix() {
@@ -2329,7 +2343,7 @@ void Search::ReadIndexPrefix() {
         }
     }
     pickedliterature_.clear();
-    UpdateLiteraturePrefenferences(true);
+    UpdateLiteraturePreferences(false);
     UpdateLiteratureStatus();
 }
 
@@ -2462,8 +2476,6 @@ void Search::eraseAllOccurrencesOfStr(string &str, const string &pattern) {
 void Search::SessionLoginChanged() {
     ResetSearch();
     ReadIndexPrefix();
-    ReadPreloadedCategories();
-    readPreloadedColors();
     readDialogPreferences();
     if (session_->login().state() != 0) {
         setDefTypeBtn->show();

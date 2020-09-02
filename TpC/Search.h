@@ -193,7 +193,7 @@ private:
     void setHitText(int index, Wt::WGroupBox* textGroupBox);
     Wt::WContainerWidget* setHitCatSentence(wstring w_cat, vector<wstring > subwstrings, int sentence_length, Wt::WGroupBox* textGroupBox);
     void showMessagebox(WString message);
-    void UpdateLiteraturePrefenferences(bool checkpermissions);
+    void UpdateLiteraturePreferences(bool checkpermissions);
     void ReadIndexPrefix();
     void UpdateLiteratureStatus();
     void CheckAgainstPickedLiteratureMap(Wt::Http::ParameterValues literatures);

@@ -25,7 +25,7 @@ OntologyBrowser::OntologyBrowser(Session & session, Wt::WContainerWidget * paren
     //
     std::set<std::string> preloaded;
     PickCategoryContainer * pcc = new PickCategoryContainer(session_,
-            preloaded, false);
+            preloaded, false, false);
     pcc->setMaximumSize(Wt::WLength(45,Wt::WLength::Percentage), h1);
     //
     Wt::WText * ortext = new Wt::WText("-- or --");
