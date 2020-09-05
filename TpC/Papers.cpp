@@ -17,41 +17,48 @@
 #include <Wt/WAnchor>
 #include <Wt/WImage>
 
-Papers::Papers(Session & session, Wt::WContainerWidget * parent) : Wt::WContainerWidget(parent) {
-    session_ = &session;
-    session_->login().changed().connect(boost::bind(&Papers::SessionLoginChanged, this));
-    clear();
-    statusline_ = new Wt::WText("", this);
-    tabwidget_ = new Wt::WTabWidget(this);
-    Wt::WContainerWidget * uploadcontainer = new Wt::WContainerWidget();
-    UploadManager * ulm = new UploadManager(session);
-    uploadcontainer->addWidget(ulm);
-    //
-    Wt::WContainerWidget * organizecontainer = new Wt::WContainerWidget();
-    PaperOrganizer * poz = new PaperOrganizer(session);
-    organizecontainer->addWidget(poz);
-    //
-    Wt::WContainerWidget * processcontainer = new Wt::WContainerWidget();
-    LiteratureProcessProgress * lpp = new LiteratureProcessProgress(session);
-    processcontainer->addWidget(lpp);
-    //
-    Wt::WContainerWidget * helpcontainer = new Wt::WContainerWidget();
-    FillContainerWithHelpText(helpcontainer);
-    //
-    tabwidget_->addTab(uploadcontainer, "Upload");
-    Wt::WMenuItem * organizemenuitem =
-            tabwidget_->addTab(organizecontainer, "Organize");
-    organizemenuitem->triggered().connect(std::bind([ = ] (){
-        poz->PopulateUploadTable();
-    }));
-    Wt::WMenuItem * progressmenuitem =
-            tabwidget_->addTab(processcontainer, "Progress");
-    progressmenuitem->triggered().connect(std::bind([ = ] (){
-        lpp->PopulateLiteratureTable();
-    }));
-    tabwidget_->addTab(helpcontainer, "Help");
-    tabwidget_->setCurrentIndex(0);
-    SessionLoginChanged();
+Papers::Papers(Wt::WContainerWidget * parent) : Wt::WContainerWidget(parent) {
+    alreadyloaded_ = false;
+}
+
+void Papers::LoadContent(Session & session) {
+    if (!alreadyloaded_) {
+        session_ = &session;
+        session_->login().changed().connect(boost::bind(&Papers::SessionLoginChanged, this));
+        clear();
+        statusline_ = new Wt::WText("", this);
+        tabwidget_ = new Wt::WTabWidget(this);
+        Wt::WContainerWidget * uploadcontainer = new Wt::WContainerWidget();
+        UploadManager * ulm = new UploadManager(session);
+        uploadcontainer->addWidget(ulm);
+        //
+        Wt::WContainerWidget * organizecontainer = new Wt::WContainerWidget();
+        PaperOrganizer * poz = new PaperOrganizer(session);
+        organizecontainer->addWidget(poz);
+        //
+        Wt::WContainerWidget * processcontainer = new Wt::WContainerWidget();
+        LiteratureProcessProgress * lpp = new LiteratureProcessProgress(session);
+        processcontainer->addWidget(lpp);
+        //
+        Wt::WContainerWidget * helpcontainer = new Wt::WContainerWidget();
+        FillContainerWithHelpText(helpcontainer);
+        //
+        tabwidget_->addTab(uploadcontainer, "Upload");
+        Wt::WMenuItem * organizemenuitem =
+                tabwidget_->addTab(organizecontainer, "Organize");
+        organizemenuitem->triggered().connect(std::bind([ = ] (){
+            poz->PopulateUploadTable();
+        }));
+        Wt::WMenuItem * progressmenuitem =
+                tabwidget_->addTab(processcontainer, "Progress");
+        progressmenuitem->triggered().connect(std::bind([ = ] (){
+            lpp->PopulateLiteratureTable();
+        }));
+        tabwidget_->addTab(helpcontainer, "Help");
+        tabwidget_->setCurrentIndex(0);
+        SessionLoginChanged();
+        alreadyloaded_ = true;
+    }
 }
 
 Papers::~Papers() {
@@ -253,10 +260,10 @@ void Papers::FillContainerWithHelpText(Wt::WContainerWidget * p) {
             "A cronjob checks literatures of all users once every 15 minutes "
             "and tokenizes them, performs mark-ups, produces indices and "
             "puts processed literatures online. The 'Progress' page reports the status of the processes. "
-                    "When indexed, the literature is ready for searching, and papers are ready "
-                    "for viewing. If they cannot be found in the 'Pick Literature' "
-                    "popup window of the 'Search' page, the whole webpage should be "
-                    "restarted by hitting the 'Reload' button of the web browser."
+            "When indexed, the literature is ready for searching, and papers are ready "
+            "for viewing. If they cannot be found in the 'Pick Literature' "
+            "popup window of the 'Search' page, the whole webpage should be "
+            "restarted by hitting the 'Reload' button of the web browser."
             );
     t31->decorationStyle().font().setSize(Wt::WFont::Large);
     t31->decorationStyle().font().setFamily(Wt::WFont::SansSerif);

@@ -71,20 +71,16 @@ session_("user=www-data dbname=www-data"), urlparameters_(urlparameters) {
     leftMenu_->setInternalBasePath("/");
     //
     home_ = new Home(session_, this);
-    // Customization instantiation has to come before curation instantiation;
-    customization_ = new Customization(session_);
+    // Customization instantiation has to come before search instantiation;
+    customization_ = new Customization(this);
+    customization_->LoadContent(session_);
     search_ = new Search(urlparameters_, session_, this);
     download_ = new Download();
     help_ = new Help();
     aboutus_ = new AboutUs();
     curation_ = new Curation(session_, urlparameters_, this);
-    nlp_ = new NLP();
-    curationdatabase_ = new CurationDatabase(session_);
-    ontology_ = new Ontology(session_);
-    lists_ = new Lists();
-    workflow_ = new Workflow();
-    browsers_ = new Browsers(session_, this);
-    papers_ = new Papers(session_, this);
+    browsers_ = new Browsers(this);
+    papers_ = new Papers(this);
     //
     homemenuitem_ = leftMenu_->addItem("Home", home_);
     homemenuitem_->setPathComponent("home");
@@ -97,41 +93,26 @@ session_("user=www-data dbname=www-data"), urlparameters_(urlparameters) {
     curationmenuitem_->setPathComponent("curation");
     curationmenuitem_->triggered().connect(this, &TCNavWeb::MenuItemTriggered);
     //
-    leftMenu_->addItem("Papers", papers_)
-            ->setPathComponent("papers");
-    //
-    leftMenu_->addItem("Browsers", browsers_)
-            ->setPathComponent("browsers");
-    //
-    leftMenu_->addItem("Customization", customization_)
-            ->setPathComponent("customization");
+    papersmenuitem_ = leftMenu_->addItem("Papers", papers_);
+    papersmenuitem_->setPathComponent("papers");
+    papersmenuitem_->triggered().connect(this, &TCNavWeb::MenuItemTriggered);
+    if (Wt::WApplication::instance()->internalPath() == "/papers")
+        papers_->LoadContent(session_);
+    browsersmenuitem_ = leftMenu_->addItem("Browsers", browsers_);
+    browsersmenuitem_->setPathComponent("browsers");
+    browsersmenuitem_->triggered().connect(this, &TCNavWeb::MenuItemTriggered);
+    if (Wt::WApplication::instance()->internalPath() == "/browsers")
+        browsers_->LoadContent(session_, this);
     //
     leftMenu_->addItem("Download", download_)
             ->setPathComponent("download");
     //
     leftMenu_->addItem("About Us", aboutus_)
             ->setPathComponent("aboutus");
-    //
-    /*
+    //    
     leftMenu_->addItem("Help", help_)
             ->setPathComponent("help");
-    //
-    leftMenu_->addItem("Curation database", curationdatabase_)
-            ->setPathComponent("curationdatabase");
-    //
-    leftMenu_->addItem("Workflow", new Workflow())
-            ->setPathComponent("workflow");
-    //
-    leftMenu_->addItem("NLP", nlp_)
-            ->setPathComponent("nlp");
-    //
-    leftMenu_->addItem("Ontology", ontology_)
-            ->setPathComponent("ontology");
-    //
-    leftMenu_->addItem("Lists", lists_)
-            ->setPathComponent("lists");
-    //
-    */
+    
     if (urlparameters_->IsRoot()) {
         permissions_ = new Permissions(urlparameters_, this);
         leftMenu_->addItem("Permissions", permissions_)
@@ -253,6 +234,10 @@ void TCNavWeb::SearchEntered(Wt::WMenu * m, Wt::WLineEdit * edit) {
 void TCNavWeb::MenuItemTriggered(Wt::WMenuItem * x) {
     if (x == curationmenuitem_)
         curation_->LoadContent();
+    else if (x == papersmenuitem_)
+        papers_->LoadContent(session_);
+    else if (x == browsersmenuitem_)
+        browsers_->LoadContent(session_, this);
 }
 
 void TCNavWeb::DeleteSinglePaperItem() {

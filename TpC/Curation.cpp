@@ -17,7 +17,6 @@ urlparams_(urlparams), session_(&session), Wt::WContainerWidget(parent) {
     newpaper = NULL;
     addWidget(combocontainer_);
     addWidget(viewercontainer_);
-
 }
 
 Curation::~Curation() {

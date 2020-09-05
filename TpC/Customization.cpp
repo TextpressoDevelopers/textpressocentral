@@ -20,35 +20,42 @@
 #include <Wt/WTable>
 #include <Wt/WBreak>
 
-Customization::Customization(Session & session, Wt::WContainerWidget * parent) {
-    session_ = &session;
-    session_->login().changed().connect(boost::bind(&Customization::SessionLoginChanged, this));
-    clear();
-    //
-    statusline_ = new Wt::WText("", this);
-    //
-    ReadLitPref();
-    PickedLiteratureContents * plc = new PickedLiteratureContents(session_, pickedliterature_);
-    plc->SignalOkClicked().connect(boost::bind(&Customization::PlcOkClicked, this, plc));
-    plc->SetSaveBoxChecked(true);
-    plc->ShowSaveBox(false);
-    //
-    ccf_ = new CreateCurationForm(session_);
-    //
-    Wt::WContainerWidget * helpcontainer = new Wt::WContainerWidget();
-    FillContainerWithHelpText(helpcontainer);
-    //
-    ccol = new CustomizeColors(session_);
-    ccol->signalSaveClicked().connect(boost::bind(&Customization::colorSaveClicked, this));
-    //
-    tabwidget_ = new Wt::WTabWidget(this);
-    tabwidget_->addTab(plc, "Literature Preference");
-    //tabwidget_->addTab(new Wt::WContainerWidget(), "Categories Choices");
-    tabwidget_->addTab(ccf_, "Curation Form");
-    tabwidget_->addTab(ccol, "Curation Colors");
-    tabwidget_->addTab(helpcontainer, "Help");
-    tabwidget_->setCurrentIndex(0);
-    SessionLoginChanged();
+Customization::Customization(Wt::WContainerWidget * parent) {
+    alreadyloaded_ = false;
+}
+
+void Customization::LoadContent(Session & session) {
+    if (!alreadyloaded_) {
+        session_ = &session;
+        session_->login().changed().connect(boost::bind(&Customization::SessionLoginChanged, this));
+        clear();
+        //
+        statusline_ = new Wt::WText("", this);
+        //
+        ReadLitPref();
+        PickedLiteratureContents * plc = new PickedLiteratureContents(session_, pickedliterature_);
+        plc->SignalOkClicked().connect(boost::bind(&Customization::PlcOkClicked, this, plc));
+        plc->SetSaveBoxChecked(true);
+        plc->ShowSaveBox(false);
+        //
+        ccf_ = new CreateCurationForm(session_);
+        //
+        Wt::WContainerWidget * helpcontainer = new Wt::WContainerWidget();
+        FillContainerWithHelpText(helpcontainer);
+        //
+        ccol = new CustomizeColors(session_);
+        ccol->signalSaveClicked().connect(boost::bind(&Customization::colorSaveClicked, this));
+        //
+        tabwidget_ = new Wt::WTabWidget(this);
+        tabwidget_->addTab(plc, "Literature Preference");
+        //tabwidget_->addTab(new Wt::WContainerWidget(), "Categories Choices");
+        tabwidget_->addTab(ccf_, "Curation Form");
+        tabwidget_->addTab(ccol, "Curation Colors");
+        tabwidget_->addTab(helpcontainer, "Help");
+        tabwidget_->setCurrentIndex(0);
+        SessionLoginChanged();
+        alreadyloaded_ = true;
+    }
 }
 
 void Customization::AddLitPrefFromFile(std::string fname, bool checkpermissions) {
@@ -284,19 +291,19 @@ void Customization::FillContainerWithHelpText(Wt::WContainerWidget * p) {
             "minus sign to the right of it."
             );
     t213->decorationStyle().font().setSize(Wt::WFont::Large);
-    t213->decorationStyle().font().setFamily(Wt::WFont::SansSerif);    
+    t213->decorationStyle().font().setFamily(Wt::WFont::SansSerif);
     //
     Wt::WText * t3 = new Wt::WText(
             "Curation Colors"
-    );
+            );
     t3->decorationStyle().font().setSize(Wt::WFont::Large);
     t3->decorationStyle().font().setFamily(Wt::WFont::SansSerif);
     t3->decorationStyle().font().setWeight(Wt::WFont::Bold);
     //
     Wt::WText * t31 = new Wt::WText(
             "Highlighting colors for 'Search' and 'Curation' pages are fully customizable. In the former page, for "
-                    "example, results are highlighted according to the keywords and categories specified for the "
-                    "search, as can be seen in the figure below.");
+            "example, results are highlighted according to the keywords and categories specified for the "
+            "search, as can be seen in the figure below.");
     t31->decorationStyle().font().setSize(Wt::WFont::Large);
     t31->decorationStyle().font().setFamily(Wt::WFont::SansSerif);
     //
@@ -306,8 +313,8 @@ void Customization::FillContainerWithHelpText(Wt::WContainerWidget * p) {
     Wt::WText * t32 = new Wt::WText(
             "The first keyword entered in the search form is highlighted with the first color in the 'Keywords' "
             "color palette, and so on for other subsequent keywords entered in the form. Similarly, the colors for "
-                    "categories correspond to the 'Categories' color palette, as can be seen in the color scheme below:"
-    );
+            "categories correspond to the 'Categories' color palette, as can be seen in the color scheme below:"
+            );
     //
     t32->decorationStyle().font().setSize(Wt::WFont::Large);
     t32->decorationStyle().font().setFamily(Wt::WFont::SansSerif);
@@ -317,8 +324,8 @@ void Customization::FillContainerWithHelpText(Wt::WContainerWidget * p) {
     //
     Wt::WText * t33 = new Wt::WText(
             "In the 'Curation' page, keywords are highlighted according to the 'Keywords' palette, and labels "
-                    "according to the 'Labels' palette."
-    );
+            "according to the 'Labels' palette."
+            );
     //
     t33->decorationStyle().font().setSize(Wt::WFont::Large);
     t33->decorationStyle().font().setFamily(Wt::WFont::SansSerif);
@@ -328,8 +335,8 @@ void Customization::FillContainerWithHelpText(Wt::WContainerWidget * p) {
     //
     Wt::WText * t34 = new Wt::WText(
             "To change the color scheme in the palettes, click on the colors in the 'Curation Colors' page and select "
-                    "the new values form the color picker. Don't forget to save the changes before leaving the page!"
-    );
+            "the new values form the color picker. Don't forget to save the changes before leaving the page!"
+            );
     //
     t34->decorationStyle().font().setSize(Wt::WFont::Large);
     t34->decorationStyle().font().setFamily(Wt::WFont::SansSerif);

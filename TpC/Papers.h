@@ -14,9 +14,11 @@
 
 class Papers : public Wt::WContainerWidget {
 public:
-    Papers(Session & session, Wt::WContainerWidget * parent = NULL);
+    Papers(Wt::WContainerWidget * parent = NULL);
+    void LoadContent(Session & session);
     virtual ~Papers();
 private:
+    bool alreadyloaded_;
     Session * session_;
     Wt::WText * statusline_;
     Wt::WTabWidget * tabwidget_;

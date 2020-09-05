@@ -16,7 +16,8 @@
 
 class Customization : public Wt::WContainerWidget {
 public:
-    Customization(Session & session, Wt::WContainerWidget * parent = NULL);
+    Customization(Wt::WContainerWidget * parent = NULL);
+    void LoadContent(Session & session);
     CreateCurationForm * GetCreateCurationFormInstance() { return ccf_; }
     CustomizeColors* getCustomizeColorsInstance() { return ccol; }
     virtual ~Customization();
@@ -24,6 +25,7 @@ public:
     void SessionLoginChanged();
 
 private:
+    bool alreadyloaded_;
     Session * session_;
     Wt::WText * statusline_;
     Wt::WTabWidget * tabwidget_;

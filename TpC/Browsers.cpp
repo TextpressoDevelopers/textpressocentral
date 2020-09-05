@@ -17,17 +17,24 @@
 //#include <Wt/WTable>
 //#include <Wt/WBreak>
 
-Browsers::Browsers(Session & session, Wt::WContainerWidget * parent) : Wt::WContainerWidget(parent) {
-    clear();
-    //
-    ob_= new OntologyBrowser(session, parent);
-    //pb_ = new PaperBrowser();
-    //
-    tabwidget_ = new Wt::WTabWidget(this);
-    tabwidget_->addTab(ob_, "Ontology");
-    //tabwidget_->addTab(pb_, "Papers");
-    tabwidget_->setCurrentIndex(0);
-    tabwidget_->show();
+Browsers::Browsers(Wt::WContainerWidget * parent) : Wt::WContainerWidget(parent) {
+    alreadyloaded_ = false;
+}
+
+void Browsers::LoadContent(Session & session, Wt::WContainerWidget * parent) {
+    if (!alreadyloaded_) {
+        clear();
+        //
+        ob_ = new OntologyBrowser(session, parent);
+        //pb_ = new PaperBrowser();
+        //
+        tabwidget_ = new Wt::WTabWidget(this);
+        tabwidget_->addTab(ob_, "Ontology");
+        //tabwidget_->addTab(pb_, "Papers");
+        tabwidget_->setCurrentIndex(0);
+        tabwidget_->show();
+        alreadyloaded_ = true;
+    }
 }
 
 Browsers::~Browsers() {

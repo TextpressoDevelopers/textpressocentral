@@ -89,6 +89,9 @@ private:
     Wt::WMenuItem * homemenuitem_;
     Wt::WMenuItem * curationmenuitem_;
     Wt::WMenuItem * searchmenuitem_;
+    Wt::WMenuItem * browsersmenuitem_;
+    Wt::WMenuItem * papersmenuitem_;
+    Wt::WMenuItem * customizationmenuitem_;
     void AuthEvent();
     void MenuItemTriggered(Wt::WMenuItem * x);
     void SearchEntered(Wt::WMenu * m, Wt::WLineEdit * edit);

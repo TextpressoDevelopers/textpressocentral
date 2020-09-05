@@ -14,9 +14,11 @@
 
 class Browsers : public Wt::WContainerWidget {
 public:
-    Browsers(Session & session, Wt::WContainerWidget * parent = NULL);
+    Browsers(Wt::WContainerWidget * parent = NULL);
+    void LoadContent(Session & session, Wt::WContainerWidget * parent);
     virtual ~Browsers();
 private:
+    bool alreadyloaded_;
     OntologyBrowser * ob_;
     PaperBrowser * pb_;
     Wt::WTabWidget * tabwidget_;
