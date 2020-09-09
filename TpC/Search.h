@@ -126,21 +126,20 @@ private:
     int current_start_;
     int current_end_;
 
-    std::vector<Wt::WGroupBox*> tableTextGroupBoxes;
-    std::set<int> expandedPanelIndexes;
 
-    colors::ColorSet colorSet;
+    std::vector<Wt::WGroupBox*> tableTextGroupBoxes_;
+    std::set<int> expandedPanelIndexes_;
+    colors::ColorSet colorSet_;
     map<string, string> filters_;
     std::map<std::string, bool> pickedliterature_;
     std::set<std::string> preloadedcategories_;
 
-    tpc::index::SearchResults searchResults;
+    tpc::index::SearchResults searchResults_;
     double min_score_;
     double max_score_;
     double max_min_;
-    //double point_value_;
 
-    std::unordered_map<std::string, int> keywordColorsMap;
+    std::unordered_map<std::string, int> keywordColorsMap_;
 
     PickCategory * pc_;
     PickLiterature * pl_;
@@ -157,7 +156,27 @@ private:
     int searchstatus_;
     std::chrono::time_point<std::chrono::system_clock> bt_, et_;
     std::vector<Wt::WCheckBox*> all_vp_cbxes_;
-    std::vector<Wt::WContainerWidget*> completeSentences;
+    
+    Wt::WContainerWidget* north_;
+    WContainerWidget *northInner_;
+    WContainerWidget *northInnerButtons_;
+    WContainerWidget *northInnerAdditional;
+    WContainerWidget *northInnerLiterature;
+    Wt::WScrollArea* cs_;
+    Wt::WContainerWidget* south_;
+    Wt::WText* statusline_;
+    WPushButton* setDefTypeBtn_;
+
+    tpc::index::IndexManager indexManager_;
+    tpc::index::Query query_;
+
+    double partial_search_time_;
+    bool show_list_of_corpora_before_search_;
+    bool return_to_sentence_search_;
+    std::wstring stored_keyword_;
+    TpCategoryBrowser *tcp_;
+
+    void SearchViaUrlParameters();
     void DoSearchUpdates();
     void UpdatePickedCatCont();
     void ListAllCats();
@@ -178,7 +197,6 @@ private:
     void createSearchButtonsRow(Wt::WHBoxLayout* hbox);
     void doSearch();
     tpc::index::Query getSearchQuery();
-
     void ResetSearch();
     void displayTable(int start, int end, int shift);
     void ViewPaperClicked(Wt::WCheckBox * cb, const std::string& papertitle,
@@ -186,7 +204,6 @@ private:
             const std::string& filepath, int index, const std::string& accession);
     std::string RetrieveBEString(int index);
     void changePage(int shift);
-
     void deleteMessagebox(Wt::WMessageBox *messageBox);
     map<string, string> getFilters();
     void PanelTitleClick(WPanel* panel, int index, Wt::WGroupBox* textGroupBox);
@@ -209,52 +226,22 @@ private:
     void eraseAllOccurrencesOfStr(string &str, const string &pattern);
     void HelpLongSentenceDialog();
     bool isSearchFormValid();
-
     static bool pairCompare(const pair<String, int32_t>& firstElem, const pair<String, int32_t>& secondElem) {
         return firstElem.second < secondElem.second;
     }
-    Wt::WContainerWidget* north;
-    Wt::WScrollArea* cs;
-    Wt::WContainerWidget* south;
-    Wt::WText* statusline;
-
-    tpc::index::IndexManager indexManager;
 
     void SessionLoginChanged();
-    WContainerWidget *northInner;
-    WContainerWidget *northInnerButtons;
     void updateSearchColors();
     void prepareKeywordColorsForSearch();
     vector<string> getSelectedLiteratures();
-    tpc::index::Query query;
-    double partial_search_time;
-
     void startSearchProcess();
-
-
-    bool show_list_of_corpora_before_search;
-
     void readDialogPreferences();
-
     static bool sentence_position_lt(const tpc::index::SentenceDetails &a, const tpc::index::SentenceDetails &b) {
         return a.doc_position_begin < b.doc_position_begin;
     }
-
-    bool return_to_sentence_search_;
-
     void createAdditionalOptionsRow(Wt::WHBoxLayout* hbox);
-
-    WContainerWidget *northInnerAdditional;
-    WPushButton* setDefTypeBtn;
-    WContainerWidget *northInnerLiterature;
-
     void createLiteratureRow(WHBoxLayout *hbox);
-
-    std::wstring stored_keyword;
-
     void hideTable();
-
-    TpCategoryBrowser *tcp;
 };
 
 #endif /* SEARCH_H */

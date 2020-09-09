@@ -130,7 +130,6 @@ CreateCurationForm::CreateCurationForm(Session * session, Wt::WContainerWidget *
         new HelpDialog("Curation Form Explanation", false, helpcontent);
     }));
     //
-    //formcomplete_ = false
     rightsidecont_ = new Wt::WContainerWidget();
     rightsidelayout_ = new Wt::WVBoxLayout();
     rightsidecont_->setLayout(rightsidelayout_);

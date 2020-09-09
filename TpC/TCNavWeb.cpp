@@ -76,7 +76,6 @@ session_("user=www-data dbname=www-data"), urlparameters_(urlparameters) {
     customization_->LoadContent(session_);
     search_ = new Search(urlparameters_, session_, this);
     download_ = new Download();
-    help_ = new Help();
     aboutus_ = new AboutUs();
     curation_ = new Curation(session_, urlparameters_, this);
     browsers_ = new Browsers(this);
@@ -98,6 +97,7 @@ session_("user=www-data dbname=www-data"), urlparameters_(urlparameters) {
     papersmenuitem_->triggered().connect(this, &TCNavWeb::MenuItemTriggered);
     if (Wt::WApplication::instance()->internalPath() == "/papers")
         papers_->LoadContent(session_);
+    //
     browsersmenuitem_ = leftMenu_->addItem("Browsers", browsers_);
     browsersmenuitem_->setPathComponent("browsers");
     browsersmenuitem_->triggered().connect(this, &TCNavWeb::MenuItemTriggered);
@@ -110,47 +110,60 @@ session_("user=www-data dbname=www-data"), urlparameters_(urlparameters) {
     leftMenu_->addItem("About Us", aboutus_)
             ->setPathComponent("aboutus");
     //    
-    leftMenu_->addItem("Help", help_)
-            ->setPathComponent("help");
-    
+
     if (urlparameters_->IsRoot()) {
         permissions_ = new Permissions(urlparameters_, this);
         leftMenu_->addItem("Permissions", permissions_)
                 ->setPathComponent("permissions");
     }
-    /*
-    // keep for later use
+    help_ = new Help();
+    help_->LoadContent();
     // Create a popup submenu for the Help menu.
     Wt::WPopupMenu * popup = new Wt::WPopupMenu();
-    popup->addItem("Contents");
-    popup->addItem("Index");
+    popup->addItem("Content");
     popup->addSeparator();
     popup->addItem("Contact us");
-    popup->addItem("About");
+    popup->addItem("Copyright");
     popup->itemSelected().connect(std::bind([ = ] (Wt::WMenuItem * item){
         Wt::WString msgtxt("");
-        if (item->text().toUTF8().compare("About") == 0) {
+        if (item->text().toUTF8().compare("Content") == 0) {
+            WDialog* helpDialog = new Wt::WDialog("Introduction & First Steps");
+            helpDialog->contents()->addWidget(help_);
+                    Wt::WPushButton *ok = new Wt::WPushButton("Ok", helpDialog->contents());
+                    ok->clicked().connect(helpDialog, &Wt::WDialog::accept);
+                    helpDialog->finished().connect(std::bind([ = ] (){
+                delete helpDialog;
+            }));
+            helpDialog->show();
+        }
+        if (item->text().toUTF8().compare("Contact us") == 0)
+                msgtxt = Wt::WString("For questions please contact us at "
+                "textpresso@caltech.edu.");
+        else if (item->text().toUTF8().compare("Copyright") == 0) {
             std::string date(__DATE__);
-            std::string year(date.substr(date.length() - 4, 4));            
-            msgtxt = Wt::WString::fromUTF8("© " + year 
+                    std::string year(date.substr(date.length() - 4, 4));
+                    msgtxt = Wt::WString::fromUTF8("© 2003 - " + year
                     + " Textpresso, California Institute of Technology. "
-                    "Build date: "
-                    + date + ", " + __TIME__);
-        } else
-            msgtxt = Wt::WString::fromUTF8("<p>To be implemented: {1}</p>").arg(item->text());
-        Wt::WMessageBox * messageBox = new Wt::WMessageBox (item->text(), msgtxt, Wt::Information, Wt::Ok);
-        messageBox->textWidget()->setWordWrap(true);
-        messageBox->buttonClicked().connect(std::bind([ = ] ()
-        {
-            delete messageBox;
-        }));
-        messageBox->show();
+                    "Site was built on "
+                    + date + ", " + __TIME__ + ". For more details see the "
+                    "'About Us' tab in the navigation menu.");
+        } //else
+        //msgtxt = Wt::WString::fromUTF8("<p>To be implemented: {1}</p>").arg(item->text());
+        if (!msgtxt.empty()) {
+            Wt::WMessageBox * messageBox =
+                    new Wt::WMessageBox(item->text(), msgtxt, Wt::Information, Wt::Ok);
+                    messageBox->textWidget()->setWordWrap(true);
+                    messageBox->buttonClicked().connect(std::bind([ = ] (){
+                delete messageBox;
+            }));
+            messageBox->show();
+        }
     }, std::placeholders::_1));
 
     Wt::WMenuItem * item = new Wt::WMenuItem("Help");
     item->setMenu(popup);
     leftMenu_->addItem(item);
-     */
+
     //
     // Add a Search control.
     Wt::WLineEdit *edit = new Wt::WLineEdit();
@@ -162,6 +175,7 @@ session_("user=www-data dbname=www-data"), urlparameters_(urlparameters) {
     setLayout(layout);
     AuthEvent();
     if (urlparameters_->IsRoot()) {
+
         Wt::WBorder bx;
         bx.setWidth(Wt::WBorder::Thick);
         bx.setStyle(Wt::WBorder::Ridge);
@@ -177,6 +191,7 @@ session_("user=www-data dbname=www-data"), urlparameters_(urlparameters) {
 }
 
 void TCNavWeb::displayLogin() {
+
     dialog_ = new Wt::WDialog("Textpresso Central Authentication");
     dialog_->contents()->addWidget(new Login(authWidget_));
     dialog_->contents()->addStyleClass("form-group");
@@ -203,11 +218,13 @@ void TCNavWeb::AuthEvent() {
     if (!isUserVerified()) {
         verifieduserlabel_->setText("Email address not verified! Click here to resend verification email");
     } else {
+
         verifieduserlabel_->setText("");
     }
 }
 
 void TCNavWeb::verifyEmailAddress() {
+
     auto user = session_.login().user();
     string email = session_.login().user().unverifiedEmail();
     session_.auth().verifyEmailAddress(session_.login().user(), email);
@@ -227,6 +244,7 @@ void TCNavWeb::verifyEmailAddress() {
 }
 
 void TCNavWeb::SearchEntered(Wt::WMenu * m, Wt::WLineEdit * edit) {
+
     m->select(searchmenuitem_);
     search_->SimpleKeywordSearchApi(edit->text());
 }
@@ -236,25 +254,31 @@ void TCNavWeb::MenuItemTriggered(Wt::WMenuItem * x) {
         curation_->LoadContent();
     else if (x == papersmenuitem_)
         papers_->LoadContent(session_);
-    else if (x == browsersmenuitem_)
+    else
+
+        if (x == browsersmenuitem_)
         browsers_->LoadContent(session_, this);
 }
 
 void TCNavWeb::DeleteSinglePaperItem() {
+
     delete singlepaperitem_;
     singlepaperitem_ = NULL;
 }
 
 void TCNavWeb::SetSinglePaperItem(const PaperAddress& x) {
+
     singlepaperitem_ = new PaperAddress(x);
     changed_ = true;
 }
 
 bool TCNavWeb::paperHasChanged() {
+
     return changed_;
 }
 
 void TCNavWeb::setNoChange() {
+
     changed_ = false;
 }
 
@@ -282,6 +306,7 @@ bool TCNavWeb::isUserVerified() {
         }
         w.commit();
     } else {
+
         return true;
     }
 }

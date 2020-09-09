@@ -35,7 +35,9 @@ namespace {
 }
 
 Help::Help() {
+}
 
+void Help::LoadContent() {
     //
     Wt::WColor tipcolor(Wt::WColor(255, 215, 90));
     Wt::WColor newscolor(Wt::WColor(255, 60, 60));

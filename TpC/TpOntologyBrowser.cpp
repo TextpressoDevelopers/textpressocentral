@@ -19,7 +19,6 @@ TpOntologyBrowser::TpOntologyBrowser() : cn_(PGONTOLOGY) {
     std::cerr << "TpOntologyBrowser: Connected to " << cn_.dbname() << std::endl;
     setSelectionMode(Wt::ExtendedSelection);
     // find root
-    //    mmsstype pc;
     Read2Cols(PCRELATIONSTABLENAME, "parent", "child");
     std::map<std::string, std::string>::iterator itroot = pcrelations_.begin();
     bool changed = true;

@@ -220,33 +220,31 @@ Wt::WContainerWidget(parent) {
     size_text_ = new WText();
     size_text_->decorationStyle().font().setSize(Wt::WFont::Large);
 
-    completeSentences = vector<WContainerWidget*>();
-
     //
     // N O R T H
-    north = new Wt::WContainerWidget();
-    statusline = new WText("");
-    north->addWidget(statusline);
-    northInner = new Wt::WContainerWidget();
+    north_ = new Wt::WContainerWidget();
+    statusline_ = new WText("");
+    north_->addWidget(statusline_);
+    northInner_ = new Wt::WContainerWidget();
     northInnerLiterature = new Wt::WContainerWidget();
     northInnerAdditional = new Wt::WContainerWidget();
-    northInnerButtons = new Wt::WContainerWidget();
+    northInnerButtons_ = new Wt::WContainerWidget();
     Wt::WHBoxLayout* hbox_north = new Wt::WHBoxLayout();
     Wt::WHBoxLayout* hbox_north_literature = new Wt::WHBoxLayout();
     Wt::WHBoxLayout* hbox_north_additional = new Wt::WHBoxLayout();
     Wt::WHBoxLayout* hbox_north_buttons = new Wt::WHBoxLayout();
-    northInner->setLayout(hbox_north);
+    northInner_->setLayout(hbox_north);
     CreateSearchInterface(hbox_north);
     northInnerLiterature->setLayout(hbox_north_literature);
     northInnerAdditional->setLayout(hbox_north_additional);
-    northInnerButtons->setLayout(hbox_north_buttons);
+    northInnerButtons_->setLayout(hbox_north_buttons);
     createLiteratureRow(hbox_north_literature);
     createAdditionalOptionsRow(hbox_north_additional);
     createSearchButtonsRow(hbox_north_buttons);
-    north->addWidget(northInner);
-    north->addWidget(northInnerLiterature);
-    north->addWidget(northInnerAdditional);
-    north->addWidget(northInnerButtons);
+    north_->addWidget(northInner_);
+    north_->addWidget(northInnerLiterature);
+    north_->addWidget(northInnerAdditional);
+    north_->addWidget(northInnerButtons_);
     //
     // C E N T E R
     Wt::WContainerWidget * center = new Wt::WContainerWidget();
@@ -254,17 +252,17 @@ Wt::WContainerWidget(parent) {
     center->addWidget(size_text_);
     center->addWidget(new Wt::WBreak());
     center->addWidget(table_);
-    cs = new Wt::WScrollArea();
-    cs->setWidget(center);
-    cs->setScrollBarPolicy(Wt::WScrollArea::ScrollBarAsNeeded);
+    cs_ = new Wt::WScrollArea();
+    cs_->setWidget(center);
+    cs_->setScrollBarPolicy(Wt::WScrollArea::ScrollBarAsNeeded);
     Wt::WLength p100 = Wt::WLength(100, Wt::WLength::Percentage);
     Wt::WLength p80 = Wt::WLength(80, Wt::WLength::Percentage);
-    cs->setHeight(p80);
-    cs->setWidth(p100);
+    cs_->setHeight(p80);
+    cs_->setWidth(p100);
 
     //
     // S O U T H
-    south = new Wt::WContainerWidget();
+    south_ = new Wt::WContainerWidget();
     Wt::WHBoxLayout* hbox_south = new Wt::WHBoxLayout();
 
     page_number_text_ = new WText();
@@ -280,106 +278,34 @@ Wt::WContainerWidget(parent) {
     hbox_south->addWidget(previous_button_);
     hbox_south->addWidget(next_button_);
     hbox_south->addWidget(last_button_);
-    south->setLayout(hbox_south);
+    south_->setLayout(hbox_south);
 
     //
     // W E S T 
     //  currently not used
 
-    mainlayout_->addWidget(north, Wt::WBorderLayout::North);
-    mainlayout_->addWidget(cs, Wt::WBorderLayout::Center);
-    mainlayout_->addWidget(south, Wt::WBorderLayout::South);
-
+    mainlayout_->addWidget(north_, Wt::WBorderLayout::North);
+    mainlayout_->addWidget(cs_, Wt::WBorderLayout::Center);
+    mainlayout_->addWidget(south_, Wt::WBorderLayout::South);
     this->setLayout(mainlayout_);
     // handle search via url parameters
-    if (!urlparameters_->IsEmpty()) {
-        bool triggersearch = false;
-        Wt::Http::ParameterValues::iterator it;
-        Wt::Http::ParameterValues keywords = urlparameters_->GetParameterValues("keyword");
-        if (!keywords.empty()) {
-            std::string kwt(*keywords.begin());
-            for (it = ++keywords.begin(); it != keywords.end(); it++)
-                kwt += " " + *it;
-            keywordtext_->setText(kwt);
-            stored_keyword = keywordtext_->text().value();
-            triggersearch = true;
-        }
-        Wt::Http::ParameterValues categories = urlparameters_->GetParameterValues("category");
-        if (!categories.empty()) {
-            pickedcat_.clear();
-            for (it = categories.begin(); it != categories.end(); it++) {
-                pickedcat_.insert(*it);
-            }
-            UpdatePickedCatCont();
-            triggersearch = true;
-        }
-        Wt::Http::ParameterValues scope = urlparameters_->GetParameterValues("scope");
-        if (!scope.empty())
-            if (scope[0].compare("sentence") == 0)
-                keywordfield_combo_->setCurrentIndex(0);
-            else
-                keywordfield_combo_->setCurrentIndex(1);
-        Wt::Http::ParameterValues literatures = urlparameters_->GetParameterValues("literature");
-        if (!literatures.empty())
-            CheckAgainstPickedLiteratureMap(literatures);
-        Wt::Http::ParameterValues excludes = urlparameters_->GetParameterValues("exclude");
-        if (!excludes.empty()) {
-            std::string ext(*excludes.begin());
-            for (it = ++excludes.begin(); it != excludes.end(); it++)
-                ext += " " + *it;
-            keywordnottext_->setText(ext);
-        }
-        Wt::Http::ParameterValues authors = urlparameters_->GetParameterValues("author");
-        if (!authors.empty()) {
-            std::string aut(*authors.begin());
-            for (it = ++authors.begin(); it != authors.end(); it++)
-                aut += " " + *it;
-            author_filter_->setText(aut);
-        }
-        Wt::Http::ParameterValues journals = urlparameters_->GetParameterValues("journal");
-        if (!journals.empty()) {
-            std::string jot(*journals.begin());
-            for (it = ++journals.begin(); it != journals.end(); it++)
-                jot += " " + *it;
-            journal_filter_->setText(jot);
-        }
-        Wt::Http::ParameterValues years = urlparameters_->GetParameterValues("year");
-        if (!years.empty()) {
-            std::string yet(*years.begin());
-            for (it = ++years.begin(); it != years.end(); it++)
-                yet += " " + *it;
-            year_filter_->setText(yet);
-        }
-        Wt::Http::ParameterValues accessions = urlparameters_->GetParameterValues("accession");
-        if (!accessions.empty()) {
-            std::string act(*accessions.begin());
-            for (it = ++accessions.begin(); it != accessions.end(); it++)
-                act += " " + *it;
-            accession_filter_->setText(act);
-        }
-        Wt::Http::ParameterValues types = urlparameters_->GetParameterValues("type");
-        string act = boost::join(types, " ");
-        type_filter_->setText(act);
-        if (triggersearch)
-            doSearch();
-    }
+    if (!urlparameters_->IsEmpty()) SearchViaUrlParameters();
 
-    statusline->setText("");
-    statusline->decorationStyle().setBackgroundColor(Wt::white);
-    northInner->show();
-    cs->show();
-    south->show();
+    statusline_->setText("");
+    statusline_->decorationStyle().setBackgroundColor(Wt::white);
+    northInner_->show();
+    cs_->show();
+    south_->show();
 
     // reload colors when color palette is changed from customization form
     TCNavWeb * tcnw = dynamic_cast<TCNavWeb*> (parent);
     tcnw->GetCustomizationInstance()->getCustomizeColorsInstance()->signalSaveClicked().connect(
             this, &Search::updateSearchColors);
-
-    indexManager = IndexManager("/usr/local/textpresso/luceneindex", "/usr/local/textpresso/tpcas");
-    show_list_of_corpora_before_search = true;
+    indexManager_ = IndexManager("/usr/local/textpresso/luceneindex", "/usr/local/textpresso/tpcas");
+    show_list_of_corpora_before_search_ = true;
     try {
         if (WApplication::instance()->environment().getCookie("show_list_of_corpora_before_search") == "false") {
-            show_list_of_corpora_before_search = false;
+            show_list_of_corpora_before_search_ = false;
         }
     } catch (const exception& e) {
 
@@ -387,6 +313,78 @@ Wt::WContainerWidget(parent) {
     return_to_sentence_search_ = false;
     session_->login().changed().connect(boost::bind(&Search::SessionLoginChanged, this));
     SessionLoginChanged();
+}
+
+void Search::SearchViaUrlParameters() {
+    bool triggersearch = false;
+    Wt::Http::ParameterValues::iterator it;
+    Wt::Http::ParameterValues keywords = urlparameters_->GetParameterValues("keyword");
+    if (!keywords.empty()) {
+        std::string kwt(*keywords.begin());
+        for (it = ++keywords.begin(); it != keywords.end(); it++)
+            kwt += " " + *it;
+        keywordtext_->setText(kwt);
+        stored_keyword_ = keywordtext_->text().value();
+        triggersearch = true;
+    }
+    Wt::Http::ParameterValues categories = urlparameters_->GetParameterValues("category");
+    if (!categories.empty()) {
+        pickedcat_.clear();
+        for (it = categories.begin(); it != categories.end(); it++) {
+            pickedcat_.insert(*it);
+        }
+        UpdatePickedCatCont();
+        triggersearch = true;
+    }
+    Wt::Http::ParameterValues scope = urlparameters_->GetParameterValues("scope");
+    if (!scope.empty())
+        if (scope[0].compare("sentence") == 0)
+            keywordfield_combo_->setCurrentIndex(0);
+        else
+            keywordfield_combo_->setCurrentIndex(1);
+    Wt::Http::ParameterValues literatures = urlparameters_->GetParameterValues("literature");
+    if (!literatures.empty())
+        CheckAgainstPickedLiteratureMap(literatures);
+    Wt::Http::ParameterValues excludes = urlparameters_->GetParameterValues("exclude");
+    if (!excludes.empty()) {
+        std::string ext(*excludes.begin());
+        for (it = ++excludes.begin(); it != excludes.end(); it++)
+            ext += " " + *it;
+        keywordnottext_->setText(ext);
+    }
+    Wt::Http::ParameterValues authors = urlparameters_->GetParameterValues("author");
+    if (!authors.empty()) {
+        std::string aut(*authors.begin());
+        for (it = ++authors.begin(); it != authors.end(); it++)
+            aut += " " + *it;
+        author_filter_->setText(aut);
+    }
+    Wt::Http::ParameterValues journals = urlparameters_->GetParameterValues("journal");
+    if (!journals.empty()) {
+        std::string jot(*journals.begin());
+        for (it = ++journals.begin(); it != journals.end(); it++)
+            jot += " " + *it;
+        journal_filter_->setText(jot);
+    }
+    Wt::Http::ParameterValues years = urlparameters_->GetParameterValues("year");
+    if (!years.empty()) {
+        std::string yet(*years.begin());
+        for (it = ++years.begin(); it != years.end(); it++)
+            yet += " " + *it;
+        year_filter_->setText(yet);
+    }
+    Wt::Http::ParameterValues accessions = urlparameters_->GetParameterValues("accession");
+    if (!accessions.empty()) {
+        std::string act(*accessions.begin());
+        for (it = ++accessions.begin(); it != accessions.end(); it++)
+            act += " " + *it;
+        accession_filter_->setText(act);
+    }
+    Wt::Http::ParameterValues types = urlparameters_->GetParameterValues("type");
+    string act = boost::join(types, " ");
+    type_filter_->setText(act);
+    if (triggersearch)
+        doSearch();
 }
 
 void Search::SetLiteratureDescription(Wt::WContainerWidget * w) {
@@ -438,8 +436,8 @@ void Search::SetLiteratureDescription(Wt::WContainerWidget * w) {
 void Search::SetLiteratureContainer(Wt::WContainerWidget * literaturecontainer) {
     vector<string> corpus_vec = IndexManager::get_available_corpora(CAS_ROOT_LOCATION.c_str());
     vector<string> additional_corpora;
-    if (session_->login().state() != 0 && indexManager.has_external_index()) {
-        additional_corpora = indexManager.get_external_corpora();
+    if (session_->login().state() != 0 && indexManager_.has_external_index()) {
+        additional_corpora = indexManager_.get_external_corpora();
     }
     literaturecontainer->clear();
     literaturecontainer->addWidget(new Wt::WText(Wt::WString(
@@ -450,12 +448,12 @@ void Search::SetLiteratureContainer(Wt::WContainerWidget * literaturecontainer) 
     literaturecontainer->addWidget(new Wt::WBreak());
     for (const auto& lit : corpus_vec) {
         literaturecontainer->addWidget(new Wt::WText(Wt::WString(
-                (lit) + " (" + std::to_string(indexManager.get_num_articles_in_corpus(lit)) + " papers)")));
+                (lit) + " (" + std::to_string(indexManager_.get_num_articles_in_corpus(lit)) + " papers)")));
         literaturecontainer->addWidget(new Wt::WBreak());
     }
     for (const auto& lit : additional_corpora) {
         literaturecontainer->addWidget(new Wt::WText(Wt::WString(
-                (lit) + " (" + std::to_string(indexManager.get_num_articles_in_corpus(lit, true)) + " papers)")));
+                (lit) + " (" + std::to_string(indexManager_.get_num_articles_in_corpus(lit, true)) + " papers)")));
         literaturecontainer->addWidget(new Wt::WBreak());
     }
 }
@@ -486,10 +484,10 @@ void Search::CreateSearchInterface(Wt::WHBoxLayout* hbox) {
     imssc->clicked().connect(this, &Search::HelpScopeDialog);
     scopecont->addWidget(imssc);
     scopecont->addWidget(new WBreak());
-    setDefTypeBtn = new Wt::WPushButton("set current selection as default");
-    setDefTypeBtn->setStyleClass("btn-small");
-    setDefTypeBtn->decorationStyle().font().setVariant(Wt::WFont::SmallCaps);
-    setDefTypeBtn->clicked().connect(std::bind([ = ](){
+    setDefTypeBtn_ = new Wt::WPushButton("set current selection as default");
+    setDefTypeBtn_->setStyleClass("btn-small");
+    setDefTypeBtn_->decorationStyle().font().setVariant(Wt::WFont::SmallCaps);
+    setDefTypeBtn_->clicked().connect(std::bind([ = ](){
         if (session_->login().state() != 0) {
             Preference *pref = new Preference(PGSEARCHPREFERENCES, PGSEARCHPREFERENCESTABLENAME,
                     session_->login().user().identity("loginname").toUTF8());
@@ -504,24 +502,24 @@ void Search::CreateSearchInterface(Wt::WHBoxLayout* hbox) {
             prefVec.clear();
                     copy(prefSet.begin(), prefSet.end(), back_inserter(prefVec));
                     pref->SavePreferencesVector(session_->login().user().identity("loginname").toUTF8(), prefVec);
-                    statusline->setText("Preferences have been saved.");
-                    statusline->decorationStyle().setForegroundColor(Wt::green);
+                    statusline_->setText("Preferences have been saved.");
+                    statusline_->decorationStyle().setForegroundColor(Wt::green);
                     Wt::WTimer * timer = new Wt::WTimer();
                     timer->setInterval(2000);
                     timer->setSingleShot(true);
                     timer->timeout().connect(std::bind([ = ] (Wt::WTimer * timer){
                 timer->stop();
                 delete timer;
-                statusline->setText("");
+                statusline_->setText("");
             }, timer));
                     timer->start();
         }
     }));
-    setDefTypeBtn->hide();
+    setDefTypeBtn_->hide();
     if (session_->login().state() != 0) {
-        setDefTypeBtn->show();
+        setDefTypeBtn_->show();
     }
-    scopecont->addWidget(setDefTypeBtn);
+    scopecont->addWidget(setDefTypeBtn_);
     scopecont->addWidget(new WBreak());
 
     //
@@ -771,7 +769,7 @@ void Search::ResetSearch() {
     if (!skip_resetui) {
         keywordfield_combo_->setCurrentIndex(1);
         keywordtext_->setText("");
-        stored_keyword = L"";
+        stored_keyword_ = L"";
         keywordnottext_->setText("");
         accession_filter_->setText("");
         type_filter_->setText("");
@@ -1122,17 +1120,17 @@ void Search::DoSearchUpdates() {
         totalresults_ = 0;
         current_start_ = 0;
         current_end_ = 0;
-        query = getSearchQuery();
-        searchResults = indexManager.search_documents(query, true);
+        query_ = getSearchQuery();
+        searchResults_ = indexManager_.search_documents(query_, true);
         et_ = std::chrono::system_clock::now();
         std::chrono::duration<double> elapsed_seconds = et_ - bt_;
-        partial_search_time = elapsed_seconds.count();
+        partial_search_time_ = elapsed_seconds.count();
         updatetext_->setText("Index lookup took " + std::to_string(elapsed_seconds.count()) + " seconds.");
         searchstatus_++;
         updatetimer_->start();
     } else if (searchstatus_ == 2) {
-        if (query.type != QueryType::document &&
-                searchResults.partialIndexMatches.size() > NUM_SENTENCES_HITS_WARN_THRESHOLD) {
+        if (query_.type != QueryType::document &&
+                searchResults_.partialIndexMatches.size() > NUM_SENTENCES_HITS_WARN_THRESHOLD) {
             Wt::WDialog *dialog = new Wt::WDialog("Warning");
             dialog->contents()->addWidget(new Wt::WText("<p>Your search returned a very large number of sentences.</p>"
                     "<p>Processing these sentences may take a lot of time.</p>"
@@ -1166,14 +1164,14 @@ void Search::DoSearchUpdates() {
         }
     } else if (searchstatus_ == 3) {
         bt_ = std::chrono::system_clock::now();
-        searchResults = indexManager.search_documents(query, false,{}, searchResults);
+        searchResults_ = indexManager_.search_documents(query_, false,{}, searchResults_);
         et_ = std::chrono::system_clock::now();
         searchstatus_++;
         updatetimer_->start();
     } else {
-        long hits = searchResults.query.type == QueryType::document ? searchResults.hit_documents.size() :
-                searchResults.total_num_sentences;
-        long size = searchResults.hit_documents.size();
+        long hits = searchResults_.query.type == QueryType::document ? searchResults_.hit_documents.size() :
+                searchResults_.total_num_sentences;
+        long size = searchResults_.hit_documents.size();
         totalresults_ = size;
         int total_page = 0;
         if (totalresults_ % RECORDS_PER_PAGE == 0) {
@@ -1197,7 +1195,7 @@ void Search::DoSearchUpdates() {
         displayTable(0, 0, 1);
         et_ = std::chrono::system_clock::now();
         std::chrono::duration<double> elapsed_seconds = et_ - bt_;
-        std::string aux("Index lookup took " + std::to_string(partial_search_time) + " seconds. Combining results "
+        std::string aux("Index lookup took " + std::to_string(partial_search_time_) + " seconds. Combining results "
                 "took " +
                 std::to_string(elapsed_seconds.count()) + " seconds. ");
         updatetext_->decorationStyle().setBackgroundColor(Wt::white);
@@ -1228,7 +1226,7 @@ bool Search::isSearchFormValid() {
 
 void Search::doSearch() {
     if (isSearchFormValid()) {
-        stored_keyword = keywordtext_->text().value();
+        stored_keyword_ = keywordtext_->text().value();
         startSearchProcess();
     } else {
         Wt::WDialog *dialog = new Wt::WDialog("Error");
@@ -1248,7 +1246,7 @@ void Search::doSearch() {
 }
 
 void Search::startSearchProcess() {
-    if (show_list_of_corpora_before_search) {
+    if (show_list_of_corpora_before_search_) {
         Wt::WDialog *dialog = new Wt::WDialog("Info");
         dialog->contents()->addWidget(new Wt::WText("<p>Your search will be performed on the following corpora:</p>"
                 "<p>" +
@@ -1259,7 +1257,7 @@ void Search::startSearchProcess() {
         dialog->setWidth(Wt::WLength("70%"));
         Wt::WCheckBox *cb = new Wt::WCheckBox("don't show this message again");
         cb->checked().connect(std::bind([ = ](){
-            show_list_of_corpora_before_search = false;
+            show_list_of_corpora_before_search_ = false;
             WApplication::instance()->setCookie("show_list_of_corpora_before_search", "false", 60000);
             if (session_->login().state() != 0) {
                 Preference *dialogPref = new Preference(PGDIALOGPREFERENCES, PGDIALOGPREFERENCESTABLENAME,
@@ -1306,7 +1304,7 @@ void Search::startSearchProcess() {
 void Search::prepareKeywordColorsForSearch() {
     String keyword = StringUtils::toString(keywordtext_->text().value());
     vector<string> keyword_entities;
-    keywordColorsMap = unordered_map<string, int>();
+    keywordColorsMap_ = unordered_map<string, int>();
     string keyword_string(keyword.begin(), keyword.end());
     std::vector<std::string> phrases(RemovePhrases(keyword_string));
     eraseAllOccurrencesOfStr(keyword_string, "*");
@@ -1320,7 +1318,7 @@ void Search::prepareKeywordColorsForSearch() {
             keyword_entities.end());
     int colorIndex = 0;
     for (auto entity : keyword_entities) {
-        keywordColorsMap.insert({
+        keywordColorsMap_.insert({
             {entity, colorIndex++}
         });
     }
@@ -1395,8 +1393,8 @@ void Search::hideTable() {
 void Search::displayTable(int start, int end, int direction) {
     // data structure to keep track of open panels
     // create reader to retrieve paper information
-    expandedPanelIndexes.clear();
-    tableTextGroupBoxes.clear();
+    expandedPanelIndexes_.clear();
+    tableTextGroupBoxes_.clear();
     vector<string> literatures = getSelectedLiteratures();
     if (totalresults_ == 0) {
         showMessagebox("Your search returned no result.");
@@ -1408,8 +1406,8 @@ void Search::displayTable(int start, int end, int direction) {
     if (totalresults_ % RECORDS_PER_PAGE == 0) //special case when total number is divisible by recordperpage
         total_page = totalresults_ / RECORDS_PER_PAGE;
     std::vector< std::vector < std::wstring> > contents;
-    max_score_ = searchResults.max_score;
-    min_score_ = searchResults.min_score;
+    max_score_ = searchResults_.max_score;
+    min_score_ = searchResults_.min_score;
     max_min_ = max_score_ - min_score_;
     int n_row = 0;
     int i = 0;
@@ -1429,7 +1427,6 @@ void Search::displayTable(int start, int end, int direction) {
     }
     vector<String> identifiers; //collect 20 identifiers
     vector<int> indexes; //collect 20 doc ids.
-    clock_t begin_time = clock();
     vector<DocumentSummary> doc_summaries;
     vector<double> scores;
     while (n_row < RECORDS_PER_PAGE && i < totalresults_ - 1) {
@@ -1445,7 +1442,7 @@ void Search::displayTable(int start, int end, int direction) {
         } else if (direction == 999999) {
             i++;
         }
-        double doc_score = searchResults.hit_documents[i].score;
+        double doc_score = searchResults_.hit_documents[i].score;
         if (totalresults_ > 1) {
             if (max_min_ > 0) {
                 doc_score = (doc_score - min_score_) / max_min_;
@@ -1457,15 +1454,15 @@ void Search::displayTable(int start, int end, int direction) {
         }
         if (direction == -1) {
             scores.insert(scores.begin(), doc_score);
-            doc_summaries.insert(doc_summaries.begin(), searchResults.hit_documents[i]);
+            doc_summaries.insert(doc_summaries.begin(), searchResults_.hit_documents[i]);
         } else {
             scores.push_back(doc_score);
-            doc_summaries.push_back(searchResults.hit_documents[i]);
+            doc_summaries.push_back(searchResults_.hit_documents[i]);
         }
         n_row++;
     }
     set<string> fields_to_exclude;
-    vector<DocumentDetails> docsDetails = indexManager.get_documents_details(
+    vector<DocumentDetails> docsDetails = indexManager_.get_documents_details(
             doc_summaries, cb_year_->isChecked(), false,
             DOCUMENTS_FIELDS_DETAILED, SENTENCE_FIELDS_DETAILED, {
                 "fulltext_compressed", "fulltext_cat_compressed"
@@ -1532,9 +1529,6 @@ void Search::displayTable(int start, int end, int direction) {
         row.push_back(LString2WtString(String(filepath.begin(), filepath.end())));
         contents.push_back(row);
     }
-    //mr->close();
-    clock_t end_time = clock();
-    cout << " time to check " << i << ": " << double(end_time - begin_time) / CLOCKS_PER_SEC << endl;
     if (direction == 1) {
         if (current_end_ != 0) {
             current_start_ = current_end_ + 1;
@@ -1551,7 +1545,6 @@ void Search::displayTable(int start, int end, int direction) {
         current_start_ = (total_page - 1)*20;
         current_end_ = i;
     }
-    //writeToCsv(resultFile, contents);
     // table manipulation from here
     table_->show();
     table_->clear();
@@ -1576,7 +1569,6 @@ void Search::displayTable(int start, int end, int direction) {
             ->addWidget(new Wt::WText(labels[7])); //link
     Wt::WImage * im = new Wt::WImage("resources/icons/qmark15.png");
     im->setVerticalAlignment(Wt::AlignTop);
-    //keywordtext_->setInline(true);
     im->setInline(true);
     im->mouseWentOver().connect(boost::bind(&Search::SetCursorHand, this, im));
     im->clicked().connect(this, &Search::HelpCurationCheckBoxDialog);
@@ -1624,7 +1616,7 @@ void Search::displayTable(int start, int end, int direction) {
         Wt::WAnimation animation(Wt::WAnimation::SlideInFromTop, Wt::WAnimation::EaseOut, 100);
         panel->setAnimation(animation);
 
-        //adhere bib here 
+        //add bib here 
         WGroupBox* textGroupBox = new Wt::WGroupBox();
         Wt::WText* author_line = new Wt::WText(L"<b>Author</b>: " + row[5]);
         author_line->decorationStyle().font().setSize(Wt::WFont::Large);
@@ -1683,7 +1675,7 @@ void Search::displayTable(int start, int end, int direction) {
         textGroupBox->addWidget(new Wt::WBreak());
         panel->setCentralWidget(textGroupBox);
         panel->expanded().connect(boost::bind(&Search::setHitText, this, indexes[i], textGroupBox));
-        tableTextGroupBoxes.push_back(textGroupBox);
+        tableTextGroupBoxes_.push_back(textGroupBox);
         panel->titleBarWidget()->clicked().connect(boost::bind(&Search::PanelTitleClick, this, panel, indexes[i], textGroupBox));
         table_->elementAt(i + 1, 2)->addWidget(panel); //panel
         table_->elementAt(i + 1, 2)->setMaximumSize(800, 100);
@@ -1721,7 +1713,6 @@ void Search::displayTable(int start, int end, int direction) {
     }
     page_number_text_->setText("Page: " + std::to_string(currentpage_) +
             " of " + std::to_string(total_page));
-    //    page_number_text_->setText("Page: " + (WString) StringUtils::toString(currentpage_).c_str());
     if (currentpage_ == 1) {
         previous_button_->hide();
         next_button_->show();
@@ -1766,8 +1757,8 @@ void Search::ViewPaperClicked(Wt::WCheckBox * cb,
         pa.bestring = RetrieveBEString(index);
         pa.accession = accession;
         pa.case_sensitive = cb_casesens_->isChecked();
-        string keywords_no_logic = query.keyword;
-        if (query.keyword != "") {
+        string keywords_no_logic = query_.keyword;
+        if (query_.keyword != "") {
             boost::replace_all(keywords_no_logic, " AND ", " ");
             boost::replace_all(keywords_no_logic, " OR ", " ");
             boost::replace_all(keywords_no_logic, "(", "");
@@ -1782,11 +1773,11 @@ void Search::ViewPaperClicked(Wt::WCheckBox * cb,
             }
         }
         vector<string> categories;
-        for (const auto& category : query.categories) {
+        for (const auto& category : query_.categories) {
             string cat = category;
             if (category.substr(0, 5) == "PTCAT") {
                 cat = category.substr(5, category.size());
-                set<string> children_cat = tcp->GetAllChildrensName(cat);
+                set<string> children_cat = tcp_->GetAllChildrensName(cat);
                 for (const auto& child : children_cat) {
                     categories.push_back(child);
                 }
@@ -1811,8 +1802,8 @@ std::string Search::RetrieveBEString(int index) {
     // search for the document again but this time get information about matching sentences
     string ret_string;
     DocumentSummary document = DocumentSummary();
-    if (searchResults.query.type == QueryType::document) {
-        tpc::index::Query q = searchResults.query;
+    if (searchResults_.query.type == QueryType::document) {
+        tpc::index::Query q = searchResults_.query;
         boost::replace_all(q.keyword, " AND ", " OR ");
         boost::replace_all(q.keyword, "(", "");
         boost::replace_all(q.keyword, ")", "");
@@ -1824,8 +1815,8 @@ std::string Search::RetrieveBEString(int index) {
         q.categories.clear();
         q.categories_and_ed = false;
         q.type = QueryType::sentence;
-        string docid = indexManager.get_document_details(
-                searchResults.hit_documents[index + current_start_], false,{"doc_id", "fulltext_compressed", "fulltext_cat_compressed"},
+        string docid = indexManager_.get_document_details(
+                searchResults_.hit_documents[index + current_start_], false,{"doc_id", "fulltext_compressed", "fulltext_cat_compressed"},
         {
         },
         {
@@ -1833,21 +1824,21 @@ std::string Search::RetrieveBEString(int index) {
         {
         }).identifier;
         try {
-            auto search_docs = indexManager.search_documents(q, false,{docid});
+            auto search_docs = indexManager_.search_documents(q, false,{docid});
             if (search_docs.hit_documents.size() > 0) {
                 document = search_docs.hit_documents[0];
             } else {
-                document = searchResults.hit_documents[index + current_start_];
+                document = searchResults_.hit_documents[index + current_start_];
             }
         } catch (tpc_exception& e) {
-            document = searchResults.hit_documents[index + current_start_];
+            document = searchResults_.hit_documents[index + current_start_];
         }
     } else {
-        document = searchResults.hit_documents[index + current_start_];
+        document = searchResults_.hit_documents[index + current_start_];
     }
     String identifier = StringUtils::toString(document.identifier.c_str());
     int beupperlimit = 110;
-    vector<SentenceDetails> docSentencesDetails = indexManager.get_document_details(
+    vector<SentenceDetails> docSentencesDetails = indexManager_.get_document_details(
             document, true,{"doc_id"},
     {
         "sentence_id", "begin", "end"
@@ -1873,7 +1864,7 @@ std::string Search::RetrieveBEString(int index) {
 }
 
 vector<wstring> Search::getCleanKeywords() {
-    String l_keyword = StringUtils::toString(stored_keyword);
+    String l_keyword = StringUtils::toString(stored_keyword_);
     wstring w_keyword = LString2wstring(l_keyword);
     boost::replace_all(w_keyword, "AND", "");
     boost::replace_all(w_keyword, "OR", "");
@@ -1889,8 +1880,8 @@ vector<wstring> Search::getCleanKeywords() {
 }
 
 void Search::setHitText(int index, Wt::WGroupBox* textGroupBox) {
-    expandedPanelIndexes.insert(index);
-    DocumentSummary currDocSummary = searchResults.hit_documents[index + current_start_];
+    expandedPanelIndexes_.insert(index);
+    DocumentSummary currDocSummary = searchResults_.hit_documents[index + current_start_];
     vector<WWidget*> children = textGroupBox->children();
     int n_children = children.size();
     for (int i = 12; i <= n_children; i++) { // clean up junky widgets before inserting hit texts
@@ -1903,8 +1894,8 @@ void Search::setHitText(int index, Wt::WGroupBox* textGroupBox) {
     string docIdentifier = currDocSummary.identifier; //getting identifier in reverse order
     double doc_score = currDocSummary.score;
     int sentence_count = 0;
-    if (searchResults.query.type == QueryType::sentence) {
-        DocumentDetails currDocDetails = indexManager.get_document_details(
+    if (searchResults_.query.type == QueryType::sentence) {
+        DocumentDetails currDocDetails = indexManager_.get_document_details(
                 currDocSummary, true,{"doc_id"},
         {
             "sentence_id", "sentence_compressed", "sentence_cat_compressed"
@@ -1941,7 +1932,7 @@ void Search::setHitText(int index, Wt::WGroupBox* textGroupBox) {
             boost::split(subwstrings, w_cleantext, boost::is_any_of(" "));
 
             int n_words = subwstrings.size();
-            vector<int> keyword_positions = getKeywordPositions(subwstrings, stored_keyword);
+            vector<int> keyword_positions = getKeywordPositions(subwstrings, stored_keyword_);
             sentence_count++;
             WContainerWidget* wt_sentence = getSingleSentenceHighlightedWidgetFromText(w_text, w_cat, keywords,
                     sentence_length, textGroupBox);
@@ -2009,7 +2000,7 @@ void Search::setHitText(int index, Wt::WGroupBox* textGroupBox) {
             textGroupBox->addWidget(new Wt::WBreak());
         }
     } else {
-        DocumentDetails currDocDetails = indexManager.get_document_details(
+        DocumentDetails currDocDetails = indexManager_.get_document_details(
                 currDocSummary, false,{"doc_id", "fulltext_compressed", "fulltext_cat_compressed"},
         {
         },
@@ -2040,7 +2031,7 @@ void Search::setHitText(int index, Wt::WGroupBox* textGroupBox) {
         boost::split(subwstrings, w_cleantext, boost::is_any_of(" "));
 
         int n_words = subwstrings.size();
-        vector<int> keyword_positions = getKeywordPositions(subwstrings, stored_keyword);
+        vector<int> keyword_positions = getKeywordPositions(subwstrings, stored_keyword_);
         for (int i = 0; i < keyword_positions.size(); i++) {
             vector<int> hit_positions; //to collect hit positions for one sentence
             int current_position = keyword_positions[i];
@@ -2075,11 +2066,11 @@ void Search::setHitText(int index, Wt::WGroupBox* textGroupBox) {
                         wt_word->decorationStyle().font().setSize(Wt::WFont::Medium);
                         wstring word = w_word;
                         std::transform(word.begin(), word.end(), word.begin(), ::tolower);
-                        if (keywordColorsMap.find(string(word.begin(), word.end())) != keywordColorsMap.end()) {
-                            wt_word->decorationStyle().setForegroundColor(colorSet.getKeywordColor(
-                                    keywordColorsMap.find(string(word.begin(), word.end()))->second));
+                        if (keywordColorsMap_.find(string(word.begin(), word.end())) != keywordColorsMap_.end()) {
+                            wt_word->decorationStyle().setForegroundColor(colorSet_.getKeywordColor(
+                                    keywordColorsMap_.find(string(word.begin(), word.end()))->second));
                         } else {
-                            wt_word->decorationStyle().setForegroundColor(colorSet.getKeywordColor(0));
+                            wt_word->decorationStyle().setForegroundColor(colorSet_.getKeywordColor(0));
                         }
                     }
                 }
@@ -2137,7 +2128,7 @@ void Search::PanelTitleClick(WPanel* panel, int index, Wt::WGroupBox* textGroupB
     if (panel->isCollapsed()) {
         setHitText(index, textGroupBox);
     } else {
-        expandedPanelIndexes.erase(index);
+        expandedPanelIndexes_.erase(index);
     }
 }
 
@@ -2188,15 +2179,13 @@ Wt::WContainerWidget* Search::setHitCatSentence(wstring w_cat, vector<wstring > 
                 }
                 i = k - 1;
                 if (position > sentence_length && position < n_words - sentence_length) {
-                    //wstring hit_sentence = L"";
                     for (int j = position - sentence_length; j < position + sentence_length; j++) {
                         wstring w_word = subwstrings[j];
-                        //hit_sentence += w_word;
                         Wt::WText* wt_word = new Wt::WText(w_word);
                         for (int l = 0; l < hit_positions.size(); l++) {
                             if (j == hit_positions[l]) {
                                 wt_word->decorationStyle().font().setSize(Wt::WFont::Medium);
-                                wt_word->decorationStyle().setForegroundColor(colorSet.getCategoryColor(n));
+                                wt_word->decorationStyle().setForegroundColor(colorSet_.getCategoryColor(n));
                             }
                         }
                         wt_sentence->addWidget(wt_word);
@@ -2206,16 +2195,14 @@ Wt::WContainerWidget* Search::setHitCatSentence(wstring w_cat, vector<wstring > 
                 }
             }
         } else if (keywordfield_combo_->currentText().value() == "sentence" && catmatch_positions.size() > 0) {
-            //wstring hit_sentence = L"";
             int sentence_size = subwstrings.size();
             for (int j = 0; j < sentence_size; j++) {
                 wstring w_word = subwstrings[j];
-                //hit_sentence += w_word;
                 Wt::WText* wt_word = new Wt::WText(w_word);
                 for (int l = 0; l < catmatch_positions.size(); l++) {
                     if (j == catmatch_positions[l]) {
                         wtexts[j]->decorationStyle().font().setSize(Wt::WFont::Medium);
-                        wtexts[j]->decorationStyle().setForegroundColor(colorSet.getCategoryColor(n));
+                        wtexts[j]->decorationStyle().setForegroundColor(colorSet_.getCategoryColor(n));
                     }
                 }
             }
@@ -2267,9 +2254,8 @@ void Search::ReadPreloadedCategories() {
     std::string username("default");
     if (session_->login().state() != 0)
         username = session_->login().user().identity("loginname").toUTF8();
-    tcp = new TpCategoryBrowser();
-    std::set<std::string> plist = tcp->GetAllDirectChildrensName("root");
-    //delete tcp;
+    tcp_ = new TpCategoryBrowser();
+    std::set<std::string> plist = tcp_->GetAllDirectChildrensName("root");
     Preference * pref = new Preference(PGPRELOADEDCATEGORIES, PGPRELOADEDCATTABLENAME, username);
     preloadedcategories_.clear();
     std::set<std::string>::iterator it;
@@ -2285,8 +2271,7 @@ void Search::readPreloadedColors() {
     std::string username("default");
     if (session_->login().state() != 0)
         username = session_->login().user().identity("loginname").toUTF8();
-    //colorSet = colors::ColorSet();
-    colorSet.loadColorsFromDB(username);
+    colorSet_.loadColorsFromDB(username);
 }
 
 void Search::UpdateLiteraturePreferences(bool checkpermissions) {
@@ -2319,8 +2304,8 @@ void Search::UpdateLiteraturePreferences(bool checkpermissions) {
                 pickedliterature_[corpus] = true;
         }
     }
-    if (session_->login().state() != 0 && indexManager.has_external_index()) {
-        for (const string& external_corpus : indexManager.get_external_corpora()) {
+    if (session_->login().state() != 0 && indexManager_.has_external_index()) {
+        for (const string& external_corpus : indexManager_.get_external_corpora()) {
             pickedliterature_[external_corpus] = true;
         }
     }
@@ -2334,12 +2319,12 @@ void Search::UpdateLiteraturePreferences(bool checkpermissions) {
 void Search::ReadIndexPrefix() {
     if (session_->login().state() != 0 && boost::filesystem::exists(
             USERUPLOADROOTDIR + string("/") + session_->login().user().identity("loginname").toUTF8() + "/luceneindex")) {
-        indexManager.set_external_index(USERUPLOADROOTDIR + string("/") +
+        indexManager_.set_external_index(USERUPLOADROOTDIR + string("/") +
                 session_->login().user().identity("loginname").toUTF8()
                 + "/luceneindex");
     } else {
-        if (indexManager.has_external_index()) {
-            indexManager.remove_external_index();
+        if (indexManager_.has_external_index()) {
+            indexManager_.remove_external_index();
         }
     }
     pickedliterature_.clear();
@@ -2418,7 +2403,7 @@ WContainerWidget* Search::getSingleSentenceHighlightedWidgetFromText(std::wstrin
             Wt::WText* wt_word = (Wt::WText*)wt_sentence->widget(i);
             stringwords.push_back(wt_word->text());
         }
-        vector<int> keyword_positions = getKeywordPositions(stringwords, stored_keyword);
+        vector<int> keyword_positions = getKeywordPositions(stringwords, stored_keyword_);
         for (int j = 0; j < count; j++) {
             for (int l = 0; l < keyword_positions.size(); l++) //loop over all hits within sentence_length
             {
@@ -2426,11 +2411,11 @@ WContainerWidget* Search::getSingleSentenceHighlightedWidgetFromText(std::wstrin
                     wt_sentence->widget(j)->decorationStyle().font().setSize(Wt::WFont::Medium);
                     wstring word = ((Wt::WText*)wt_sentence->widget(j))->text().value();
                     std::transform(word.begin(), word.end(), word.begin(), ::tolower);
-                    if (keywordColorsMap.find(string(word.begin(), word.end())) != keywordColorsMap.end()) {
-                        wt_sentence->widget(j)->decorationStyle().setForegroundColor(colorSet.getKeywordColor(
-                                keywordColorsMap.find(string(word.begin(), word.end()))->second));
+                    if (keywordColorsMap_.find(string(word.begin(), word.end())) != keywordColorsMap_.end()) {
+                        wt_sentence->widget(j)->decorationStyle().setForegroundColor(colorSet_.getKeywordColor(
+                                keywordColorsMap_.find(string(word.begin(), word.end()))->second));
                     } else {
-                        wt_sentence->widget(j)->decorationStyle().setForegroundColor(colorSet.getKeywordColor(0));
+                        wt_sentence->widget(j)->decorationStyle().setForegroundColor(colorSet_.getKeywordColor(0));
                     }
                 }
             }
@@ -2438,7 +2423,7 @@ WContainerWidget* Search::getSingleSentenceHighlightedWidgetFromText(std::wstrin
         }
     } else {
         boost::split(stringwords, w_text, boost::is_any_of(" "));
-        vector<int> keyword_positions = getKeywordPositions(stringwords, stored_keyword);
+        vector<int> keyword_positions = getKeywordPositions(stringwords, stored_keyword_);
         int words_count = stringwords.size();
         for (int j = 0; j < words_count; j++) {
             wstring w_word = stringwords[j];
@@ -2449,11 +2434,11 @@ WContainerWidget* Search::getSingleSentenceHighlightedWidgetFromText(std::wstrin
                     wt_word->decorationStyle().font().setSize(Wt::WFont::Medium);
                     wstring word = w_word;
                     std::transform(word.begin(), word.end(), word.begin(), ::tolower);
-                    if (keywordColorsMap.find(string(word.begin(), word.end())) != keywordColorsMap.end()) {
-                        wt_word->decorationStyle().setForegroundColor(colorSet.getKeywordColor(
-                                keywordColorsMap.find(string(word.begin(), word.end()))->second));
+                    if (keywordColorsMap_.find(string(word.begin(), word.end())) != keywordColorsMap_.end()) {
+                        wt_word->decorationStyle().setForegroundColor(colorSet_.getKeywordColor(
+                                keywordColorsMap_.find(string(word.begin(), word.end()))->second));
                     } else {
-                        wt_word->decorationStyle().setForegroundColor(colorSet.getKeywordColor(0));
+                        wt_word->decorationStyle().setForegroundColor(colorSet_.getKeywordColor(0));
                     }
 
                 }
@@ -2478,17 +2463,17 @@ void Search::SessionLoginChanged() {
     ReadIndexPrefix();
     readDialogPreferences();
     if (session_->login().state() != 0) {
-        setDefTypeBtn->show();
+        setDefTypeBtn_->show();
     } else {
-        setDefTypeBtn->hide();
+        setDefTypeBtn_->hide();
     }
 }
 
 void Search::readDialogPreferences() {
-    show_list_of_corpora_before_search = true;
+    show_list_of_corpora_before_search_ = true;
     try {
         if (WApplication::instance()->environment().getCookie("show_list_of_corpora_before_search") == "false") {
-            show_list_of_corpora_before_search = false;
+            show_list_of_corpora_before_search_ = false;
         }
     } catch (const exception& e) {
 
@@ -2498,13 +2483,13 @@ void Search::readDialogPreferences() {
                 session_->login().user().identity("loginname").toUTF8());
         if (dialogPref->HasPreferences())
             if (dialogPref->IsPreference("show_list_of_corpora_before_search"))
-                show_list_of_corpora_before_search = false;
+                show_list_of_corpora_before_search_ = false;
     }
 }
 
 void Search::updateSearchColors() {
     readPreloadedColors();
-    for (auto index : expandedPanelIndexes) {
-        setHitText(index, tableTextGroupBoxes[index % 20]);
+    for (auto index : expandedPanelIndexes_) {
+        setHitText(index, tableTextGroupBoxes_[index % 20]);
     }
 }

@@ -25,7 +25,6 @@ void SuggestionBoxFromPgOntology::BasicInit(Wt::WObject * parent) {
     setFilterLength(4);
     setModel(slm_);
     setMaximumSize(Wt::WLength(60, Wt::WLength::FontEx), Wt::WLength(15, Wt::WLength::FontEx));
-//    setMaximumSize(Wt::WLength::Auto, Wt::WLength(20, Wt::WLength::FontEx));
     filterModel().connect(this, &SuggestionBoxFromPgOntology::PopulateModel);
 }
 

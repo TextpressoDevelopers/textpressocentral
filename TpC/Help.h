@@ -13,6 +13,7 @@
 class Help : public Wt::WContainerWidget {
 public:
     Help();
+    void LoadContent();
     Help(const Help& orig);
     void DisplayRandomItem(Wt::WContainerWidget * se);
     void DisplayTextAndLinksFromFile(std::string filename,

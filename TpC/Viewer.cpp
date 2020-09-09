@@ -155,19 +155,11 @@ Viewer::Viewer(UrlParameters * urlparams, Session * session, PaperAddress* pa, W
     std::string tmpfl = uncompressGzip2(filename_);
     GetCas(tmpfl.c_str());
     boost::filesystem::remove(tmpfl);
-    //
-    //clock_t begin_time = clock();
     PrepareAnnotationIds();
-    //clock_t end_time = clock();
-    //std::cout << "Time spent in PrepareAnnotationIds() " << double(end_time - begin_time) / CLOCKS_PER_SEC << std::endl;
-    //std::cout << "Range: " << firstallbeginnings_ << " " << lastallbeginnings_ << std::endl;
     if (rawsource_ == nxml)
         papercontainer_ = DisplayAnnotationRangeNxml(firstallbeginnings_, lastallbeginnings_);
     else if (rawsource_ == pdf)
         papercontainer_ = DisplayAnnotationRangePdf(firstallbeginnings_, lastallbeginnings_);
-    //end_time = clock();
-    //std::cout << "Time spent in DisplayAnnotationRangeXXX " << double(end_time - begin_time) / CLOCKS_PER_SEC << std::endl;
-    //
     mainlayout_ = new Wt::WBorderLayout();
     setLayout(mainlayout_);
     //
@@ -345,12 +337,7 @@ Wt::WContainerWidget * Viewer::DisplayAnnotationRangeNxml(int32_t b, int32_t e, 
 
     Wt::WContainerWidget * ret = new Wt::WContainerWidget(parent);
     ret->setContentAlignment(Wt::AlignJustify);
-    //    
-    //std::chrono::time_point<std::chrono::system_clock> bt, et;
-    //bt = std::chrono::system_clock::now();
-    //clock_t begin_time = clock();
     size_t sizeinterval = sortedXmlTagAnnotationIds_.size() / NUMBEROFTHREADS;
-    //std::cerr << sortedXmlTagAnnotationIds_.size() << " " << sizeinterval << std::endl;
     if (sizeinterval > 0) {
         std::vector<std::thread*> threadvec;
         typedef std::vector<XmlTag*> vpx;
@@ -398,28 +385,17 @@ Wt::WContainerWidget * Viewer::DisplayAnnotationRangeNxml(int32_t b, int32_t e, 
             itstart = itstop;
             threadvec.push_back(t);
         }
-        // wait for all threads to finish   
-        //std::cerr << "THREADVEC SIZE: " << threadvec.size() << std::endl;
+        // wait for all threads to finish
         while (threadvec.size() > 0) {
             threadvec.back()->join();
             delete threadvec.back();
             threadvec.pop_back();
         }
-        //et = std::chrono::system_clock::now();
-        //std::chrono::duration<double> elapsed_seconds = et - bt;
-        //clock_t end_time = clock();
-        //std::cout << "L347 " << double(end_time - begin_time) / CLOCKS_PER_SEC << std::endl;
-        //std::cout << "L347 elapsed time: " << elapsed_seconds.count() << std::endl;
         for (std::vector<vpx*>::iterator vvpxit = vvpx.begin(); vvpxit != vvpx.end(); vvpxit++)
             for (vpx::iterator vpxit = (*vvpxit)->begin(); vpxit != (*vvpxit)->end(); vpxit++) {
                 AddXmlTagAsWidget(*vpxit, ret);
                 delete *vpxit;
             }
-        //et = std::chrono::system_clock::now();
-        //elapsed_seconds = et - bt;
-        //end_time = clock();
-        //std::cout << "L353 " << double(end_time - begin_time) / CLOCKS_PER_SEC << std::endl;
-        //std::cout << "L353 elapsed time: " << elapsed_seconds.count() << std::endl;
     }
     return ret;
 }
@@ -525,18 +501,12 @@ Wt::WContainerWidget * Viewer::DisplayAnnotationRangePdf(int32_t b, int32_t e, W
         itstart = itstop;
         threadvec.push_back(t);
     }
-    // wait for all threads to finish   
-    //std::cerr << "THREADVEC SIZE: " << threadvec.size() << std::endl;
+    // wait for all threads to finish
     while (threadvec.size() > 0) {
         threadvec.back()->join();
         delete threadvec.back();
         threadvec.pop_back();
     }
-    //et = std::chrono::system_clock::now();
-    //std::chrono::duration<double> elapsed_seconds = et - bt;
-    //clock_t end_time = clock();
-    //std::cout << "L347 " << double(end_time - begin_time) / CLOCKS_PER_SEC << std::endl;
-    //std::cout << "L501 elapsed time: " << elapsed_seconds.count() << std::endl;
     //] PRELIMS
     //[ Display
     int32_t currentpos = 0;
@@ -669,11 +639,6 @@ Wt::WContainerWidget * Viewer::DisplayAnnotationRangePdf(int32_t b, int32_t e, W
         delete (tdv);
     }
     //] Display
-    //et = std::chrono::system_clock::now();
-    //elapsed_seconds = et - bt;
-    //end_time = clock();
-    //std::cout << "L635 " << double(end_time - begin_time) / CLOCKS_PER_SEC << std::endl;
-    //std::cout << "L636 elapsed time: " << elapsed_seconds.count() << std::endl;
     return ret;
 }
 
@@ -1213,7 +1178,6 @@ void Viewer::DisplayLevelClicked(Wt::WStackedWidget * sw) {
         else
             (*vtit)->hide();
     //       
-
     for (vtit = wtpt_.Terms.begin(); vtit != wtpt_.Terms.end(); vtit++)
         (*vtit)->show();
     //       

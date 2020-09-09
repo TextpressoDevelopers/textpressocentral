@@ -11,7 +11,6 @@
 
 ModAnnotator::ModAnnotator(Wt::WContainerWidget * parent) : Wt::WContainerWidget(parent) {
     this->addWidget(new Wt::WBreak);
-//    this->addWidget(new Wt::WText("MOD annotation can be performed here. Data transfer from Textpress is done via a webservice."));
     this->addWidget(new Wt::WText("GO annotation can be performed here. Data transfer from Textpresso is done via a webservice."));
 }
 

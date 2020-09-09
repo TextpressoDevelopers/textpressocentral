@@ -110,15 +110,6 @@ void PgCurationDataFromViewer::ReadData(const int & record_id,
         std::string & filename, std::string & owner, std::string & paper_id,
         time_t last_update, std::string & version) {
     try {
-        /*            pc << "record_id int";
-               pc << ", term text";
-               pc << ", bestring text";
-               pc << ", filename text";
-               pc << ", owner varchar(255)";
-               pc << ", paper_id text";
-               pc << ", last_update int";
-               pc << ", version varchar(255)";
-         */
         pqxx::work w(cn_);
         pqxx::result r;
         std::stringstream pc;

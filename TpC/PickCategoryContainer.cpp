@@ -126,7 +126,6 @@ void PickCategoryContainer::PrepareInputDisplay(Session * session, Wt::WScrollAr
     inputdisplay->addWidget(changeprefs);
     inputdisplay->addWidget(new Wt::WBreak());
     inputdisplay->addWidget(tcb_);
-    //    inputdisplay->addWidget(new Wt::WBreak());
     cs->setScrollBarPolicy(Wt::WScrollArea::ScrollBarAsNeeded);
     Wt::WLength heightfx = Wt::WLength(36, Wt::WLength::FontEx);
     inputdisplay->setHeight(heightfx);
