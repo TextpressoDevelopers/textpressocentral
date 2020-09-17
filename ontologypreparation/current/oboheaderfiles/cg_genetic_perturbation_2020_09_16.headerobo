@@ -1,0 +1,13 @@
+format-version: 1.2
+data-version: 27:10:2019 03:11
+date: 27:10:2019 03:11
+saved-by: Textpresso
+
+[Term]
+id: Tp:0000016
+name: WormBase Curation
+
+[Term]
+id: tpgp:0000000
+name: genetic perturbation (C. elegans)
+is_a: Tp:0000016 ! WormBase Curation
