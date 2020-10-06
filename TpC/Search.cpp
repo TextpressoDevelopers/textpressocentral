@@ -383,6 +383,10 @@ void Search::SearchViaUrlParameters() {
     Wt::Http::ParameterValues types = urlparameters_->GetParameterValues("type");
     string act = boost::join(types, " ");
     type_filter_->setText(act);
+    Wt::Http::ParameterValues casesensitive = urlparameters_->GetParameterValues("casesensitive");
+    if (!casesensitive.empty())
+        if (casesensitive[0].compare("true") == 0)
+            cb_casesens_->setChecked();    
     if (triggersearch)
         doSearch();
 }
