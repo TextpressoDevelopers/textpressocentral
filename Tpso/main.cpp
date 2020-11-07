@@ -154,7 +154,6 @@ namespace {
                 "\tgenerating postgres tables\n"
                 "\t" << PGONTOLOGYTABLENAME << "_<base of obofilename>,\n"
                 "\t" << PCRELATIONSTABLENAME << "_<base of obofilename> and\n"
-                //                "\t" << PADCRELATIONSTABLENAME << "_<base of obofilename>.\n"
                 "\t<base of obofilename> is the base filename of each\n"
                 "\tobo file in \"obo directory\".\n"
                 "\tEach <base of obofilename> will be added to table "
