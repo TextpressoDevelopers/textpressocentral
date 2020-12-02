@@ -104,6 +104,9 @@ session_("user=www-data dbname=www-data"), urlparameters_(urlparameters) {
     if (Wt::WApplication::instance()->internalPath() == "/browsers")
         browsers_->LoadContent(session_, this);
     //
+    leftMenu_->addItem("Customization", customization_)
+            ->setPathComponent("customization");
+    //
     leftMenu_->addItem("Download", download_)
             ->setPathComponent("download");
     //
