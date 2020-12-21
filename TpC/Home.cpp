@@ -54,13 +54,12 @@ namespace {
         Wt::WContainerWidget * ret = new Wt::WContainerWidget();
         Wt::WGroupBox * gb = new Wt::WGroupBox("External Links");
         gb->setContentAlignment(Wt::AlignJustify);
-        Wt::WAnchor * oldsite = new Wt::WAnchor("http://textpresso.org/index_old.html");
-        oldsite->setTarget(Wt::TargetNewWindow);
-        oldsite->setText("Old Textpresso site");
-        //        oldsite->decorationStyle().setForegroundColor(Wt::WColor(255, 255, 255));
-        oldsite->decorationStyle().font().setSize(Wt::WFont::Large);
-        oldsite->decorationStyle().font().setVariant(Wt::WFont::SmallCaps);
-        gb->addWidget(oldsite);
+        Wt::WAnchor * alliancesite = new Wt::WAnchor("https://www.alliancegenome.org/");
+        alliancesite->setTarget(Wt::TargetNewWindow);
+        alliancesite->setText("Alliance of Genomic Resources");
+        alliancesite->decorationStyle().font().setSize(Wt::WFont::Large);
+        alliancesite->decorationStyle().font().setVariant(Wt::WFont::SmallCaps);
+        gb->addWidget(alliancesite);
         gb->addWidget(new Wt::WBreak());
         Wt::WAnchor * paper = new Wt::WAnchor("https://bmcbioinformatics.biomedcentral.com/"
                 "articles/10.1186/s12859-018-2103-8");
@@ -79,7 +78,8 @@ namespace {
         //
         Wt::WGroupBox * sft(DisplayGroupBox("Search Full Text",
                 "Textpresso Central contains "
-                "(roughly 2.85 million) PMCOA full text articles. "
+                "full text articles that can be searched "
+		"by keywords and categories. "
                 "The number of articles is continuously growing."));
         ret->addWidget(sft);
         ret->addWidget(new Wt::WBreak());
