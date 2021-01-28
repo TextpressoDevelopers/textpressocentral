@@ -23,6 +23,17 @@
 #include <Wt/WCssDecorationStyle>
 #include <boost/filesystem.hpp>
 
+namespace {
+    Wt::WString textFromFile(std::string filename) {
+        std::ifstream f(filename.c_str());
+        std::string in("");
+        std::string txt("");
+        while (getline(f, in)) txt += in;
+        f.close();
+        return Wt::WString(txt);
+    }
+}
+
 TCNavWeb::TCNavWeb(UrlParameters * urlparameters, Wt::WContainerWidget * parent) : Wt::WContainerWidget(parent),
 session_("user=www-data dbname=www-data"), urlparameters_(urlparameters) {
     dialog_ = nullptr;
@@ -140,8 +151,7 @@ session_("user=www-data dbname=www-data"), urlparameters_(urlparameters) {
             helpDialog->show();
         }
         if (item->text().toUTF8().compare("Contact us") == 0)
-                msgtxt = Wt::WString("For questions please contact us at "
-                "textpresso@caltech.edu.");
+                msgtxt = textFromFile("/data/textpresso/etc/contactus.txt");
         else if (item->text().toUTF8().compare("Copyright") == 0) {
             std::string date(__DATE__);
                     std::string year(date.substr(date.length() - 4, 4));

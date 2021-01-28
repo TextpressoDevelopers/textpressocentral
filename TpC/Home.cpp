@@ -11,6 +11,20 @@
 
 namespace {
 
+    Wt::WContainerWidget * textFromFile(std::string filename, Wt::WContainerWidget * parent = NULL) {
+        Wt::WContainerWidget * ret = new Wt::WContainerWidget(parent);
+        std::ifstream f(filename.c_str());
+        std::string in("");
+        std::string txt("");
+        while (getline(f, in)) txt += in;
+        Wt::WText * text = new Wt::WText(txt);
+        text->decorationStyle().font().setSize(Wt::WFont::XLarge);
+        text->decorationStyle().font().setVariant(Wt::WFont::SmallCaps);
+        f.close();
+        ret->addWidget(text);
+        return ret;
+    }
+
     Wt::WGroupBox * DisplayGroupBox(const Wt::WString & title, const Wt::WString & description) {
         Wt::WGroupBox * ret = new Wt::WGroupBox(title);
         ret->setContentAlignment(Wt::AlignJustify);
@@ -23,17 +37,17 @@ namespace {
 
     Wt::WContainerWidget * Banner(Wt::WContainerWidget * parent = NULL) {
         Wt::WContainerWidget * ret = new Wt::WContainerWidget(parent);
-        
+
         Wt::WImage * banner = new Wt::WImage("resources/other_images/textpresso_banner_aj.png");
         banner->setWidth(Wt::WLength(20, Wt::WLength::Percentage));
-        
-//        Wt::WText * banner = new Wt::WText("Textpresso Central");
-//        banner->decorationStyle().setForegroundColor(Wt::WColor(70, 90, 180));
-//        banner->decorationStyle().font().setWeight(Wt::WFont::Bold);
-//        banner->decorationStyle().font().setSize(Wt::WFont::XXLarge);
-//        banner->decorationStyle().font().setStyle(Wt::WFont::Italic);
-//        banner->decorationStyle().font().setFamily(Wt::WFont::SansSerif);
-//        banner->decorationStyle().font().setVariant(Wt::WFont::SmallCaps);
+
+        //        Wt::WText * banner = new Wt::WText("Textpresso Central");
+        //        banner->decorationStyle().setForegroundColor(Wt::WColor(70, 90, 180));
+        //        banner->decorationStyle().font().setWeight(Wt::WFont::Bold);
+        //        banner->decorationStyle().font().setSize(Wt::WFont::XXLarge);
+        //        banner->decorationStyle().font().setStyle(Wt::WFont::Italic);
+        //        banner->decorationStyle().font().setFamily(Wt::WFont::SansSerif);
+        //        banner->decorationStyle().font().setVariant(Wt::WFont::SmallCaps);
 
         ret->addWidget(banner);
         //
@@ -79,7 +93,7 @@ namespace {
         Wt::WGroupBox * sft(DisplayGroupBox("Search Full Text",
                 "Textpresso Central contains "
                 "full text articles that can be searched "
-		"by keywords and categories. "
+                "by keywords and categories. "
                 "The number of articles is continuously growing."));
         ret->addWidget(sft);
         ret->addWidget(new Wt::WBreak());
@@ -164,6 +178,8 @@ void Home::LoadContent(Search * search) {
     //
     north->setContentAlignment(Wt::AlignCenter);
     north->addWidget(Banner());
+    north->addWidget(new Wt::WBreak());
+    north->addWidget(textFromFile("/data/textpresso/etc/subline.txt"));
     south->addWidget(SearchBox(search));
     //
     center->addWidget(Main());
