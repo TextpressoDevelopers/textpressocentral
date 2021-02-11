@@ -386,7 +386,7 @@ void Search::SearchViaUrlParameters() {
     Wt::Http::ParameterValues casesensitive = urlparameters_->GetParameterValues("casesensitive");
     if (!casesensitive.empty())
         if (casesensitive[0].compare("true") == 0)
-            cb_casesens_->setChecked();    
+            cb_casesens_->setChecked();
     if (triggersearch)
         doSearch();
 }
@@ -2224,8 +2224,10 @@ vector<int> Search::getKeywordPositions(vector<wstring> subwstrings, wstring key
     ret.clear();
     boost::replace_all(keyword, "AND", "");
     boost::replace_all(keyword, "OR", "");
-    boost::replace_all(keyword, "(", "");
-    boost::replace_all(keyword, ")", "");
+    boost::replace_all(keyword, "(", "\\(");
+    boost::replace_all(keyword, ")", "\\)");
+    boost::replace_all(keyword, "[", "\\[");
+    boost::replace_all(keyword, "]", "\\]");
     boost::wregex re_boostfactor(L"\\^\\d+");
     keyword = boost::regex_replace(keyword, re_boostfactor, L"");
     keyword = boost::regex_replace(keyword, boost::wregex(L"\\s+"), L" ");
