@@ -1346,7 +1346,7 @@ tpc::index::Query Search::getSearchQuery() {
     query.case_sensitive = cb_casesens_->isChecked();
     query.sort_by_year = cb_year_->isChecked();
     query.literatures = getSelectedLiteratures();
-    query.keyword = StringUtils::toUTF8(keywordtext_->text().value());
+    query.keyword = "\\(" + StringUtils::toUTF8(keywordtext_->text().value()) + "\\)";
     query.exclude_keyword = StringUtils::toUTF8(keywordnottext_->text().value());
     std::set<std::string>::iterator it;
     query.categories_and_ed = categoriesanded_;
