@@ -1811,9 +1811,11 @@ std::string Search::RetrieveBEString(int index) {
         boost::replace_all(q.keyword, " AND ", " OR ");
         boost::replace_all(q.keyword, "(", "");
         boost::replace_all(q.keyword, ")", "");
+        boost::replace_all(q.keyword, "\\", "");
         boost::replace_all(q.exclude_keyword, " AND ", " OR ");
         boost::replace_all(q.exclude_keyword, "(", "");
         boost::replace_all(q.exclude_keyword, ")", "");
+        boost::replace_all(q.exclude_keyword, "\\", "");
         boost::regex_replace(q.keyword, boost::regex("\\s+"), " ");
         boost::regex_replace(q.exclude_keyword, boost::regex("\\s+"), " ");
         q.categories.clear();

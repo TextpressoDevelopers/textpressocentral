@@ -160,6 +160,8 @@
             <df name="Pdf2Tpcas">
             </df>
           </df>
+          <df name="Progress">
+          </df>
           <df name="tpc.dir">
             <df name="TpC">
               <df name="lucene">
