@@ -163,12 +163,12 @@ std::vector<std::string> Preference::GetPreferencesVec() {
  * @param uid the id of the user
  */
 void Preference::LoadPreferencesFromDb(std::string uid) {
-    if (uid.compare("default") == 0) { // set default preferences as available corpora
-        for (const std::string& corpus : tpc::index::IndexManager::get_available_corpora(tpc::index::CAS_ROOT_LOCATION.c_str())) {
-            preferences_.insert(corpus);
-            preferencesVector.push_back(corpus);
-        }
-    } else {
+//    if (uid.compare("default") == 0) { // set default preferences as available corpora
+//        for (const std::string& corpus : tpc::index::IndexManager::get_available_corpora(tpc::index::CAS_ROOT_LOCATION.c_str())) {
+//            preferences_.insert(corpus);
+//            preferencesVector.push_back(corpus);
+//        }
+//    } else {
         try {
             pqxx::work w(cn_);
             pqxx::result r;
@@ -193,7 +193,7 @@ void Preference::LoadPreferencesFromDb(std::string uid) {
         } catch (const std::exception &e) {
             std::cerr << e.what() << std::endl;
         }
-    }
+//    }
 }
 
 Preference::~Preference() {
