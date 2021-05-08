@@ -30,6 +30,9 @@ function activate() {
     ln -s $TPC_HOME/resources/resources-web $CGI_BIN/tc/resources
     chmod -R 775 $TPC_HOME
     chmod -R 777 $TPC_HOME/useruploads
+    mkdir -p $TPC_HOME/downloads
+    chmod -R 777 $TPC_HOME/downloads
+    ln -s $TPC_HOME/downloads $CGI_BIN/tc/
 }
 
 function set_literature_dir() {

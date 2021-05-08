@@ -156,7 +156,7 @@ private:
     int searchstatus_;
     std::chrono::time_point<std::chrono::system_clock> bt_, et_;
     std::vector<Wt::WCheckBox*> all_vp_cbxes_;
-    
+
     Wt::WContainerWidget* north_;
     WContainerWidget *northInner_;
     WContainerWidget *northInnerButtons_;
@@ -198,6 +198,8 @@ private:
     void doSearch();
     tpc::index::Query getSearchQuery();
     void ResetSearch();
+    void WriteTsvFile(const std::vector< std::vector < std::wstring> > &contents,
+            const std::string tmpfilename);
     void displayTable(int start, int end, int shift);
     void ViewPaperClicked(Wt::WCheckBox * cb, const std::string& papertitle,
             const std::string& paperauthor, const std::string& paperjournal, const std::string& paperyear,
@@ -226,6 +228,7 @@ private:
     void eraseAllOccurrencesOfStr(string &str, const string &pattern);
     void HelpLongSentenceDialog();
     bool isSearchFormValid();
+
     static bool pairCompare(const pair<String, int32_t>& firstElem, const pair<String, int32_t>& secondElem) {
         return firstElem.second < secondElem.second;
     }
@@ -236,6 +239,7 @@ private:
     vector<string> getSelectedLiteratures();
     void startSearchProcess();
     void readDialogPreferences();
+
     static bool sentence_position_lt(const tpc::index::SentenceDetails &a, const tpc::index::SentenceDetails &b) {
         return a.doc_position_begin < b.doc_position_begin;
     }

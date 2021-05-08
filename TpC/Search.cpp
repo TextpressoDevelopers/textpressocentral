@@ -1394,6 +1394,33 @@ void Search::hideTable() {
     table_->hide();
 }
 
+void Search::WriteTsvFile(const std::vector< std::vector < std::wstring> > &contents,
+        const std::string tmpfilename) {
+    std::cerr << tmpfilename;
+    std::ofstream out(tmpfilename);
+    if (out.is_open()) {
+    out << "Index\t";
+    out << "Accession\t";
+    out << "Literature\t";
+    out << "Type\t";
+    out << "Title\t";
+    out << "Author\t";
+    out << "Journal\t";
+    out << "Year\t";
+    out << "Abstract\t";
+    out << "Score\t";
+    out << "File location\t";
+    out << std::endl;
+    for (unsigned i = 0; i < contents.size(); ++i) {
+        for (auto x : contents[i]) out << x << "\t";
+        out << std::endl;
+    }
+    out.close();
+    } else {
+        std::cerr << "Couldn't open " << tmpfilename << std::endl;
+    }
+}
+
 void Search::displayTable(int start, int end, int direction) {
     // data structure to keep track of open panels
     // create reader to retrieve paper information
@@ -1706,6 +1733,13 @@ void Search::displayTable(int start, int end, int direction) {
         table_->elementAt(i + 1, 7)->addWidget(cb);
         table_->elementAt(i + 1, 7)->setContentAlignment(Wt::AlignCenter);
     }
+    std::string tmpfilename = Wt::WApplication::instance()->sessionId() + ".tsv";
+    std::string tmpdirname = "/usr/lib/cgi-bin/tc/downloads/";
+    WriteTsvFile(contents, tmpdirname + tmpfilename);
+    Wt::WAnchor* tsvAnchor = new Wt::WAnchor(Wt::WLink(Wt::WLink::Url, "downloads/" + tmpfilename), "Download this table");
+    tsvAnchor->setTarget(Wt::TargetDownload);
+    table_->elementAt(contents.size() + 1, 0)
+            ->addWidget(tsvAnchor);
     if (direction == 1) {
         currentpage_++;
     } else if (direction == -1) {
@@ -1743,7 +1777,7 @@ void Search::displayTable(int start, int end, int direction) {
 void Search::ViewPaperClicked(Wt::WCheckBox * cb,
         const string& title,
         const string& author, const string& journal, const string& year,
-        const string& filepath, int index, const string& accession) {
+        const string& filepath, int index, const string & accession) {
     //
     auto tcnw = dynamic_cast<TCNavWeb*> (parent_);
     if (cb->isChecked()) {
@@ -1885,7 +1919,7 @@ vector<wstring> Search::getCleanKeywords() {
     return keywords;
 }
 
-void Search::setHitText(int index, Wt::WGroupBox* textGroupBox) {
+void Search::setHitText(int index, Wt::WGroupBox * textGroupBox) {
     expandedPanelIndexes_.insert(index);
     DocumentSummary currDocSummary = searchResults_.hit_documents[index + current_start_];
     vector<WWidget*> children = textGroupBox->children();
@@ -2117,7 +2151,7 @@ void Search::showMessagebox(WString message) {
     messageBox->buttonClicked().connect(boost::bind(&Search::deleteMessagebox, this, messageBox));
 }
 
-void Search::deleteMessagebox(Wt::WMessageBox *messageBox) {
+void Search::deleteMessagebox(Wt::WMessageBox * messageBox) {
     if (messageBox != NULL) {
         if (messageBox->buttonResult() == Wt::Ok) {
 
@@ -2130,7 +2164,7 @@ void Search::changePage(int shift) {
     displayTable(current_start_, current_end_, shift);
 }
 
-void Search::PanelTitleClick(WPanel* panel, int index, Wt::WGroupBox* textGroupBox) {
+void Search::PanelTitleClick(WPanel* panel, int index, Wt::WGroupBox * textGroupBox) {
     if (panel->isCollapsed()) {
         setHitText(index, textGroupBox);
     } else {
@@ -2138,8 +2172,8 @@ void Search::PanelTitleClick(WPanel* panel, int index, Wt::WGroupBox* textGroupB
     }
 }
 
-Wt::WContainerWidget* Search::setHitCatSentence(wstring w_cat, vector<wstring > subwstrings, int sentence_length,
-        Wt::WGroupBox* textGroupBox) {
+Wt::WContainerWidget * Search::setHitCatSentence(wstring w_cat, vector<wstring > subwstrings, int sentence_length,
+        Wt::WGroupBox * textGroupBox) {
     vector<wstring> cats;
     std::set<std::string>::iterator it;
     for (it = pickedcat_.begin(); it != pickedcat_.end(); it++) {
@@ -2397,9 +2431,9 @@ Search::~Search() {
  * @param textGroupBox the parent group box, used only for document searches
  * @return the container representing the sentence
  */
-WContainerWidget* Search::getSingleSentenceHighlightedWidgetFromText(std::wstring w_text, std::wstring w_cat,
+WContainerWidget * Search::getSingleSentenceHighlightedWidgetFromText(std::wstring w_text, std::wstring w_cat,
         vector<std::wstring> keywords,
-        int sentence_length, Wt::WGroupBox* textGroupBox) {
+        int sentence_length, Wt::WGroupBox * textGroupBox) {
     vector<wstring> subwstrings4cat;
     boost::split(subwstrings4cat, w_text, boost::is_any_of(" \n\t'\\/()[]{}:.;,!?"));
     Wt::WContainerWidget* wt_sentence = setHitCatSentence(w_cat, subwstrings4cat, sentence_length, textGroupBox);
@@ -2458,7 +2492,7 @@ WContainerWidget* Search::getSingleSentenceHighlightedWidgetFromText(std::wstrin
     return wt_sentence;
 }
 
-void Search::eraseAllOccurrencesOfStr(string &str, const string &pattern) {
+void Search::eraseAllOccurrencesOfStr(string &str, const string & pattern) {
     std::string::size_type i = str.find(pattern);
     while (i != std::string::npos) {
         str.erase(i, pattern.length());
