@@ -64,26 +64,35 @@ namespace {
 
     }
 
-    Wt::WContainerWidget * ExternalLinks(Wt::WContainerWidget * parent = NULL) {
+    Wt::WContainerWidget * ExternalLinks(std::string filename, Wt::WContainerWidget * parent = NULL) {
         Wt::WContainerWidget * ret = new Wt::WContainerWidget();
-        Wt::WGroupBox * gb = new Wt::WGroupBox("External Links");
-        gb->setContentAlignment(Wt::AlignJustify);
-        Wt::WAnchor * alliancesite = new Wt::WAnchor("https://www.alliancegenome.org/");
-        alliancesite->setTarget(Wt::TargetNewWindow);
-        alliancesite->setText("Alliance of Genomic Resources");
-        alliancesite->decorationStyle().font().setSize(Wt::WFont::Large);
-        alliancesite->decorationStyle().font().setVariant(Wt::WFont::SmallCaps);
-        gb->addWidget(alliancesite);
-        gb->addWidget(new Wt::WBreak());
-        Wt::WAnchor * paper = new Wt::WAnchor("https://bmcbioinformatics.biomedcentral.com/"
-                "articles/10.1186/s12859-018-2103-8");
-        //        paper->decorationStyle().setForegroundColor(Wt::WColor(255, 255, 255));
-        paper->setTarget(Wt::TargetNewWindow);
-        paper->decorationStyle().font().setSize(Wt::WFont::Large);
-        paper->decorationStyle().font().setVariant(Wt::WFont::SmallCaps);
-        paper->setText("Paper about this site");
-        gb->addWidget(paper);
-        ret->addWidget(gb);
+
+        std::ifstream f(filename.c_str());
+        if (f.is_open()) {
+            Wt::WGroupBox * gb = new Wt::WGroupBox("External Links");
+            gb->setContentAlignment(Wt::AlignJustify);
+            std::string in("");
+            while (getline(f, in)) {
+                std::vector<std::string> info;
+                boost::split(info, in, boost::is_any_of("\t"));
+                if (info.size() > 1) {
+                    Wt::WAnchor * site = new Wt::WAnchor(info[0]);
+                    site->setTarget(Wt::TargetNewWindow);
+                    site->setText(info[1]);
+                    site->decorationStyle().font().setSize(Wt::WFont::Large);
+                    site->decorationStyle().font().setVariant(Wt::WFont::SmallCaps);
+                    int r(100), g(100), b(255);
+                    if (info.size() > 2) r = std::stoi(info[2]);
+                    if (info.size() > 3) g = std::stoi(info[3]);
+                    if (info.size() > 4) b = std::stoi(info[4]);
+                    site->decorationStyle().setForegroundColor(Wt::WColor(r, g, b));
+                    gb->addWidget(site);
+                    gb->addWidget(new Wt::WBreak());
+                }
+            }
+            ret->addWidget(gb);
+        }
+        f.close();
         return ret;
     }
 
@@ -185,7 +194,7 @@ void Home::LoadContent(Search * search) {
     center->addWidget(Main());
     center->setPadding(Wt::WLength("1%"));
     //
-    east->addWidget(ExternalLinks());
+    east->addWidget(ExternalLinks("/data/textpresso/etc/externallinks.txt"));
     east->setPadding(Wt::WLength("1%"));
     //
 }
