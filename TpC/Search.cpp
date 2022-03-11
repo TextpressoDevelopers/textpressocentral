@@ -34,6 +34,7 @@
 #include "IndexManager.h"
 #include <boost/algorithm/string_regex.hpp>
 #include <regex>
+#include <Wt/WRadioButton>
 
 using namespace Wt;
 using namespace Lucene;
@@ -338,10 +339,7 @@ void Search::SearchViaUrlParameters() {
     }
     Wt::Http::ParameterValues scope = urlparameters_->GetParameterValues("scope");
     if (!scope.empty())
-        if (scope[0].compare("sentence") == 0)
-            keywordfield_combo_->setCurrentIndex(0);
-        else
-            keywordfield_combo_->setCurrentIndex(1);
+        keywordfield_combo_->setCurrentIndex(keywordfield_combo_->findText(scope[0]));
     Wt::Http::ParameterValues literatures = urlparameters_->GetParameterValues("literature");
     if (!literatures.empty())
         CheckAgainstPickedLiteratureMap(literatures);
@@ -466,12 +464,12 @@ void Search::CreateSearchInterface(Wt::WHBoxLayout* hbox) {
     Wt::WContainerWidget * litcont = new Wt::WContainerWidget();
     SetLiteratureDescription(litcont);
     //
-    Wt::WContainerWidget * scopecont = new Wt::WContainerWidget();
-    Wt::WText * label_scope_ = new WText("Search Scope: ");
-    label_scope_->decorationStyle().font().setVariant(Wt::WFont::SmallCaps);
-    label_scope_->decorationStyle().font().setSize(Wt::WFont::Medium);
-    scopecont->addWidget(label_scope_);
-    scopecont->addWidget(new Wt::WBreak());
+    Wt::WContainerWidget * scopeLocationContainer = new Wt::WContainerWidget();
+    Wt::WText * label_scope = new WText("Search Scope: ");
+    label_scope->decorationStyle().font().setVariant(Wt::WFont::SmallCaps);
+    label_scope->decorationStyle().font().setSize(Wt::WFont::Medium);
+    scopeLocationContainer->addWidget(label_scope);
+    scopeLocationContainer->addWidget(new Wt::WBreak());
     keywordfield_combo_ = new WComboBox();
     keywordfield_combo_->addItem("sentence");
     keywordfield_combo_->addItem("document");
@@ -479,15 +477,52 @@ void Search::CreateSearchInterface(Wt::WHBoxLayout* hbox) {
     keywordfield_combo_->decorationStyle().font().setSize(Wt::WFont::Medium);
     keywordfield_combo_->setInline(true);
     keywordfield_combo_->setWidth(WLength("50%"));
-    keywordfield_combo_->setCurrentIndex(1);
-    scopecont->addWidget(keywordfield_combo_);
+    keywordfield_combo_->setCurrentIndex(keywordfield_combo_->findText("document"));
+    scopeLocationContainer->addWidget(keywordfield_combo_);
     Wt::WImage * imssc = new Wt::WImage("resources/icons/qmark15.png");
     imssc->setVerticalAlignment(Wt::AlignTop);
     imssc->setInline(true);
     imssc->mouseWentOver().connect(boost::bind(&Search::SetCursorHand, this, imssc));
     imssc->clicked().connect(this, &Search::HelpScopeDialog);
-    scopecont->addWidget(imssc);
-    scopecont->addWidget(new WBreak());
+    scopeLocationContainer->addWidget(imssc);
+    scopeLocationContainer->addWidget(new WBreak());
+    //  
+    Wt::WText * label_location = new WText("Search Location: ");
+    label_location->decorationStyle().font().setVariant(Wt::WFont::SmallCaps);
+    label_location->decorationStyle().font().setSize(Wt::WFont::Medium);
+    scopeLocationContainer->addWidget(label_location);
+    scopeLocationContainer->addWidget(new Wt::WBreak());
+    searchlocation_ = new WComboBox();
+    searchlocation_->addItem("abstract");
+    searchlocation_->addItem("acknowledgments");
+    searchlocation_->addItem("background");
+    searchlocation_->addItem("beginning of article");
+    searchlocation_->addItem("conclusion");
+    searchlocation_->addItem("design");
+    searchlocation_->addItem("discussion");
+    searchlocation_->addItem("document");
+    searchlocation_->addItem("introduction");
+    searchlocation_->addItem("materials and methods");
+    searchlocation_->addItem("references");
+    searchlocation_->addItem("result");
+    searchlocation_->addItem("title");
+    searchlocation_->decorationStyle().font().setVariant(Wt::WFont::SmallCaps);
+    searchlocation_->decorationStyle().font().setSize(Wt::WFont::Medium);
+    searchlocation_->setInline(true);
+    searchlocation_->setWidth(WLength("50%"));
+    searchlocation_->setCurrentIndex(searchlocation_->findText("document"));
+    scopeLocationContainer->addWidget(searchlocation_);
+    keywordfield_combo_->changed().connect(std::bind([ = ](){
+        if (keywordfield_combo_->currentText().value() == "sentence") {
+            searchlocation_->setCurrentIndex(searchlocation_->findText("document"));
+                    searchlocation_->disable();
+                    label_location->disable();
+        } else {
+            searchlocation_->enable();
+                    label_location->enable();
+        }
+    }));
+    //
     setDefTypeBtn_ = new Wt::WPushButton("set current selection as default");
     setDefTypeBtn_->setStyleClass("btn-small");
     setDefTypeBtn_->decorationStyle().font().setVariant(Wt::WFont::SmallCaps);
@@ -523,12 +558,12 @@ void Search::CreateSearchInterface(Wt::WHBoxLayout* hbox) {
     if (session_->login().state() != 0) {
         setDefTypeBtn_->show();
     }
-    scopecont->addWidget(setDefTypeBtn_);
-    scopecont->addWidget(new WBreak());
+    scopeLocationContainer->addWidget(setDefTypeBtn_);
+    scopeLocationContainer->addWidget(new WBreak());
 
     //
     Wt::WContainerWidget * combinedlitscope = new Wt::WContainerWidget();
-    combinedlitscope->addWidget(scopecont);
+    combinedlitscope->addWidget(scopeLocationContainer);
     combinedlitscope->addWidget(new Wt::WBreak());
     combinedlitscope->addWidget(litcont);
     //
@@ -762,7 +797,7 @@ void Search::ResetSearch() {
         Preference * pref = new Preference(PGSEARCHPREFERENCES, PGSEARCHPREFERENCESTABLENAME, username);
         if (pref->HasPreferences())
             if (pref->IsPreference("search_type_sentences"))
-                keywordfield_combo_->setCurrentIndex(0);
+                keywordfield_combo_->setCurrentIndex(keywordfield_combo_->findText("sentence"));
     }
     bool skip_resetui(false);
     for (auto& param : urlparameters_->GetMap()) {
@@ -771,7 +806,8 @@ void Search::ResetSearch() {
         }
     }
     if (!skip_resetui) {
-        keywordfield_combo_->setCurrentIndex(1);
+        keywordfield_combo_->setCurrentIndex(keywordfield_combo_->findText("document"));
+        searchlocation_->setCurrentIndex(searchlocation_->findText("document"));
         keywordtext_->setText("");
         stored_keyword_ = L"";
         keywordnottext_->setText("");
@@ -977,7 +1013,7 @@ void Search::HelpScopeDialog() {
             "combination of keywords and categories) need to be found in the same sentence. ", helpscopedialog_->contents());
     t1->setWordWrap(true);
     Wt::WText * t2 = new Wt::WText("For document scope all search items "
-            "only need to be found in the whole document. ", helpscopedialog_->contents());
+            "only need to be found in the search location specified. ", helpscopedialog_->contents());
     t2->setWordWrap(true);
     helpscopedialog_->contents()->addWidget(new Wt::WBreak());
     helpscopedialog_->contents()->addWidget(new Wt::WBreak());
@@ -1096,14 +1132,15 @@ void Search::PickCategoryDialogDone(Wt::WDialog::DialogCode code) {
 
 void Search::SimpleKeywordSearchApi(Wt::WString text) {
     keywordtext_->setText(text);
-    keywordfield_combo_->setCurrentIndex(1);
+    keywordfield_combo_->setCurrentIndex(keywordfield_combo_->findText("document"));
+    searchlocation_->setCurrentIndex(searchlocation_->findText("document"));
     if (session_->login().state() != 0) {
         std::string username("");
         username = session_->login().user().identity("loginname").toUTF8();
         Preference * pref = new Preference(PGSEARCHPREFERENCES, PGSEARCHPREFERENCESTABLENAME, username);
         if (pref->HasPreferences())
             if (pref->IsPreference("search_type_sentences"))
-                keywordfield_combo_->setCurrentIndex(0);
+                keywordfield_combo_->setCurrentIndex(keywordfield_combo_->findText("sentence"));
     }
     Wt::Http::ParameterValues literatures;
     doSearch();
@@ -1133,7 +1170,7 @@ void Search::DoSearchUpdates() {
         searchstatus_++;
         updatetimer_->start();
     } else if (searchstatus_ == 2) {
-        if (query_.type != QueryType::document &&
+        if (query_.type == QueryType::sentence &&
                 searchResults_.partialIndexMatches.size() > NUM_SENTENCES_HITS_WARN_THRESHOLD) {
             Wt::WDialog *dialog = new Wt::WDialog("Warning");
             dialog->contents()->addWidget(new Wt::WText("<p>Your search returned a very large number of sentences.</p>"
@@ -1173,7 +1210,7 @@ void Search::DoSearchUpdates() {
         searchstatus_++;
         updatetimer_->start();
     } else {
-        long hits = searchResults_.query.type == QueryType::document ? searchResults_.hit_documents.size() :
+        long hits = searchResults_.query.type != QueryType::sentence ? searchResults_.hit_documents.size() :
                 searchResults_.total_num_sentences;
         long size = searchResults_.hit_documents.size();
         totalresults_ = size;
@@ -1353,11 +1390,41 @@ tpc::index::Query Search::getSearchQuery() {
     for (auto& cat : pickedcat_) {
         query.categories.push_back(cat);
     }
-    if (keywordfield_combo_->currentText().value() == "document") {
-        query.type = QueryType::document;
-    } else if (keywordfield_combo_->currentText().value() == "sentence") {
+    std::wstring type(keywordfield_combo_->currentText().value());
+    if (type == L"sentence")
         query.type = QueryType::sentence;
+    else {
+        type = searchlocation_->currentText().value();
+        if (type == L"abstract")
+            query.type = QueryType::abstract;
+        else if (type == L"acknowledgments")
+            query.type = QueryType::acknowledgments;
+        else if (type == L"background")
+            query.type = QueryType::background;
+        else if (type == L"beginning of article")
+            query.type = QueryType::begofart;
+        else if (type == L"conclusion")
+            query.type = QueryType::conclusion;
+        else if (type == L"design")
+            query.type = QueryType::design;
+        else if (type == L"discussion")
+            query.type = QueryType::discussion;
+        else if (type == L"document")
+            query.type = QueryType::document;
+        else if (type == L"introduction")
+            query.type = QueryType::introduction;
+        else if (type == L"materials and methods")
+            query.type = QueryType::materials;
+        else if (type == L"references")
+            query.type = QueryType::references;
+        else if (type == L"result")
+            query.type = QueryType::result;
+        else if (type == L"title")
+            query.type = QueryType::title;
     }
+
+
+
     //adding filters:
     map<string, string> filters = getFilters();
     query.author = filters["author"]; //apply filters
@@ -1399,23 +1466,23 @@ void Search::WriteTsvFile(const std::vector< std::vector < std::wstring> > &cont
     std::cerr << tmpfilename;
     std::ofstream out(tmpfilename);
     if (out.is_open()) {
-    out << "Index\t";
-    out << "Accession\t";
-    out << "Literature\t";
-    out << "Type\t";
-    out << "Title\t";
-    out << "Author\t";
-    out << "Journal\t";
-    out << "Year\t";
-    out << "Abstract\t";
-    out << "Score\t";
-    out << "File location\t";
-    out << std::endl;
-    for (unsigned i = 0; i < contents.size(); ++i) {
-        for (auto x : contents[i]) out << x << "\t";
+        out << "Index\t";
+        out << "Accession\t";
+        out << "Literature\t";
+        out << "Type\t";
+        out << "Title\t";
+        out << "Author\t";
+        out << "Journal\t";
+        out << "Year\t";
+        out << "Abstract\t";
+        out << "Score\t";
+        out << "File location\t";
         out << std::endl;
-    }
-    out.close();
+        for (unsigned i = 0; i < contents.size(); ++i) {
+            for (auto x : contents[i]) out << x << "\t";
+            out << std::endl;
+        }
+        out.close();
     } else {
         std::cerr << "Couldn't open " << tmpfilename << std::endl;
     }
@@ -1840,7 +1907,7 @@ std::string Search::RetrieveBEString(int index) {
     // search for the document again but this time get information about matching sentences
     string ret_string;
     DocumentSummary document = DocumentSummary();
-    if (searchResults_.query.type == QueryType::document) {
+    if (!(searchResults_.query.type == QueryType::sentence)) {
         tpc::index::Query q = searchResults_.query;
         boost::replace_all(q.keyword, " AND ", " OR ");
         boost::replace_all(q.keyword, "(", "");

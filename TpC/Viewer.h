@@ -45,7 +45,7 @@ private:
     Wt::WContainerWidget * parent_;
 
     enum rawsourcetype {
-        unknown, nxml, pdf
+        unknown, nxml, pdf, tai
     };
 
     UrlParameters * urlparams_;
@@ -96,8 +96,8 @@ private:
         long unsigned int currentlypointingat;
         std::set<long unsigned int> indicesofhighlighted;
     } userstatus_;
+    
     // struct of all Witty object pointer
-
     struct wtpt {
         std::vector<Wt::WText*> Values;
         std::vector<Wt::WText*> Terms;
@@ -116,11 +116,16 @@ private:
     uima::CAS * pCas_;
     //
     rawsourcetype rawsource_;
-    std::multimap<int32_t, uima::ANIterator> sortedAnnotationIds_;
-    std::multimap<int32_t, uima::ANIterator> sortedXmlTagAnnotationIds_;
-    std::multimap<int32_t, uima::ANIterator> sortedLexAnnotationIds_;
-    std::multimap<int32_t, uima::ANIterator> sortedPdfTokenAnnotationIds_;
-    std::multimap<int32_t, uima::ANIterator> sortedPdfTagAnnotationIds_;
+    std::multimap<int32_t, uima::ANIterator> sortedAnnotationIds_{};
+    std::multimap<int32_t, uima::ANIterator> sortedXmlTagAnnotationIds_{};
+    std::multimap<int32_t, uima::ANIterator> sortedLexAnnotationIds_{};
+    std::multimap<int32_t, uima::ANIterator> sortedPdfTokenAnnotationIds_{};
+    std::multimap<int32_t, uima::ANIterator> sortedPdfTagAnnotationIds_{};
+    std::multimap<int32_t, uima::ANIterator> sortedTaiTokenAnnotationIds_{};
+    std::multimap<int32_t, uima::ANIterator> sortedTaiPageAnnotationIds_{};
+    std::multimap<int32_t, uima::ANIterator> sortedTaiDblBrkAnnotationIds_{};
+    std::multimap<int32_t, uima::ANIterator> sortedTaiSectionAnnotationIds_{};
+    std::multimap<int32_t, uima::ANIterator> sortedTaiImageAnnotationIds_{};
     std::set<int32_t> allbeginnings_;
     int32_t firstallbeginnings_;
     int32_t lastallbeginnings_;
@@ -141,6 +146,8 @@ private:
     Wt::WContainerWidget * DisplayAnnotationRangeNxml(int32_t b, int32_t e,
             Wt::WContainerWidget * parent = NULL);
     Wt::WContainerWidget * DisplayAnnotationRangePdf(int32_t b, int32_t e,
+            Wt::WContainerWidget * parent = NULL);
+    Wt::WContainerWidget * DisplayAnnotationRangeTai(int32_t b, int32_t e,
             Wt::WContainerWidget * parent = NULL);
     int32_t CheckTagDownStream(uima::UnicodeStringRef & s, int32_t pos,
             bool DownstreamChangeIsPositive, int valuethreshold, int posoffset);

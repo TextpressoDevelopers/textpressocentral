@@ -8,7 +8,6 @@
 #include "Viewer.h"
 #include "SuggestionBoxFromPgOntology.h"
 #include "StopWords.h"
-//#include "FrequencyAnalyzer.h"
 
 #include "xercesc/util/XMLString.hpp"
 #include "uima/xmideserializer.hpp"
@@ -22,6 +21,7 @@
 #include <thread>
 #include <chrono>
 #include <algorithm>
+#include <regex>
 
 #include <Wt/WBorderLayout>
 #include <Wt/WBreak>
@@ -77,13 +77,12 @@ namespace {
 
 //[ Basic
 
-Viewer::Viewer(UrlParameters * urlparams, Session * session, PaperAddress* pa, Wt::WContainerWidget * parent):
-        pEngine_(NULL),
-        urlparams_(urlparams),
-        pCas_(NULL),
-        parent_(parent),
-        previously_highlighed()
-{
+Viewer::Viewer(UrlParameters * urlparams, Session * session, PaperAddress* pa, Wt::WContainerWidget * parent) :
+pEngine_(NULL),
+urlparams_(urlparams),
+pCas_(NULL),
+parent_(parent),
+previously_highlighed() {
     //
     previously_highlighed = vector<WText*>();
     session_ = session;
@@ -94,7 +93,6 @@ Viewer::Viewer(UrlParameters * urlparams, Session * session, PaperAddress* pa, W
     filename_ = rootfn_ + "/" + paperdir_ + "/" + fname_;
     accession_ = pa->accession;
     case_sensitive = pa->case_sensitive;
-    //std::cerr << "Viewer bestring: " << bestring << std::endl;
     std::vector<std::string> bepairs;
     boost::split(bepairs, pa->bestring, boost::is_any_of(" "));
     Wt::WText * benotice = NULL;
@@ -160,6 +158,8 @@ Viewer::Viewer(UrlParameters * urlparams, Session * session, PaperAddress* pa, W
         papercontainer_ = DisplayAnnotationRangeNxml(firstallbeginnings_, lastallbeginnings_);
     else if (rawsource_ == pdf)
         papercontainer_ = DisplayAnnotationRangePdf(firstallbeginnings_, lastallbeginnings_);
+    else if (rawsource_ == tai)
+        papercontainer_ = DisplayAnnotationRangeTai(firstallbeginnings_, lastallbeginnings_);
     mainlayout_ = new Wt::WBorderLayout();
     setLayout(mainlayout_);
     //
@@ -177,6 +177,7 @@ Viewer::Viewer(UrlParameters * urlparams, Session * session, PaperAddress* pa, W
     curationpanel_->centralWidget()->hide();
     center->addWidget(curationpanel_);
     //
+
     Wt::WContainerWidget * scrollandpaper = new Wt::WContainerWidget();
     if (searchresultspansbegin_.size() > 0) {
         Wt::WPushButton * minus = new Wt::WPushButton("<");
@@ -193,11 +194,11 @@ Viewer::Viewer(UrlParameters * urlparams, Session * session, PaperAddress* pa, W
         HighlightSentenceAndScrollIntoView(scrollintoviewpoints_[scrollintoviewpointsindex_]);
         plus->clicked().connect(std::bind([ = ] (){
             if (scrollintoviewpointsindex_ < scrollintoviewpoints_.size() - 1) scrollintoviewpointsindex_++;
-            HighlightSentenceAndScrollIntoView(scrollintoviewpoints_[scrollintoviewpointsindex_]);
+                    HighlightSentenceAndScrollIntoView(scrollintoviewpoints_[scrollintoviewpointsindex_]);
             }));
         minus->clicked().connect(std::bind([ = ] (){
             if (scrollintoviewpointsindex_ > 0) scrollintoviewpointsindex_--;
-            HighlightSentenceAndScrollIntoView(scrollintoviewpoints_[scrollintoviewpointsindex_]);
+                    HighlightSentenceAndScrollIntoView(scrollintoviewpoints_[scrollintoviewpointsindex_]);
             }));
         Wt::WText * scrollinglabel = new Wt::WText("Scroll through search results: ");
         scrollinglabel->setInline(true);
@@ -330,7 +331,7 @@ Wt::WContainerWidget * Viewer::DisplayAnnotationRangeNxml(int32_t b, int32_t e, 
 
     /*
      * 
-     * possible scenarios for annotations 
+     * annotations to consider
      * token(t), sentence(s), lexical(l), xmltag(x):
      * 
      */
@@ -404,7 +405,7 @@ Wt::WContainerWidget * Viewer::DisplayAnnotationRangePdf(int32_t b, int32_t e, W
 
     /*
      * 
-     * possible scenarios for annotations 
+     * annotations to consider
      * token(t), sentence(s), lexical(l), pdftag(p):
      * 
      */
@@ -429,7 +430,6 @@ Wt::WContainerWidget * Viewer::DisplayAnnotationRangePdf(int32_t b, int32_t e, W
     typedef std::vector<threaddata*> threaddatavec;
 
     size_t sizeinterval = allbeginnings_.size() / NUMBEROFTHREADS;
-    //std::cerr << "AB size(): " << allbeginnings_.size() << " " << sizeinterval << std::endl;
     if (sizeinterval == 0) return ret;
 
     std::vector<std::thread*> threadvec;
@@ -642,6 +642,207 @@ Wt::WContainerWidget * Viewer::DisplayAnnotationRangePdf(int32_t b, int32_t e, W
     return ret;
 }
 
+Wt::WContainerWidget * Viewer::DisplayAnnotationRangeTai(int32_t b, int32_t e, Wt::WContainerWidget * parent) {
+
+    /*
+     * 
+     * annotations to consider:
+     * token(t), sentence(s), lexical(l), page(p), section(c), image(i):
+     * 
+     */
+
+    Wt::WContainerWidget * ret = new Wt::WContainerWidget(parent);
+    ret->setContentAlignment(Wt::AlignJustify);
+
+    struct threaddata {
+        int32_t pos;
+        size_t begin;
+        size_t end;
+        uima::UnicodeStringRef taitagtype;
+        std::vector<uima::UnicodeStringRef> lexann;
+        uima::UnicodeStringRef content;
+        int32_t value;
+        uima::UnicodeStringRef type;
+        uima::UnicodeStringRef filename;
+    };
+
+    typedef std::vector<threaddata*> threaddatavec;
+    size_t sizeinterval = allbeginnings_.size() / NUMBEROFTHREADS;
+    if (sizeinterval == 0) return ret;
+
+    std::vector<std::thread*> threadvec;
+    std::vector<threaddatavec*> votdv;
+    bool moveonflag = true;
+    std::set<int32_t>::iterator itstart(allbeginnings_.begin());
+    std::set<int32_t>::iterator itstop(itstart);
+    while (moveonflag) {
+        size_t counter(sizeinterval);
+        while ((itstop != allbeginnings_.end() && (counter > 0))) {
+            counter--;
+            itstop++;
+        }
+        if (itstop == allbeginnings_.end()) moveonflag = false;
+        threaddatavec * tdv = new threaddatavec;
+        votdv.push_back(tdv);
+        std::thread * t = new std::thread([ = ](threaddatavec * tdv){
+            for (std::set<int32_t>::iterator siit = itstart; siit != itstop; siit++)
+                if ((*siit >= b) && (*siit < e)) {
+                    std::pair<mmiaittype, mmiaittype> taiTokenRange = sortedTaiTokenAnnotationIds_.equal_range(*siit);
+
+                            std::pair<mmiaittype, mmiaittype> taiPageRange = sortedTaiPageAnnotationIds_.equal_range(*siit);
+
+                            std::pair<mmiaittype, mmiaittype> taiDblBrkRange = sortedTaiDblBrkAnnotationIds_.equal_range(*siit);
+
+                            std::pair<mmiaittype, mmiaittype> taiSectionRange = sortedTaiSectionAnnotationIds_.equal_range(*siit);
+
+                            std::pair<mmiaittype, mmiaittype> taiImageRange = sortedTaiImageAnnotationIds_.equal_range(*siit);
+
+                            //*****
+                    for (mmiaittype tagit = taiTokenRange.first; tagit != taiTokenRange.second; tagit++) {
+                        uima::ANIterator anit = tagit->second;
+                                threaddata * td = new threaddata;
+                                uima::Type t = anit.get().getType();
+                                td->taitagtype = t.getName();
+                                uima::Feature f = t.getFeatureByBaseName("content");
+                                td->begin = anit.get().getBeginPosition();
+                                td->end = anit.get().getEndPosition();
+                        if (f.isValid()) td->content = anit.get().getStringValue(f);
+                                td->pos = *siit;
+                                std::set<std::string> seen;
+                                int32_t beginpos = anit.get().getBeginPosition();
+                                int32_t endpos = anit.get().getEndPosition();
+                                std::pair<std::multimap<int32_t, uima::ANIterator>::iterator,
+                                std::multimap<int32_t, uima::ANIterator>::iterator> range;
+                            for (int32_t i = beginpos; i != endpos; i++) {
+                                range = sortedLexAnnotationIds_.equal_range(i);
+                                for (std::multimap<int32_t, uima::ANIterator>::iterator it
+                                        = range.first; it != range.second; it++) {
+                                    uima::Type ty = (*it).second.get().getType();
+                                            uima::Feature f = ty.getFeatureByBaseName("category");
+                                            std::string s((*it).second.get().getStringValue(f).asUTF8());
+                                    if (seen.find(s) == seen.end()) {
+                                        td->lexann.push_back((*it).second.get().getStringValue(f));
+                                                seen.insert(s);
+                                    }
+                                }
+                            }
+                        tdv->push_back(td);
+                    }
+                    //*****
+                    for (mmiaittype tagit = taiPageRange.first; tagit != taiPageRange.second; tagit++) {
+                        uima::ANIterator anit = tagit->second;
+                                threaddata * td = new threaddata;
+                                uima::Type t = anit.get().getType();
+                                td->taitagtype = t.getName();
+                                uima::Feature f = t.getFeatureByBaseName("value");
+                        if (f.isValid()) td->value = anit.get().getIntValue(f);
+                                td->pos = *siit;
+                                tdv->push_back(td);
+                        }
+                    //*****
+                    for (mmiaittype tagit = taiDblBrkRange.first; tagit != taiDblBrkRange.second; tagit++) {
+                        uima::ANIterator anit = tagit->second;
+                                threaddata *td = new threaddata;
+                                uima::Type t = anit.get().getType();
+                                td->taitagtype = t.getName();
+                                tdv->push_back(td);
+                    }
+                    //*****
+                    for (mmiaittype tagit = taiSectionRange.first; tagit != taiSectionRange.second; tagit++) {
+                        uima::ANIterator anit = tagit->second;
+                                threaddata * td = new threaddata;
+                                uima::Type t = anit.get().getType();
+                                td->taitagtype = t.getName();
+                                uima::Feature f = t.getFeatureByBaseName("type");
+                        if (f.isValid()) td->type = anit.get().getStringValue(f);
+                                td->pos = *siit;
+                                tdv->push_back(td);
+                        }
+                    //*****
+                    for (mmiaittype tagit = taiImageRange.first; tagit != taiImageRange.second; tagit++) {
+                        uima::ANIterator anit = tagit->second;
+                                threaddata * td = new threaddata;
+                                uima::Type t = anit.get().getType();
+                                td->taitagtype = t.getName();
+                                uima::Feature f = t.getFeatureByBaseName("filename");
+                        if (f.isValid()) td->filename = anit.get().getStringValue(f);
+                                f = t.getFeatureByBaseName("page");
+                            if (f.isValid()) td->value = anit.get().getIntValue(f);
+                                    td->pos = *siit;
+                                    tdv->push_back(td);
+                            }
+                    //*****
+                }
+        }, tdv);
+        itstart = itstop;
+        threadvec.push_back(t);
+    }
+    // wait for all threads to finish
+    while (threadvec.size() > 0) {
+        threadvec.back()->join();
+        delete threadvec.back();
+        threadvec.pop_back();
+    }
+    //] PRELIMS
+    //[ Display
+    //    int32_t currentpos = 0;
+    std::vector<threaddatavec*>::iterator votdvit;
+    for (votdvit = votdv.begin(); votdvit != votdv.end(); votdvit++) {
+        threaddatavec * tdv = (*votdvit);
+        for (threaddatavec::iterator tdvit = tdv->begin(); tdvit != tdv->end(); tdvit++) {
+            threaddata * td = (*tdvit);
+
+            uima::UnicodeStringRef tag = td->taitagtype;
+            if (tag.compare("org.apache.uima.textpresso.token") == 0) {
+                Wt::WText * text = new Wt::WText;
+                std::string s = td->content.asUTF8();
+                dispstatus_.bold = false;
+                dispstatus_.fontsize = 0;
+                dispstatus_.italic = false;
+                dispstatus_.sub = false;
+                dispstatus_.sup = false;
+                dispstatus_.title = false;
+                SetTextAndAnnotations(s, text, td->lexann, td->begin, td->end);
+                ret->addWidget(text);
+            }
+            if (tag.compare("org.apache.uima.textpresso.page") == 0) {
+                ret->addWidget(new Wt::WBreak());
+                ret->addWidget(new Wt::WBreak());
+                Wt::WText * newpage = new Wt::WText(" -- Page " + std::to_string(td->value) + " -- ");
+                newpage->decorationStyle().font().setSize(Wt::WFont::XXSmall);
+                ret->addWidget(newpage);
+                ret->addWidget(new Wt::WBreak());
+                ret->addWidget(new Wt::WBreak());
+            }
+            if (tag.compare("org.apache.uima.textpresso.dblbrk") == 0) {
+                ret->addWidget(new Wt::WBreak());
+                ret->addWidget(new Wt::WBreak());
+            }
+            if (tag.compare("org.apache.uima.textpresso.section") == 0) {
+                ret->addWidget(new Wt::WBreak());
+                ret->addWidget(new Wt::WBreak());
+                std::string s(" -- Section " + td->type.asUTF8() + " -- ");
+                Wt::WText * newsection = new Wt::WText(s);
+                newsection->decorationStyle().font().setWeight(Wt::WFont::Bold);
+                ret->addWidget(newsection);
+                ret->addWidget(new Wt::WBreak());
+                ret->addWidget(new Wt::WBreak());
+            }
+            if (tag.compare("org.apache.uima.textpresso.image") == 0) {
+                ret->addWidget(new Wt::WBreak());
+                Wt::WText * newimage = new Wt::WText(" -- Image on page " + std::to_string(td->value) + "-- ");
+                newimage->decorationStyle().font().setSize(Wt::WFont::XXSmall);
+                ret->addWidget(newimage);
+                std::string location = "images/" + td->filename.asUTF8();
+                SetImage(location, ret);
+            }
+            delete td;
+        }
+        delete (tdv);
+    }
+    return ret;
+}
+
 int32_t Viewer::CheckTagDownStream(uima::UnicodeStringRef & s, int32_t pos,
         bool DownStreamChangeIsPositive, int valuethreshold, int posoffset) {
     // find pos in SortedPdfTagAnnotationsIds_.
@@ -772,6 +973,7 @@ void Viewer::SetImage(std::string location, Wt::WContainerWidget * parent) {
     anchor->setTarget(Wt::TargetNewWindow);
     parent->addWidget(anchor);
     Wt::WImage * img = new Wt::WImage(location, anchor);
+    img->setMaximumSize(Wt::WLength(50, Wt::WLength::Percentage), Wt::WLength::Auto);
     if (dispuseroption_.graphic)
         img->show();
 
@@ -838,31 +1040,26 @@ void Viewer::SetTextAndAnnotations(std::string s, Wt::WText * text,
 }
 
 void Viewer::PrepareAnnotationIds() {
-    uima::ANIndex allannindex = pCas_->getAnnotationIndex();
+    uima::Type rst = pCas_->getTypeSystem().getType("org.apache.uima.textpresso.rawsource");
+    uima::ANIndex allannindex = pCas_->getAnnotationIndex(rst);
     uima::ANIterator aait = allannindex.iterator();
     rawsource_ = unknown;
     aait.moveToFirst();
-    while (aait.isValid()) {
-        uima::Type currentType = aait.get().getType();
-        uima::UnicodeStringRef tnameref = currentType.getName();
-        bool isTextpressoAnnotation = (tnameref.indexOf(UnicodeString("textpresso")) > -1);
-        if (isTextpressoAnnotation) {
-            if (tnameref.compare("org.apache.uima.textpresso.rawsource") == 0) {
-                uima::Feature fvalue = currentType.getFeatureByBaseName("value");
-                if (fvalue.isValid()) {
-                    uima::UnicodeStringRef uvalue = aait.get().getStringValue(fvalue);
-                    if (uvalue.compare("nxml") == 0)
-                        rawsource_ = nxml;
-                    else if (uvalue.compare("pdf") == 0)
-                        rawsource_ = pdf;
-                }
-                break;
-            }
-        }
-        aait.moveToNext();
+    uima::Type currentType = aait.get().getType();
+    uima::Feature fvalue = currentType.getFeatureByBaseName("value");
+    if (fvalue.isValid()) {
+        uima::UnicodeStringRef uvalue = aait.get().getStringValue(fvalue);
+        if (uvalue.compare("nxml") == 0)
+            rawsource_ = nxml;
+        else if (uvalue.compare("pdf") == 0)
+            rawsource_ = pdf;
+        else if (uvalue.compare("tai") == 0)
+            rawsource_ = tai;
     }
     firstallbeginnings_ = -1;
     lastallbeginnings_ = -1;
+    allannindex = pCas_->getAnnotationIndex();
+    aait = allannindex.iterator();
     aait.moveToFirst();
     while (aait.isValid()) {
         uima::Type currentType = aait.get().getType();
@@ -877,6 +1074,18 @@ void Viewer::PrepareAnnotationIds() {
             if (rawsource_ == pdf) {
                 isPdfTokenAnnotation = (tnameref.compare("org.apache.uima.textpresso.token") == 0);
                 isPdfTagAnnotation = (tnameref.compare("org.apache.uima.textpresso.pdftag") == 0);
+            }
+            bool isTaiTokenAnnotation = false;
+            bool isTaiPageAnnotation = false;
+            bool isTaiDblBrkAnnotation = false;
+            bool isTaiSectionAnnotation = false;
+            bool isTaiImageAnnotation = false;
+            if (rawsource_ == tai) {
+                isTaiTokenAnnotation = (tnameref.compare("org.apache.uima.textpresso.token") == 0);
+                isTaiPageAnnotation = (tnameref.compare("org.apache.uima.textpresso.page") == 0);
+                isTaiDblBrkAnnotation = (tnameref.compare("org.apache.uima.textpresso.dblbrk") == 0);
+                isTaiSectionAnnotation = (tnameref.compare("org.apache.uima.textpresso.section") == 0);
+                isTaiImageAnnotation = (tnameref.compare("org.apache.uima.textpresso.image") == 0);
             }
             bool isLexAnnotation = (tnameref.compare("org.apache.uima.textpresso.lexicalannotation") == 0);
             int32_t begin = aait.get().getBeginPosition();
@@ -905,13 +1114,25 @@ void Viewer::PrepareAnnotationIds() {
                     // keys will be sorted.
                     sortedPdfTagAnnotationIds_.insert(std::make_pair(begin, aait));
             }
-
+            if (rawsource_ == tai) {
+                if (isTaiTokenAnnotation)
+                    sortedTaiTokenAnnotationIds_.insert(std::make_pair(begin, aait));
+                if (isTaiPageAnnotation)
+                    sortedTaiPageAnnotationIds_.insert(std::make_pair(begin, aait));
+                if (isTaiDblBrkAnnotation)
+                    sortedTaiDblBrkAnnotationIds_.insert(std::make_pair(begin, aait));
+                if (isTaiSectionAnnotation)
+                    sortedTaiSectionAnnotationIds_.insert(std::make_pair(begin, aait));
+                if (isTaiImageAnnotation)
+                    sortedTaiImageAnnotationIds_.insert(std::make_pair(begin, aait));
+            }
             if (isLexAnnotation) {
                 // all textpresso.lexicalannotations annotations.
                 // keys will be sorted.
                 // different storage method than in other cases
                 // to make loading the paper faster
                 int32_t end = aait.get().getEndPosition();
+
                 for (int32_t i = begin; i < end; i++)
                     sortedLexAnnotationIds_.insert(std::make_pair(i, aait));
             }
@@ -1047,6 +1268,7 @@ void Viewer::SetOptionsInContainer(Wt::WContainerWidget * w) {
         if (!stopwords.isStopword(t.toUTF8()))
             if (!t.empty())
                 if (!seen[t]) {
+
                     seen[t] = true;
                     sp->addSuggestion(t, t);
                 }
@@ -1129,7 +1351,7 @@ void Viewer::SetScrollIntoViewPoints() {
     scrollintoviewpointsindex_ = 0;
 }
 
-void Viewer::HighlightSentenceAndScrollIntoView(Wt::WText *p) {
+void Viewer::HighlightSentenceAndScrollIntoView(Wt::WText * p) {
     for (const auto& word_to_restore : previously_highlighed) {
         word_to_restore->decorationStyle().setBackgroundColor(SPANHIGHLIGHTCOLOR);
     }
@@ -1244,7 +1466,7 @@ void Viewer::HighlightCategory(const std::string& category, bool scroll_to_first
     }
 }
 
-void Viewer::KeywordEntered(WLineEdit* le) {
+void Viewer::KeywordEntered(WLineEdit * le) {
     HighlightKeyword(le->text().toUTF8(), true);
 }
 

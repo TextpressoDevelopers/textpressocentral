@@ -82,44 +82,45 @@ static const set<string> urlparamset = {"accession", "author", "category", "excl
 
 class Search : public Wt::WContainerWidget {
 public:
-    Search(UrlParameters * urlparams, Session & session, Wt::WContainerWidget * parent = NULL);
+    Search(UrlParameters *urlparams, Session & session, Wt::WContainerWidget *parent = NULL);
     virtual ~Search();
     void SimpleKeywordSearchApi(Wt::WString text);
-    void SetLiteratureDescription(Wt::WContainerWidget * w);
+    void SetLiteratureDescription(Wt::WContainerWidget *w);
 private:
-    UrlParameters * urlparameters_;
-    Session * session_;
-    Wt::WContainerWidget * parent_;
-    Wt::WBorderLayout* mainlayout_;
-    Wt::WLineEdit* keywordtext_;
-    Wt::WLineEdit* keywordnottext_;
-    Wt::WComboBox* keywordfield_combo_;
-    Wt::WText* size_text_;
-    Wt::WText* page_number_text_;
+    UrlParameters *urlparameters_;
+    Session *session_;
+    Wt::WContainerWidget *parent_;
+    Wt::WBorderLayout *mainlayout_;
+    Wt::WLineEdit *keywordtext_;
+    Wt::WLineEdit *keywordnottext_;
+    Wt::WComboBox *keywordfield_combo_;
+    Wt::WComboBox *searchlocation_;
+    Wt::WText *size_text_;
+    Wt::WText *page_number_text_;
 
-    WPushButton* addcat_button_;
-    WPushButton* button_search_;
-    WPushButton* button_reset_;
-    WPushButton* next_button_;
-    WPushButton* previous_button_;
-    WPushButton* first_button_;
-    WPushButton* last_button_;
-    WLineEdit* author_filter_;
-    WLineEdit* journal_filter_;
-    WLineEdit* year_filter_;
-    WLineEdit* accession_filter_;
-    WLineEdit* type_filter_;
-    WPushButton* corpus_button_;
-    Wt::WCheckBox* author_exact_match;
-    Wt::WCheckBox* journal_exact_match;
-    Wt::WCheckBox* cb_year_;
-    Wt::WCheckBox* cb_casesens_;
-    Wt::WText * literaturestatus_;
+    WPushButton *addcat_button_;
+    WPushButton *button_search_;
+    WPushButton *button_reset_;
+    WPushButton *next_button_;
+    WPushButton *previous_button_;
+    WPushButton *first_button_;
+    WPushButton *last_button_;
+    WLineEdit *author_filter_;
+    WLineEdit *journal_filter_;
+    WLineEdit *year_filter_;
+    WLineEdit *accession_filter_;
+    WLineEdit *type_filter_;
+    WPushButton *corpus_button_;
+    Wt::WCheckBox *author_exact_match;
+    Wt::WCheckBox *journal_exact_match;
+    Wt::WCheckBox *cb_year_;
+    Wt::WCheckBox *cb_casesens_;
+    Wt::WText  *literaturestatus_;
 
-    Wt::WContainerWidget * container_west_;
-    Wt::WTable* table_;
-    WLineEdit* username_;
-    WLineEdit* password_;
+    Wt::WContainerWidget  *container_west_;
+    Wt::WTable *table_;
+    WLineEdit *username_;
+    WLineEdit *password_;
 
     int currentpage_;
     int totalresults_;
@@ -141,31 +142,31 @@ private:
 
     std::unordered_map<std::string, int> keywordColorsMap_;
 
-    PickCategory * pc_;
-    PickLiterature * pl_;
+    PickCategory *pc_;
+    PickLiterature *pl_;
     bool categoriesanded_;
-    Wt::WContainerWidget * pickedcatcont_;
+    Wt::WContainerWidget *pickedcatcont_;
     std::set<std::string> pickedcat_;
-    Wt::WDialog * listallcatsdialog_;
-    Wt::WDialog * helplucenedialog_;
-    Wt::WDialog * helpscopedialog_;
-    Wt::WDialog * helpcurationcheckboxdialog_;
-    Wt::WContainerWidget * containerforupdates_;
-    Wt::WText * updatetext_;
-    Wt::WTimer * updatetimer_;
+    Wt::WDialog *listallcatsdialog_;
+    Wt::WDialog *helplucenedialog_;
+    Wt::WDialog *helpscopedialog_;
+    Wt::WDialog *helpcurationcheckboxdialog_;
+    Wt::WContainerWidget *containerforupdates_;
+    Wt::WText *updatetext_;
+    Wt::WTimer *updatetimer_;
     int searchstatus_;
     std::chrono::time_point<std::chrono::system_clock> bt_, et_;
     std::vector<Wt::WCheckBox*> all_vp_cbxes_;
 
-    Wt::WContainerWidget* north_;
+    Wt::WContainerWidget *north_;
     WContainerWidget *northInner_;
     WContainerWidget *northInnerButtons_;
     WContainerWidget *northInnerAdditional;
     WContainerWidget *northInnerLiterature;
-    Wt::WScrollArea* cs_;
-    Wt::WContainerWidget* south_;
-    Wt::WText* statusline_;
-    WPushButton* setDefTypeBtn_;
+    Wt::WScrollArea *cs_;
+    Wt::WContainerWidget *south_;
+    Wt::WText *statusline_;
+    WPushButton *setDefTypeBtn_;
 
     tpc::index::IndexManager indexManager_;
     tpc::index::Query query_;
@@ -186,31 +187,31 @@ private:
     void HelpLuceneDialog();
     void HelpLuceneDialogDone(Wt::WDialog::DialogCode code);
     void HelpScopeDialog();
-    void SetCursorHand(Wt::WWidget * w);
-    void AddCatButtonPressed(Session * session);
+    void SetCursorHand(Wt::WWidget *w);
+    void AddCatButtonPressed(Session *session);
     void SelectLiteraturePressed();
     void PickCategoryDialogDone(Wt::WDialog::DialogCode code);
     void PickLiteratureDialogDone(Wt::WDialog::DialogCode code);
     void ReadPreloadedCategories();
     void readPreloadedColors();
-    void CreateSearchInterface(Wt::WHBoxLayout* hbox);
-    void createSearchButtonsRow(Wt::WHBoxLayout* hbox);
+    void CreateSearchInterface(Wt::WHBoxLayout *hbox);
+    void createSearchButtonsRow(Wt::WHBoxLayout *hbox);
     void doSearch();
     tpc::index::Query getSearchQuery();
     void ResetSearch();
     void WriteTsvFile(const std::vector< std::vector < std::wstring> > &contents,
             const std::string tmpfilename);
     void displayTable(int start, int end, int shift);
-    void ViewPaperClicked(Wt::WCheckBox * cb, const std::string& papertitle,
+    void ViewPaperClicked(Wt::WCheckBox *cb, const std::string& papertitle,
             const std::string& paperauthor, const std::string& paperjournal, const std::string& paperyear,
             const std::string& filepath, int index, const std::string& accession);
     std::string RetrieveBEString(int index);
     void changePage(int shift);
     void deleteMessagebox(Wt::WMessageBox *messageBox);
     map<string, string> getFilters();
-    void PanelTitleClick(WPanel* panel, int index, Wt::WGroupBox* textGroupBox);
-    void setHitText(int index, Wt::WGroupBox* textGroupBox);
-    Wt::WContainerWidget* setHitCatSentence(wstring w_cat, vector<wstring > subwstrings, int sentence_length, Wt::WGroupBox* textGroupBox);
+    void PanelTitleClick(WPanel *panel, int index, Wt::WGroupBox *textGroupBox);
+    void setHitText(int index, Wt::WGroupBox *textGroupBox);
+    Wt::WContainerWidget *setHitCatSentence(wstring w_cat, vector<wstring > subwstrings, int sentence_length, Wt::WGroupBox *textGroupBox);
     void showMessagebox(WString message);
     void UpdateLiteraturePreferences(bool checkpermissions);
     void ReadIndexPrefix();
@@ -218,10 +219,10 @@ private:
     void CheckAgainstPickedLiteratureMap(Wt::Http::ParameterValues literatures);
     vector<int> getKeywordPositions(vector<wstring> subwstrings, wstring keyword);
     wstring RemoveTags(wstring w_cleantext);
-    void SetLiteratureContainer(Wt::WContainerWidget * literaturecontainer);
+    void SetLiteratureContainer(Wt::WContainerWidget *literaturecontainer);
 
     // added by valerio
-    Wt::WContainerWidget* getSingleSentenceHighlightedWidgetFromText(std::wstring, std::wstring,
+    Wt::WContainerWidget *getSingleSentenceHighlightedWidgetFromText(std::wstring, std::wstring,
             std::vector<std::wstring>, int, Wt::WGroupBox*);
     std::vector<std::wstring> getCleanKeywords();
     void ShowLongSentenceInDialog(std::string, std::wstring, std::wstring);
@@ -243,7 +244,7 @@ private:
     static bool sentence_position_lt(const tpc::index::SentenceDetails &a, const tpc::index::SentenceDetails &b) {
         return a.doc_position_begin < b.doc_position_begin;
     }
-    void createAdditionalOptionsRow(Wt::WHBoxLayout* hbox);
+    void createAdditionalOptionsRow(Wt::WHBoxLayout *hbox);
     void createLiteratureRow(WHBoxLayout *hbox);
     void hideTable();
 };

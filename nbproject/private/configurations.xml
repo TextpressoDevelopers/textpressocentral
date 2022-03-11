@@ -46,14 +46,6 @@
             <df name="Pdf2Tpcas">
             </df>
           </df>
-          <df name="Progress">
-          </df>
-          <df name="tpc.dir">
-            <df name="TpC">
-              <df name="lucene">
-              </df>
-            </df>
-          </df>
           <df name="tpcuration.dir">
             <df name="TpCuration">
             </df>
