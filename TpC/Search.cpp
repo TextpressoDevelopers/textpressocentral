@@ -485,45 +485,8 @@ void Search::CreateSearchInterface(Wt::WHBoxLayout* hbox) {
     imssc->mouseWentOver().connect(boost::bind(&Search::SetCursorHand, this, imssc));
     imssc->clicked().connect(this, &Search::HelpScopeDialog);
     scopeLocationContainer->addWidget(imssc);
-    scopeLocationContainer->addWidget(new WBreak());
-    //  
-    Wt::WText * label_location = new WText("Search Location: ");
-    label_location->decorationStyle().font().setVariant(Wt::WFont::SmallCaps);
-    label_location->decorationStyle().font().setSize(Wt::WFont::Medium);
-    scopeLocationContainer->addWidget(label_location);
-    scopeLocationContainer->addWidget(new Wt::WBreak());
-    searchlocation_ = new WComboBox();
-    searchlocation_->addItem("abstract");
-    searchlocation_->addItem("acknowledgments");
-    searchlocation_->addItem("background");
-    searchlocation_->addItem("beginning of article");
-    searchlocation_->addItem("conclusion");
-    searchlocation_->addItem("design");
-    searchlocation_->addItem("discussion");
-    searchlocation_->addItem("document");
-    searchlocation_->addItem("introduction");
-    searchlocation_->addItem("materials and methods");
-    searchlocation_->addItem("references");
-    searchlocation_->addItem("result");
-    searchlocation_->addItem("title");
-    searchlocation_->decorationStyle().font().setVariant(Wt::WFont::SmallCaps);
-    searchlocation_->decorationStyle().font().setSize(Wt::WFont::Medium);
-    searchlocation_->setInline(true);
-    searchlocation_->setWidth(WLength("50%"));
-    searchlocation_->setCurrentIndex(searchlocation_->findText("document"));
-    scopeLocationContainer->addWidget(searchlocation_);
-    keywordfield_combo_->changed().connect(std::bind([ = ](){
-        if (keywordfield_combo_->currentText().value() == "sentence") {
-            searchlocation_->setCurrentIndex(searchlocation_->findText("document"));
-                    searchlocation_->disable();
-                    label_location->disable();
-        } else {
-            searchlocation_->enable();
-                    label_location->enable();
-        }
-    }));
     //
-    setDefTypeBtn_ = new Wt::WPushButton("set current selection as default");
+    setDefTypeBtn_ = new Wt::WPushButton("set as default");
     setDefTypeBtn_->setStyleClass("btn-small");
     setDefTypeBtn_->decorationStyle().font().setVariant(Wt::WFont::SmallCaps);
     setDefTypeBtn_->clicked().connect(std::bind([ = ](){
@@ -560,7 +523,40 @@ void Search::CreateSearchInterface(Wt::WHBoxLayout* hbox) {
     }
     scopeLocationContainer->addWidget(setDefTypeBtn_);
     scopeLocationContainer->addWidget(new WBreak());
-
+    //
+        Wt::WText * label_location = new WText("Search Location: ");
+    label_location->decorationStyle().font().setVariant(Wt::WFont::SmallCaps);
+    label_location->decorationStyle().font().setSize(Wt::WFont::Medium);
+    scopeLocationContainer->addWidget(label_location);
+    scopeLocationContainer->addWidget(new Wt::WBreak());
+    searchlocation_ = new WComboBox();
+    searchlocation_->addItem("abstract");
+    searchlocation_->addItem("acknowledgments");
+    searchlocation_->addItem("background");
+    searchlocation_->addItem("beginning of article");
+    searchlocation_->addItem("conclusion");
+    searchlocation_->addItem("design");
+    searchlocation_->addItem("discussion");
+    searchlocation_->addItem("document");
+    searchlocation_->addItem("introduction");
+    searchlocation_->addItem("materials and methods");
+    searchlocation_->addItem("references");
+    searchlocation_->addItem("result");
+    searchlocation_->addItem("title");
+    searchlocation_->decorationStyle().font().setVariant(Wt::WFont::SmallCaps);
+    searchlocation_->decorationStyle().font().setSize(Wt::WFont::Medium);
+    searchlocation_->setInline(true);
+    searchlocation_->setWidth(WLength("50%"));
+    searchlocation_->setCurrentIndex(searchlocation_->findText("document"));
+    scopeLocationContainer->addWidget(searchlocation_);
+    keywordfield_combo_->changed().connect(std::bind([ = ](){
+        if (keywordfield_combo_->currentText().value() == "sentence") {
+            searchlocation_->setCurrentIndex(searchlocation_->findText("document"));
+            searchlocation_->disable();
+        } else {
+            searchlocation_->enable();
+        }
+    }));
     //
     Wt::WContainerWidget * combinedlitscope = new Wt::WContainerWidget();
     combinedlitscope->addWidget(scopeLocationContainer);
@@ -791,14 +787,6 @@ void Search::createSearchButtonsRow(Wt::WHBoxLayout* hbox) {
 }
 
 void Search::ResetSearch() {
-    if (session_->login().state() != 0) {
-        std::string username("");
-        username = session_->login().user().identity("loginname").toUTF8();
-        Preference * pref = new Preference(PGSEARCHPREFERENCES, PGSEARCHPREFERENCESTABLENAME, username);
-        if (pref->HasPreferences())
-            if (pref->IsPreference("search_type_sentences"))
-                keywordfield_combo_->setCurrentIndex(keywordfield_combo_->findText("sentence"));
-    }
     bool skip_resetui(false);
     for (auto& param : urlparameters_->GetMap()) {
         if (!param.second.empty() && urlparamset.find(param.first) != urlparamset.end()) {
@@ -807,6 +795,17 @@ void Search::ResetSearch() {
     }
     if (!skip_resetui) {
         keywordfield_combo_->setCurrentIndex(keywordfield_combo_->findText("document"));
+        searchlocation_->enable();
+        if (session_->login().state() != 0) {
+            std::string username("");
+            username = session_->login().user().identity("loginname").toUTF8();
+            Preference * pref = new Preference(PGSEARCHPREFERENCES, PGSEARCHPREFERENCESTABLENAME, username);
+            if (pref->HasPreferences())
+                if (pref->IsPreference("search_type_sentences")) {
+                    keywordfield_combo_->setCurrentIndex(keywordfield_combo_->findText("sentence"));
+                    searchlocation_->disable();
+                }
+        }
         searchlocation_->setCurrentIndex(searchlocation_->findText("document"));
         keywordtext_->setText("");
         stored_keyword_ = L"";
@@ -1139,8 +1138,10 @@ void Search::SimpleKeywordSearchApi(Wt::WString text) {
         username = session_->login().user().identity("loginname").toUTF8();
         Preference * pref = new Preference(PGSEARCHPREFERENCES, PGSEARCHPREFERENCESTABLENAME, username);
         if (pref->HasPreferences())
-            if (pref->IsPreference("search_type_sentences"))
+            if (pref->IsPreference("search_type_sentences")) {
                 keywordfield_combo_->setCurrentIndex(keywordfield_combo_->findText("sentence"));
+                searchlocation_->disable();
+            }
     }
     Wt::Http::ParameterValues literatures;
     doSearch();
