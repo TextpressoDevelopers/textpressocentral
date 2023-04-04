@@ -47,6 +47,7 @@ void Help::LoadContent() {
     //
 
     //
+    setWidth(Wt::WLength(80, Wt::WLength::FontEx));
     Wt::WImage * introimage = new Wt::WImage("resources/other_images/glowingbulb.png");
     introimage->resize(Wt::WLength(4, Wt::WLength::FontEx), Wt::WLength(4, Wt::WLength::FontEx));
     introimage->setInline(true);
