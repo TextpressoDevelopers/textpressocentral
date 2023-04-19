@@ -5,6 +5,7 @@
  * Created on April 4, 2013, 10:20 AM
  */
 
+#include "displaySwitches.h"
 #include "Search.h"
 #include "TCNavWeb.h"
 #include "Preference.h"
@@ -524,7 +525,7 @@ void Search::CreateSearchInterface(Wt::WHBoxLayout* hbox) {
     scopeLocationContainer->addWidget(setDefTypeBtn_);
     scopeLocationContainer->addWidget(new WBreak());
     //
-        Wt::WText * label_location = new WText("Search Location: ");
+    Wt::WText * label_location = new WText("Search Location: ");
     label_location->decorationStyle().font().setVariant(Wt::WFont::SmallCaps);
     label_location->decorationStyle().font().setSize(Wt::WFont::Medium);
     scopeLocationContainer->addWidget(label_location);
@@ -552,7 +553,7 @@ void Search::CreateSearchInterface(Wt::WHBoxLayout* hbox) {
     keywordfield_combo_->changed().connect(std::bind([ = ](){
         if (keywordfield_combo_->currentText().value() == "sentence") {
             searchlocation_->setCurrentIndex(searchlocation_->findText("document"));
-            searchlocation_->disable();
+                    searchlocation_->disable();
         } else {
             searchlocation_->enable();
         }
@@ -1490,6 +1491,7 @@ void Search::WriteTsvFile(const std::vector< std::vector < std::wstring> > &cont
 }
 
 void Search::displayTable(int start, int end, int direction) {
+    displaySwitches switches;
     // data structure to keep track of open panels
     // create reader to retrieve paper information
     expandedPanelIndexes_.clear();
@@ -1664,20 +1666,22 @@ void Search::displayTable(int start, int end, int direction) {
             ->addWidget(new Wt::WText(labels[4])); //Type
     table_->elementAt(0, 6)
             ->addWidget(new Wt::WText(labels[6])); //doc score
-    table_->elementAt(0, 7)
-            ->addWidget(new Wt::WText(labels[7])); //link
-    Wt::WImage * im = new Wt::WImage("resources/icons/qmark15.png");
-    im->setVerticalAlignment(Wt::AlignTop);
-    im->setInline(true);
-    im->mouseWentOver().connect(boost::bind(&Search::SetCursorHand, this, im));
-    im->clicked().connect(this, &Search::HelpCurationCheckBoxDialog);
-    table_->elementAt(0, 7)->addWidget(im);
-    Wt::WPushButton * vspbutton = new Wt::WPushButton("View selected paper!");
-    vspbutton->setLink(Wt::WLink(Wt::WLink::InternalPath, "/curation"));
-    vspbutton->setStyleClass("btn-mini");
-    table_->elementAt(0, 7)->addWidget(new WBreak());
-    table_->elementAt(0, 7)->addWidget(vspbutton);
-    all_vp_cbxes_.clear();
+    if (switches.isNotSuppressed("curation")) {
+        table_->elementAt(0, 7)
+                ->addWidget(new Wt::WText(labels[7])); //link
+        Wt::WImage * im = new Wt::WImage("resources/icons/qmark15.png");
+        im->setVerticalAlignment(Wt::AlignTop);
+        im->setInline(true);
+        im->mouseWentOver().connect(boost::bind(&Search::SetCursorHand, this, im));
+        im->clicked().connect(this, &Search::HelpCurationCheckBoxDialog);
+        table_->elementAt(0, 7)->addWidget(im);
+        Wt::WPushButton * vspbutton = new Wt::WPushButton("View selected paper!");
+        vspbutton->setLink(Wt::WLink(Wt::WLink::InternalPath, "/curation"));
+        vspbutton->setStyleClass("btn-mini");
+        table_->elementAt(0, 7)->addWidget(new WBreak());
+        table_->elementAt(0, 7)->addWidget(vspbutton);
+        all_vp_cbxes_.clear();
+    }
     for (unsigned i = 0; i < contents.size(); ++i) {
         vector<wstring> row = contents[i];
         table_->elementAt(i + 1, 0)->setMinimumSize(50, 0);
@@ -1789,17 +1793,19 @@ void Search::displayTable(int start, int end, int direction) {
         table_->elementAt(i + 1, 6)->addWidget(new Wt::WText(row[9])); //score
         table_->elementAt(i + 1, 6)->setContentAlignment(Wt::AlignCenter);
         table_->elementAt(i + 1, 4)->setMinimumSize(100, 100);
-        std::string filepath(row[10].begin(), row[10].end());
-        Wt::WCheckBox * cb = new Wt::WCheckBox();
-        all_vp_cbxes_.push_back(cb);
-        cb->clicked().connect(boost::bind(&Search::ViewPaperClicked, this, cb,
-                std::string(row[4].begin(), row[4].end()),
-                std::string(row[5].begin(), row[5].end()),
-                std::string(row[6].begin(), row[6].end()),
-                std::string(row[7].begin(), row[7].end()),
-                filepath, indexes[i], std::string(row[1].begin(), row[1].end())));
-        table_->elementAt(i + 1, 7)->addWidget(cb);
-        table_->elementAt(i + 1, 7)->setContentAlignment(Wt::AlignCenter);
+        if (switches.isNotSuppressed("curation")) {
+            std::string filepath(row[10].begin(), row[10].end());
+            Wt::WCheckBox * cb = new Wt::WCheckBox();
+            all_vp_cbxes_.push_back(cb);
+            cb->clicked().connect(boost::bind(&Search::ViewPaperClicked, this, cb,
+                    std::string(row[4].begin(), row[4].end()),
+                    std::string(row[5].begin(), row[5].end()),
+                    std::string(row[6].begin(), row[6].end()),
+                    std::string(row[7].begin(), row[7].end()),
+                    filepath, indexes[i], std::string(row[1].begin(), row[1].end())));
+            table_->elementAt(i + 1, 7)->addWidget(cb);
+            table_->elementAt(i + 1, 7)->setContentAlignment(Wt::AlignCenter);
+        }
     }
     std::string tmpfilename = Wt::WApplication::instance()->sessionId() + ".tsv";
     std::string tmpdirname = "/usr/lib/cgi-bin/tc/downloads/";

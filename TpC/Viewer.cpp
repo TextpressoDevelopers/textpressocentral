@@ -8,6 +8,7 @@
 #include "Viewer.h"
 #include "SuggestionBoxFromPgOntology.h"
 #include "StopWords.h"
+#include "displaySwitches.h"
 
 #include "xercesc/util/XMLString.hpp"
 #include "uima/xmideserializer.hpp"
@@ -1517,7 +1518,7 @@ void Viewer::ResetLineEdit(Wt::WLineEdit * le, Wt::WTimer * timer) {
 //[ Annotations and curation box in the West
 
 void Viewer::SetAnnotationAndCurationBox(Wt::WContainerWidget * w) {
-
+    displaySwitches switches;
     userstatus_.annotationbox = new AnnotationGroupBox("Annotations");
     userstatus_.curationbox = new CurationGroupBox(session_, "Curation", parent_);
     userstatus_.curationbox->CancelAllSnipletsSignal().connect(this, &Viewer::CancelAllSnipletsSignalReceived);
@@ -1526,7 +1527,7 @@ void Viewer::SetAnnotationAndCurationBox(Wt::WContainerWidget * w) {
     userstatus_.curationbox->CBClicked().connect(this, &Viewer::CBButtonClicked);
     userstatus_.curationbox->SetLoginState();
     w->addWidget(userstatus_.annotationbox);
-    w->addWidget(userstatus_.curationbox);
+    if (switches.isNotSuppressed("login")) w->addWidget(userstatus_.curationbox);
 }
 
 void Viewer::SetAnnotationText(Wt::WString s) {

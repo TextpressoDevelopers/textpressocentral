@@ -46,6 +46,12 @@
             <df name="Pdf2Tpcas">
             </df>
           </df>
+          <df name="tpc.dir">
+            <df name="TpC">
+              <df name="lucene">
+              </df>
+            </df>
+          </df>
           <df name="tpcuration.dir">
             <df name="TpCuration">
             </df>
@@ -527,6 +533,8 @@
         <in>Workflow.h</in>
         <in>XmlTag.cpp</in>
         <in>XmlTag.h</in>
+        <in>displaySwitches.cpp</in>
+        <in>displaySwitches.h</in>
         <in>main.cpp</in>
         <in>tree.h</in>
       </df>

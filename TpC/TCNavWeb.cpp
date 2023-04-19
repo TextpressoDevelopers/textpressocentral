@@ -5,6 +5,7 @@
  * Created on April 2, 2013, 2:24 PM
  */
 
+#include "displaySwitches.h"
 #include "TCNavWeb.h"
 #include <Wt/Auth/AuthModel>
 #include <Wt/Auth/AuthWidget>
@@ -24,6 +25,7 @@
 #include <boost/filesystem.hpp>
 
 namespace {
+
     Wt::WString textFromFile(std::string filename) {
         std::ifstream f(filename.c_str());
         std::string in("");
@@ -36,6 +38,7 @@ namespace {
 
 TCNavWeb::TCNavWeb(UrlParameters * urlparameters, Wt::WContainerWidget * parent) : Wt::WContainerWidget(parent),
 session_("user=www-data dbname=www-data"), urlparameters_(urlparameters) {
+    displaySwitches switches;
     dialog_ = nullptr;
     singlepaperitem_ = NULL;
     session_.login().changed().connect(this, & TCNavWeb::AuthEvent);
@@ -99,27 +102,37 @@ session_("user=www-data dbname=www-data"), urlparameters_(urlparameters) {
     searchmenuitem_ = leftMenu_->addItem("Search", search_);
     searchmenuitem_->setPathComponent("search");
     //
-    curationmenuitem_ = leftMenu_->addItem("Curation", curation_);
-    curationmenuitem_->setPathComponent("curation");
-    curationmenuitem_->triggered().connect(this, &TCNavWeb::MenuItemTriggered);
+    if (switches.isNotSuppressed("curation")) {
+            curationmenuitem_ = leftMenu_->addItem("Curation", curation_);
+            curationmenuitem_->setPathComponent("curation");
+            curationmenuitem_->triggered().connect(this, &TCNavWeb::MenuItemTriggered);
+        }
     //
-    papersmenuitem_ = leftMenu_->addItem("Papers", papers_);
-    papersmenuitem_->setPathComponent("papers");
-    papersmenuitem_->triggered().connect(this, &TCNavWeb::MenuItemTriggered);
-    if (Wt::WApplication::instance()->internalPath() == "/papers")
-        papers_->LoadContent(session_);
+    if (switches.isNotSuppressed("papers"))
+        if (switches.isNotSuppressed("login")) {
+            papersmenuitem_ = leftMenu_->addItem("Papers", papers_);
+            papersmenuitem_->setPathComponent("papers");
+            papersmenuitem_->triggered().connect(this, &TCNavWeb::MenuItemTriggered);
+            if (Wt::WApplication::instance()->internalPath() == "/papers")
+                papers_->LoadContent(session_);
+        }
     //
-    browsersmenuitem_ = leftMenu_->addItem("Browsers", browsers_);
-    browsersmenuitem_->setPathComponent("browsers");
-    browsersmenuitem_->triggered().connect(this, &TCNavWeb::MenuItemTriggered);
-    if (Wt::WApplication::instance()->internalPath() == "/browsers")
-        browsers_->LoadContent(session_, this);
+    if (switches.isNotSuppressed("browsers")) {
+        browsersmenuitem_ = leftMenu_->addItem("Browsers", browsers_);
+        browsersmenuitem_->setPathComponent("browsers");
+        browsersmenuitem_->triggered().connect(this, &TCNavWeb::MenuItemTriggered);
+        if (Wt::WApplication::instance()->internalPath() == "/browsers")
+            browsers_->LoadContent(session_, this);
+    }
     //
-    leftMenu_->addItem("Customization", customization_)
+    if (switches.isNotSuppressed("customization"))
+        if (switches.isNotSuppressed("login"))
+            leftMenu_->addItem("Customization", customization_)
             ->setPathComponent("customization");
     //
-    leftMenu_->addItem("Download", download_)
-            ->setPathComponent("download");
+    if (switches.isNotSuppressed("download"))
+        leftMenu_->addItem("Download", download_)
+        ->setPathComponent("download");
     //
     leftMenu_->addItem("About Us", aboutus_)
             ->setPathComponent("aboutus");
@@ -142,7 +155,7 @@ session_("user=www-data dbname=www-data"), urlparameters_(urlparameters) {
         Wt::WString msgtxt("");
         if (item->text().toUTF8().compare("Content") == 0) {
             WDialog* helpDialog = new Wt::WDialog("Introduction & First Steps");
-            helpDialog->contents()->addWidget(help_);
+                    helpDialog->contents()->addWidget(help_);
                     Wt::WPushButton *ok = new Wt::WPushButton("Ok", helpDialog->contents());
                     ok->clicked().connect(helpDialog, &Wt::WDialog::accept);
                     helpDialog->finished().connect(std::bind([ = ] (){
@@ -196,9 +209,12 @@ session_("user=www-data dbname=www-data"), urlparameters_(urlparameters) {
         decorationStyle().setBorder(bx);
     }
     layout->addWidget(navigation_);
-    layout->addWidget(loganchor_, 0, Wt::AlignRight);
-    layout->addWidget(new Wt::WBreak());
-    layout->addWidget(verifieduserlabel_, 0, Wt::AlignRight);
+    if (switches.isNotSuppressed("login")) {
+
+        layout->addWidget(loganchor_, 0, Wt::AlignRight);
+        layout->addWidget(new Wt::WBreak());
+        layout->addWidget(verifieduserlabel_, 0, Wt::AlignRight);
+    }
     layout->addWidget(contentsStack_);
     changed_ = true;
 }
