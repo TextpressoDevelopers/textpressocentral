@@ -1231,6 +1231,13 @@ void Search::DoSearchUpdates() {
                 matchtext += " (results were limited to the first " + std::to_string(hits) + " sentences)";
             }
         }
+        // All results as tsv
+        std::vector< std::vector < std::wstring> > allcontent;
+        getAllResults(allcontent);
+        std::string tmpdirname = "/usr/lib/cgi-bin/tc/downloads/";
+        allResultsAsTSVfilename_ = Wt::WApplication::instance()->sessionId() + ".all.tsv";
+        WriteTsvFile(allcontent, tmpdirname + allResultsAsTSVfilename_);
+
         matchtext += ".";
         size_text_->setText(matchtext);
         page_number_text_->setText("Page: " + std::to_string(currentpage_ + 1) +
@@ -1478,15 +1485,103 @@ void Search::WriteTsvFile(const std::vector< std::vector < std::wstring> > &cont
         out << "Year\t";
         out << "Abstract\t";
         out << "Score\t";
-        out << "File location\t";
+        //        out << "File location\t";
         out << std::endl;
         for (unsigned i = 0; i < contents.size(); ++i) {
-            for (auto x : contents[i]) out << x << "\t";
+            //            for (auto x : contents[i]) out << x << "\t";
+            for (size_t j = 0; j < contents[i].size() - 1; j++)
+                out << contents[i][j] << "\t";
             out << std::endl;
         }
         out.close();
     } else {
         std::cerr << "Couldn't open " << tmpfilename << std::endl;
+    }
+}
+
+void Search::getAllResults(std::vector< std::vector < std::wstring> >& contents) {
+    contents = {};
+    double max_min = searchResults_.max_score - searchResults_.min_score;
+    if (totalresults_ > 0) {
+        //
+        vector<DocumentSummary> doc_summaries;
+        vector<double> scores;
+        for (size_t i = 0; i < searchResults_.hit_documents.size(); i++) {
+            double doc_score = searchResults_.hit_documents[i].score;
+            if (totalresults_ > 1) {
+                if (max_min > 0) {
+                    doc_score = (doc_score - searchResults_.min_score) / max_min;
+                } else {
+                    doc_score = 0;
+                }
+            } else {
+                doc_score = 1;
+            }
+            scores.push_back(doc_score);
+            doc_summaries.push_back(searchResults_.hit_documents[i]);
+        }
+        //
+        vector<DocumentDetails> docsDetails = indexManager_.get_documents_details(
+                searchResults_.hit_documents, cb_year_->isChecked(), false,
+                DOCUMENTS_FIELDS_DETAILED, SENTENCE_FIELDS_DETAILED, {
+                    "fulltext_compressed", "fulltext_cat_compressed"
+                },
+        {
+        });
+        bool use_identifiers = all_of(doc_summaries.begin(), doc_summaries.end(), [](DocumentSummary d) {
+            return !d.identifier.empty();
+        });
+        map<string, DocumentDetails> docDetailsMap;
+        for (DocumentDetails docDetails : docsDetails) {
+            if (use_identifiers) {
+                docDetailsMap[docDetails.identifier] = docDetails;
+
+            } else {
+                docDetailsMap[to_string(docDetails.lucene_internal_id)] = docDetails;
+            }
+        }
+        for (int i = 0; i < doc_summaries.size(); ++i) {
+            std::wstring w_score = boost::lexical_cast<std::wstring > (100.0 * scores[i]);
+            w_score = w_score.substr(0, 5); //display only 4 digit of score
+            DocumentDetails docDetails;
+            if (use_identifiers) {
+                docDetails = docDetailsMap[doc_summaries[i].identifier];
+            } else {
+                docDetails = docDetailsMap[to_string(doc_summaries[i].lucene_internal_id)];
+            }
+            std::vector<std::wstring> row;
+            std::wstring serial = boost::lexical_cast<std::wstring > (i + 1);
+            row.push_back(serial);
+            row.push_back(LString2WtString(String(docDetails.accession.begin(), docDetails.accession.end())));
+            string corpora = boost::join(docDetails.corpora, ", ");
+            row.push_back(LString2WtString(String(corpora.begin(), corpora.end())));
+            row.push_back(LString2WtString(String(docDetails.type.begin(), docDetails.type.end())));
+            if (!docDetails.title.empty()) {
+                string cleanTitle = docDetails.title.substr(6, docDetails.title.size() - 10);
+                row.push_back(LString2WtString(String(cleanTitle.begin(), cleanTitle.end())));
+            } else {
+                row.push_back(L"");
+            }
+            if (!docDetails.author.empty()) {
+                string cleanAuthor = docDetails.author.substr(6, docDetails.author.size() - 10);
+                row.push_back(LString2WtString(String(cleanAuthor.begin(), cleanAuthor.end())));
+            } else {
+                row.push_back(L"");
+            }
+            if (!docDetails.journal.empty()) {
+                string cleanJournal = docDetails.journal.substr(6, docDetails.journal.size() - 10);
+                row.push_back(LString2WtString(String(cleanJournal.begin(), cleanJournal.end())));
+            } else {
+                row.push_back(L"");
+            }
+            row.push_back(LString2WtString(String(docDetails.year.begin(), docDetails.year.end())));
+            row.push_back(LString2WtString(String(docDetails.abstract.begin(), docDetails.abstract.end())));
+            row.push_back(w_score);
+            string filepath = docDetails.filepath;
+            boost::replace_regex(filepath, boost::regex("^PMCOA [^\\/]*\\/"), string("PMCOA\\/"));
+            row.push_back(LString2WtString(String(filepath.begin(), filepath.end())));
+            contents.push_back(row);
+        }
     }
 }
 
@@ -1814,6 +1909,10 @@ void Search::displayTable(int start, int end, int direction) {
     tsvAnchor->setTarget(Wt::TargetDownload);
     table_->elementAt(contents.size() + 1, 0)
             ->addWidget(tsvAnchor);
+    Wt::WAnchor* alltsvAnchor = new Wt::WAnchor(Wt::WLink(Wt::WLink::Url, "downloads/" + allResultsAsTSVfilename_), "Download all results");
+    alltsvAnchor->setTarget(Wt::TargetDownload);
+    table_->elementAt(contents.size() + 1, 1)
+            ->addWidget(alltsvAnchor);
     if (direction == 1) {
         currentpage_++;
     } else if (direction == -1) {

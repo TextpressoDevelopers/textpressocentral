@@ -127,6 +127,7 @@ private:
     int current_start_;
     int current_end_;
 
+    std::string allResultsAsTSVfilename_;
 
     std::vector<Wt::WGroupBox*> tableTextGroupBoxes_;
     std::set<int> expandedPanelIndexes_;
@@ -201,6 +202,7 @@ private:
     void ResetSearch();
     void WriteTsvFile(const std::vector< std::vector < std::wstring> > &contents,
             const std::string tmpfilename);
+    void getAllResults(std::vector<std::vector<std::wstring>>& contents);
     void displayTable(int start, int end, int shift);
     void ViewPaperClicked(Wt::WCheckBox *cb, const std::string& papertitle,
             const std::string& paperauthor, const std::string& paperjournal, const std::string& paperyear,
